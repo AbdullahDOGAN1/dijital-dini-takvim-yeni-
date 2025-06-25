@@ -85,17 +85,22 @@ class _MainScreenState extends State<MainScreen> {
       ),
       endDrawer: _buildEndDrawer(),
       body: _screens[_selectedIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const DhikrScreen()),
-          );
-        },
-        backgroundColor: Colors.green.shade600,
-        child: const Icon(
-          Icons.spa,
-          color: Colors.white,
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(top: 10), // Push down to sit properly in notch
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const DhikrScreen()),
+            );
+          },
+          backgroundColor: Colors.green.shade600,
+          elevation: 4,
+          child: const Icon(
+            Icons.spa,
+            color: Colors.white,
+            size: 24,
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

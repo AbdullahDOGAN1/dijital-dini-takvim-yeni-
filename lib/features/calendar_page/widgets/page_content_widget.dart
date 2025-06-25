@@ -22,31 +22,31 @@ class PageContentWidget extends StatelessWidget {
         //   fit: BoxFit.cover,
         // ),
         
-        // Rounded corners for a book page effect
-        borderRadius: BorderRadius.circular(10),
+        // Rounded corners for a book page effect with modern radius
+        borderRadius: BorderRadius.circular(16),
         
-        // Subtle shadow for depth
+        // Enhanced shadows for depth
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(2, 4),
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(1, 2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
         
-        // Subtle border for definition
+        // Enhanced border for definition
         border: Border.all(
-          color: Colors.brown.withOpacity(0.2),
-          width: 1,
+          color: Colors.brown.withOpacity(0.25),
+          width: 1.5,
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: child,
       ),
     );
