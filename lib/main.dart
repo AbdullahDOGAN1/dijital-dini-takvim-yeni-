@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
+import 'features/calendar_page/widgets/daily_page_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,15 +29,7 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Dijital Dini Takvim'),
         centerTitle: true,
       ),
-      body: const Center(
-        child: Text(
-          'Yakında...',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+      body: const DailyPageWidget(),
     );
   }
 }
