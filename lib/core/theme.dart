@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static ThemeData getThemeData() {
     return ThemeData(
       // Ana renkler
-      primaryColor: const Color(0xFF0D47A1),
-      scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+      primaryColor: Colors.brown.shade700,
+      scaffoldBackgroundColor: const Color(0xFFF1EAD9), // Warm parchment color
       
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0D47A1),
+        seedColor: Colors.brown.shade700,
         brightness: Brightness.light,
-        surface: const Color(0xFFF5F5F5),
-        onSurface: const Color(0xFF1A1A1A),
+        surface: const Color(0xFFF1EAD9),
+        onSurface: Colors.black87,
       ),
       
       // Font Family
-      fontFamily: 'Inter',
+      fontFamily: GoogleFonts.ebGaramond().fontFamily,
       
       // AppBar Teması
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF0D47A1),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.brown.shade700,
         foregroundColor: Colors.white,
         elevation: 2,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontFamily: 'Inter',
+        titleTextStyle: GoogleFonts.ebGaramond(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -33,54 +33,46 @@ class AppTheme {
       ),
       
       // Text Teması
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontFamily: 'Inter',
+      textTheme: GoogleFonts.ebGaramondTextTheme().copyWith(
+        headlineLarge: GoogleFonts.ebGaramond(
           fontSize: 32,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        headlineMedium: TextStyle(
-          fontFamily: 'Inter',
+        headlineMedium: GoogleFonts.ebGaramond(
           fontSize: 28,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        headlineSmall: TextStyle(
-          fontFamily: 'Inter',
+        headlineSmall: GoogleFonts.ebGaramond(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        titleLarge: TextStyle(
-          fontFamily: 'Inter',
+        titleLarge: GoogleFonts.ebGaramond(
           fontSize: 22,
           fontWeight: FontWeight.w500,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        titleMedium: TextStyle(
-          fontFamily: 'Inter',
+        titleMedium: GoogleFonts.ebGaramond(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        bodyLarge: TextStyle(
-          fontFamily: 'Inter',
+        bodyLarge: GoogleFonts.ebGaramond(
           fontSize: 16,
           fontWeight: FontWeight.normal,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        bodyMedium: TextStyle(
-          fontFamily: 'Inter',
+        bodyMedium: GoogleFonts.ebGaramond(
           fontSize: 14,
           fontWeight: FontWeight.normal,
-          color: Color(0xFF1A1A1A),
+          color: Colors.black87,
         ),
-        bodySmall: TextStyle(
-          fontFamily: 'Inter',
+        bodySmall: GoogleFonts.ebGaramond(
           fontSize: 12,
           fontWeight: FontWeight.normal,
-          color: Color(0xFF666666),
+          color: const Color(0xFF6D4C41), // Dark brown for secondary text
         ),
       ),
       
@@ -96,15 +88,14 @@ class AppTheme {
       // Elevated Button Teması
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D47A1),
+          backgroundColor: Colors.brown.shade600,
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: const TextStyle(
-            fontFamily: 'Inter',
+          textStyle: GoogleFonts.ebGaramond(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -125,7 +116,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF0D47A1), width: 2),
+          borderSide: BorderSide(color: Colors.brown.shade700, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),

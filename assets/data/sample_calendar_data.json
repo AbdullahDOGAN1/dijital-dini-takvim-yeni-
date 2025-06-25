@@ -1,0 +1,26 @@
+[
+  {
+    "gun_sira_no": 1,
+    "miladi_tarih": "01-01",
+    "sayfa_onu": {
+      "tarihte_bugun": { "yil": 630, "olay": "Hz. Muhammed (S.A.V) komutasındaki İslam ordusu, Mekke'yi fethetti." },
+      "gunun_risale_metni": { "metin": "Bismillah her hayrın başıdır. Biz dahi başta ona başlarız.", "kaynak": "Sözler, Birinci Söz" }
+    },
+    "sayfa_arkasi": {
+      "gunun_hadisi_veya_ayeti": { "tip": "Ayet", "metin": "Yaratan Rabbinin adıyla oku.", "kaynak": "Alak Suresi, 1. Ayet" },
+      "gunun_menusu": { "corba": "Mercimek Çorbası", "ana_yemek": "Hünkar Beğendi", "tatli": "Sütlaç" }
+    }
+  },
+  {
+    "gun_sira_no": 2,
+    "miladi_tarih": "01-02",
+    "sayfa_onu": {
+      "tarihte_bugun": { "yil": 1982, "olay": "TRT, haftada iki gün renkli televizyon yayınına başladı." },
+      "gunun_risale_metni": { "metin": "Evet, her bir çiçek, her bir meyve, Kâinat Hâlıkının sikke-i ehadiyetini ve hâtem-i samediyetini gösteriyor.", "kaynak": "Mektubat, Yirminci Mektup" }
+    },
+    "sayfa_arkasi": {
+      "gunun_hadisi_veya_ayeti": { "tip": "Hadis", "metin": "İki günü eşit olan zarardadır.", "kaynak": "Beyhakî" },
+      "gunun_menusu": { "corba": "Yayla Çorbası", "ana_yemek": "İzmir Köfte", "tatli": "Şekerpare" }
+    }
+  }
+]

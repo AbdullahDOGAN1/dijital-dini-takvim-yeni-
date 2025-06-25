@@ -1,0 +1,6 @@
+This directory contains image assets for the app.
+
+Currently needed:
+- paper_texture.jpg (for page background texture)
+
+Note: Add your paper texture image here and ensure it's properly declared in pubspec.yaml
