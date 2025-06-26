@@ -21,10 +21,12 @@ class PrayerTimesModel {
   factory PrayerTimesModel.fromJson(Map<String, dynamic> json) {
     // Handle the nested structure of Aladhan API
     final timings = json['data']?['timings'] ?? json['timings'] ?? json;
-    
+
     return PrayerTimesModel(
       imsak: _parseTime(timings['Imsak'] ?? timings['imsak'] ?? ''),
-      gunes: _parseTime(timings['Sunrise'] ?? timings['Fajr'] ?? timings['gunes'] ?? ''),
+      gunes: _parseTime(
+        timings['Sunrise'] ?? timings['Fajr'] ?? timings['gunes'] ?? '',
+      ),
       ogle: _parseTime(timings['Dhuhr'] ?? timings['ogle'] ?? ''),
       ikindi: _parseTime(timings['Asr'] ?? timings['ikindi'] ?? ''),
       aksam: _parseTime(timings['Maghrib'] ?? timings['aksam'] ?? ''),
@@ -36,10 +38,10 @@ class PrayerTimesModel {
   /// Removes timezone info and formats consistently
   static String _parseTime(String timeString) {
     if (timeString.isEmpty) return '--:--';
-    
+
     // Remove timezone info if present (e.g., "05:30 (+03)" -> "05:30")
     final cleanTime = timeString.replaceAll(RegExp(r'\s*\([^)]*\)'), '').trim();
-    
+
     // Extract just the time part (HH:MM)
     final timeMatch = RegExp(r'(\d{1,2}:\d{2})').firstMatch(cleanTime);
     return timeMatch?.group(1) ?? cleanTime;

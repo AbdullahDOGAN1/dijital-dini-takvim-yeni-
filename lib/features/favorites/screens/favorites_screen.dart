@@ -10,9 +10,7 @@ class FavoritesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Favorilerim',
-          style: GoogleFonts.ebGaramond(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.pink.shade700,
         foregroundColor: Colors.white,
@@ -29,11 +27,7 @@ class FavoritesScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.favorite,
-                size: 80,
-                color: Colors.pink.shade400,
-              ),
+              Icon(Icons.favorite, size: 80, color: Colors.pink.shade400),
               const SizedBox(height: 20),
               Text(
                 'Favorilerim',

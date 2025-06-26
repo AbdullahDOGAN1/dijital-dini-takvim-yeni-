@@ -7,23 +7,24 @@ class TearEffectWidget extends StatefulWidget {
   final Widget child;
   final void Function()? onTearComplete;
 
-  const TearEffectWidget({
-    Key? key,
-    required this.child,
-    this.onTearComplete,
-  }) : super(key: key);
+  const TearEffectWidget({Key? key, required this.child, this.onTearComplete})
+    : super(key: key);
 
   @override
   State<TearEffectWidget> createState() => _TearEffectWidgetState();
 }
 
-class _TearEffectWidgetState extends State<TearEffectWidget> with SingleTickerProviderStateMixin {
+class _TearEffectWidgetState extends State<TearEffectWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
     // Yırtma animasyonunu otomatik başlat
     _controller.forward(from: 0).then((_) => widget.onTearComplete?.call());
   }
@@ -61,7 +62,9 @@ class TearEffectPainter extends CustomPainter {
     final y = progress * size.height;
 
     // Dalgalı yırtılma path
-    final tearPath = Path()..moveTo(0, 0)..lineTo(0, y);
+    final tearPath = Path()
+      ..moveTo(0, 0)
+      ..lineTo(0, y);
     for (double x = 0; x <= size.width; x += 1) {
       final dy = sin(x * waveFrequency + progress * pi * 2) * waveAmplitude;
       tearPath.lineTo(x, y + dy);

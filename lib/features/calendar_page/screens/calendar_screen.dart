@@ -11,14 +11,15 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStateMixin {
+class _CalendarScreenState extends State<CalendarScreen>
+    with TickerProviderStateMixin {
   // Loading state
   bool _isLoading = true;
   List<DailyContentModel> _calendarData = [];
-  
+
   // Current day navigation
   int _currentPageIndex = 0;
-  
+
   // Page flip controller
   late AnimationController _pageTurnController;
   late Animation<double> _pageTurnAnimation;
@@ -27,21 +28,17 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize page turn controller
     _pageTurnController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
-    _pageTurnAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _pageTurnController,
-      curve: Curves.easeInOut,
-    ));
-    
+
+    _pageTurnAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _pageTurnController, curve: Curves.easeInOut),
+    );
+
     _loadData();
   }
 
@@ -70,13 +67,14 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
 
   /// Get formatted date information for the current page
   Map<String, dynamic> _getFormattedDates() {
-    if (_calendarData.isEmpty) return {
-      'gregorian': {'day': '', 'month': '', 'year': '', 'weekday': ''},
-      'hijri': {'day': '', 'month': '', 'year': ''}
-    };
-    
+    if (_calendarData.isEmpty)
+      return {
+        'gregorian': {'day': '', 'month': '', 'year': '', 'weekday': ''},
+        'hijri': {'day': '', 'month': '', 'year': ''},
+      };
+
     final currentData = _calendarData[_currentPageIndex];
-    
+
     // Parse the Gregorian date from the data
     try {
       final parts = currentData.miladiTarih.split(' ');
@@ -84,26 +82,35 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
         final day = int.parse(parts[0]);
         final monthStr = parts[1];
         final year = int.parse(parts[2]);
-        
+
         // Turkish month names to numbers
         const monthMap = {
-          'OCAK': 1, 'ŞUBAT': 2, 'MART': 3, 'NİSAN': 4,
-          'MAYIS': 5, 'HAZİRAN': 6, 'TEMMUZ': 7, 'AĞUSTOS': 8,
-          'EYLÜL': 9, 'EKİM': 10, 'KASIM': 11, 'ARALIK': 12
+          'OCAK': 1,
+          'ŞUBAT': 2,
+          'MART': 3,
+          'NİSAN': 4,
+          'MAYIS': 5,
+          'HAZİRAN': 6,
+          'TEMMUZ': 7,
+          'AĞUSTOS': 8,
+          'EYLÜL': 9,
+          'EKİM': 10,
+          'KASIM': 11,
+          'ARALIK': 12,
         };
-        
+
         final month = monthMap[monthStr] ?? 1;
         final date = DateTime(year, month, day);
-        
+
         // Format different parts of Gregorian date
         final dayFormatter = DateFormat('d', 'tr_TR');
         final monthFormatter = DateFormat('MMMM', 'tr_TR');
         final yearFormatter = DateFormat('yyyy', 'tr_TR');
         final weekdayFormatter = DateFormat('EEEE', 'tr_TR');
-        
+
         // Calculate approximate Hijri date (basic conversion)
         final hijriDate = _calculateHijriDate(date);
-        
+
         return {
           'gregorian': {
             'day': dayFormatter.format(date),
@@ -115,13 +122,13 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
             'day': hijriDate['day'].toString(),
             'month': hijriDate['month'],
             'year': hijriDate['year'].toString(),
-          }
+          },
         };
       }
     } catch (e) {
       print('Date parsing error: $e');
     }
-    
+
     // Fallback to original data
     return {
       'gregorian': {
@@ -130,11 +137,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
         'year': '2025',
         'weekday': 'Çarşamba',
       },
-      'hijri': {
-        'day': '1',
-        'month': 'Recep',
-        'year': '1446',
-      }
+      'hijri': {'day': '1', 'month': 'Recep', 'year': '1446'},
     };
   }
 
@@ -144,16 +147,18 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
     // Hijri year 1 started on July 16, 622 CE
     final hijriEpoch = DateTime(622, 7, 16);
     final daysDifference = gregorianDate.difference(hijriEpoch).inDays;
-    
+
     // Average Hijri year is about 354.367 days
     final hijriYear = (daysDifference / 354.367).floor() + 1;
-    
+
     // Calculate approximate month and day (simplified)
-    final yearStart = hijriEpoch.add(Duration(days: ((hijriYear - 1) * 354.367).floor()));
+    final yearStart = hijriEpoch.add(
+      Duration(days: ((hijriYear - 1) * 354.367).floor()),
+    );
     final daysIntoYear = gregorianDate.difference(yearStart).inDays;
     final hijriMonth = (daysIntoYear / 29.53).floor() + 1;
     final hijriDay = (daysIntoYear % 29.53).floor() + 1;
-    
+
     return {
       'day': hijriDay.clamp(1, 30),
       'month': _getHijriMonthNameTurkish(hijriMonth.clamp(1, 12)),
@@ -164,11 +169,20 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
   /// Get Hijri month name in Turkish
   String _getHijriMonthNameTurkish(int month) {
     const hijriMonths = [
-      'Muharrem', 'Safer', 'Rebiülevvel', 'Rebiülahir',
-      'Cemaziyelevvel', 'Cemaziyelahir', 'Recep', 'Şaban',
-      'Ramazan', 'Şevval', 'Zilkade', 'Zilhicce'
+      'Muharrem',
+      'Safer',
+      'Rebiülevvel',
+      'Rebiülahir',
+      'Cemaziyelevvel',
+      'Cemaziyelahir',
+      'Recep',
+      'Şaban',
+      'Ramazan',
+      'Şevval',
+      'Zilkade',
+      'Zilhicce',
     ];
-    
+
     if (month >= 1 && month <= 12) {
       return hijriMonths[month - 1];
     }
@@ -178,7 +192,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
   /// Handle vertical drag end for page flip gesture
   void _onVerticalDragEnd(DragEndDetails details) {
     final velocity = details.primaryVelocity ?? 0;
-    
+
     // If fast upward swipe, trigger page flip
     if (velocity < -250) {
       if (_isFlipped) {
@@ -217,7 +231,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
   /// Build the prominent date header with rich hierarchical display
   Widget _buildDateHeader() {
     final dates = _getFormattedDates();
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -286,9 +300,9 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
               ),
             ],
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           // Weekday
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -307,9 +321,9 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
               textAlign: TextAlign.center,
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Elegant Hijri Date
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -388,12 +402,15 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Day Counter with better styling
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Colors.brown.shade100, Colors.brown.shade50],
@@ -419,13 +436,15 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Next Day Button
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _currentPageIndex < _calendarData.length - 1 ? _goToNextDay : null,
+                  onPressed: _currentPageIndex < _calendarData.length - 1
+                      ? _goToNextDay
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.brown.shade600,
                     foregroundColor: Colors.white,
@@ -464,9 +483,9 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
   /// Build page content with flip animation
   Widget _buildPageContent() {
     if (_calendarData.isEmpty) return const SizedBox();
-    
+
     final currentData = _calendarData[_currentPageIndex];
-    
+
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -497,9 +516,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                         ..setEntry(3, 2, 0.001)
                         ..rotateY(_pageTurnAnimation.value * 3.14159),
                       child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
+                        decoration: const BoxDecoration(color: Colors.white),
                         child: isShowingFront
                             ? _buildFrontPage(currentData)
                             : Transform(
@@ -513,7 +530,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 ),
               ),
             ),
-            
+
             // Page flip indicator at bottom
             Positioned(
               bottom: 16,
@@ -546,9 +563,9 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                     animation: _pageTurnAnimation,
                     builder: (context, child) {
                       return Icon(
-                        _pageTurnAnimation.value < 0.5 
-                          ? Icons.flip_to_back 
-                          : Icons.flip_to_front,
+                        _pageTurnAnimation.value < 0.5
+                            ? Icons.flip_to_back
+                            : Icons.flip_to_front,
                         size: 20,
                         color: Colors.white,
                       );
@@ -570,10 +587,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.brown.shade50,
-            Colors.amber.shade50,
-          ],
+          colors: [Colors.brown.shade50, Colors.amber.shade50],
         ),
       ),
       child: SingleChildScrollView(
@@ -611,7 +625,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.brown.shade600, Colors.brown.shade700],
+                            colors: [
+                              Colors.brown.shade600,
+                              Colors.brown.shade700,
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -657,9 +674,9 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Risale-i Nur Section
             Container(
               width: double.infinity,
@@ -690,7 +707,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.green.shade600, Colors.green.shade700],
+                            colors: [
+                              Colors.green.shade600,
+                              Colors.green.shade700,
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -727,7 +747,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green.shade100, width: 1),
+                      border: Border.all(
+                        color: Colors.green.shade100,
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       '"${data.frontPage.risaleQuote.text}"',
@@ -744,11 +767,17 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green.shade100,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.green.shade200, width: 1),
+                        border: Border.all(
+                          color: Colors.green.shade200,
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         '— ${data.frontPage.risaleQuote.source}',
@@ -763,7 +792,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 80), // Space for flip button
           ],
         ),
@@ -778,10 +807,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.shade50,
-            Colors.purple.shade50,
-          ],
+          colors: [Colors.blue.shade50, Colors.purple.shade50],
         ),
       ),
       child: SingleChildScrollView(
@@ -819,7 +845,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.blue.shade600, Colors.blue.shade700],
+                            colors: [
+                              Colors.blue.shade600,
+                              Colors.blue.shade700,
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -832,11 +861,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                             ),
                           ],
                         ),
-                        child: Icon(
-                          Icons.book,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        child: Icon(Icons.book, color: Colors.white, size: 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -874,11 +899,17 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade100,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.blue.shade200, width: 1),
+                        border: Border.all(
+                          color: Colors.blue.shade200,
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         '— ${data.backPage.dailyVerseOrHadith.source}',
@@ -893,9 +924,9 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Daily Menu Section
             Container(
               width: double.infinity,
@@ -926,7 +957,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.purple.shade600, Colors.purple.shade700],
+                            colors: [
+                              Colors.purple.shade600,
+                              Colors.purple.shade700,
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -960,13 +994,16 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                   const SizedBox(height: 16),
                   _buildMenuRow('🍲 Çorba', data.backPage.dailyMenu.soup),
                   const SizedBox(height: 10),
-                  _buildMenuRow('🍽️ Ana Yemek', data.backPage.dailyMenu.mainCourse),
+                  _buildMenuRow(
+                    '🍽️ Ana Yemek',
+                    data.backPage.dailyMenu.mainCourse,
+                  ),
                   const SizedBox(height: 10),
                   _buildMenuRow('🍰 Tatlı', data.backPage.dailyMenu.dessert),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 80), // Space for flip button
           ],
         ),
@@ -1025,15 +1062,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFF1EAD9),
-              Colors.brown.shade50,
-            ],
+            colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
           ),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -1044,10 +1076,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFF1EAD9),
-              Colors.brown.shade50,
-            ],
+            colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
           ),
         ),
         child: const Center(
@@ -1066,10 +1095,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFF1EAD9),
-              Colors.brown.shade50,
-            ],
+            colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
           ),
         ),
         child: SafeArea(
@@ -1077,10 +1103,10 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
             children: [
               // 1. Date Header
               _buildDateHeader(),
-              
+
               // 2. Page Content (Expanded)
               _buildPageContent(),
-              
+
               // 3. Navigation Buttons
               _buildNavigationButtons(),
             ],

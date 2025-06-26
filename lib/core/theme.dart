@@ -7,7 +7,6 @@ class AppTheme {
       // Ana renkler
       primaryColor: Colors.brown.shade700,
       scaffoldBackgroundColor: const Color(0xFFF1EAD9), // Warm parchment color
-      
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.brown.shade700,
@@ -15,10 +14,10 @@ class AppTheme {
         surface: const Color(0xFFF1EAD9),
         onSurface: Colors.black87,
       ),
-      
+
       // Font Family
       fontFamily: GoogleFonts.ebGaramond().fontFamily,
-      
+
       // AppBar Teması
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.brown.shade700,
@@ -31,7 +30,7 @@ class AppTheme {
           color: Colors.white,
         ),
       ),
-      
+
       // Text Teması
       textTheme: GoogleFonts.ebGaramondTextTheme().copyWith(
         headlineLarge: GoogleFonts.ebGaramond(
@@ -75,7 +74,7 @@ class AppTheme {
           color: const Color(0xFF6D4C41), // Dark brown for secondary text
         ),
       ),
-      
+
       // Card Teması
       cardTheme: const CardThemeData(
         color: Colors.white,
@@ -84,7 +83,7 @@ class AppTheme {
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
       ),
-      
+
       // Elevated Button Teması
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -92,16 +91,14 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.ebGaramond(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
-      
+
       // Input Decoration Teması
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -118,7 +115,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: Colors.brown.shade700, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
       ),
     );
   }

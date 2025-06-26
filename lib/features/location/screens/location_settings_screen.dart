@@ -10,9 +10,7 @@ class LocationSettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Konum Ayarları',
-          style: GoogleFonts.ebGaramond(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
@@ -29,11 +27,7 @@ class LocationSettingsScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.location_on,
-                size: 80,
-                color: Colors.green.shade400,
-              ),
+              Icon(Icons.location_on, size: 80, color: Colors.green.shade400),
               const SizedBox(height: 20),
               Text(
                 'Konum Ayarları',
@@ -69,10 +63,7 @@ class LocationSettingsScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.location_city,
-                      color: Colors.green.shade600,
-                    ),
+                    Icon(Icons.location_city, color: Colors.green.shade600),
                     const SizedBox(width: 12),
                     Text(
                       'Mevcut Konum: Ankara',

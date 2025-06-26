@@ -19,7 +19,8 @@ class PageFlipWidget extends StatefulWidget {
   State<PageFlipWidget> createState() => _PageFlipWidgetState();
 }
 
-class _PageFlipWidgetState extends State<PageFlipWidget> with SingleTickerProviderStateMixin {
+class _PageFlipWidgetState extends State<PageFlipWidget>
+    with SingleTickerProviderStateMixin {
   // Animasyon ve gesture state değişkenleri burada olacak
   late AnimationController _controller;
   Offset? _dragStart;
@@ -28,7 +29,10 @@ class _PageFlipWidgetState extends State<PageFlipWidget> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
   }
 
   @override
@@ -143,10 +147,7 @@ class PageFlipPainter extends CustomPainter {
       colors: [Colors.grey.shade200, Colors.grey.shade400],
     );
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    canvas.drawRect(
-      rect,
-      Paint()..shader = backGradient.createShader(rect),
-    );
+    canvas.drawRect(rect, Paint()..shader = backGradient.createShader(rect));
     canvas.restore();
 
     // Gölge efekti (kıvrım kenarında)

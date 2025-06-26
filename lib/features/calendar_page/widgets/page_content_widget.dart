@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class PageContentWidget extends StatelessWidget {
   final Widget child;
 
-  const PageContentWidget({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const PageContentWidget({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +12,15 @@ class PageContentWidget extends StatelessWidget {
       decoration: BoxDecoration(
         // Paper-like background color as fallback
         color: const Color(0xFFF5F5DC), // Beige/cream color
-        
         // Uncomment when paper_texture.jpg is available
         // image: const DecorationImage(
         //   image: AssetImage('assets/images/paper_texture.jpg'),
         //   fit: BoxFit.cover,
         // ),
-        
+
         // Rounded corners for a book page effect with modern radius
         borderRadius: BorderRadius.circular(16),
-        
+
         // Enhanced shadows for depth
         boxShadow: [
           BoxShadow(
@@ -38,17 +34,11 @@ class PageContentWidget extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
-        
+
         // Enhanced border for definition
-        border: Border.all(
-          color: Colors.brown.withOpacity(0.25),
-          width: 1.5,
-        ),
+        border: Border.all(color: Colors.brown.withOpacity(0.25), width: 1.5),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: child,
-      ),
+      child: Padding(padding: const EdgeInsets.all(16.0), child: child),
     );
   }
 }

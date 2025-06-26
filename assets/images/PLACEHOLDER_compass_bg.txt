@@ -1,0 +1,11 @@
+PLACEHOLDER for compass background image (compass_bg.png)
+
+This should be a circular compass background image showing:
+- Cardinal directions (N, S, E, W)
+- Intermediate directions (NE, NW, SE, SW)  
+- Degree markings around the edge
+- Traditional compass styling with gold/bronze colors
+- Size: 300x300 pixels minimum
+- Format: PNG with transparent background
+
+For now, we'll use a programmatically drawn compass background.

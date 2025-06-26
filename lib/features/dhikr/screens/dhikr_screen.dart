@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DhikrScreen extends StatefulWidget {
   const DhikrScreen({super.key});
@@ -8,7 +10,8 @@ class DhikrScreen extends StatefulWidget {
   State<DhikrScreen> createState() => _DhikrScreenState();
 }
 
-class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin {
+class _DhikrScreenState extends State<DhikrScreen>
+    with TickerProviderStateMixin {
   int _counter = 0;
   final int _targetCount = 33;
   late AnimationController _scaleController;
@@ -29,6 +32,9 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
+    
+    // Load saved counter value
+    _loadCounter();
   }
 
   @override
@@ -38,10 +44,44 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
     super.dispose();
   }
 
+  /// Load counter value from SharedPreferences
+  Future<void> _loadCounter() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedCounter = prefs.getInt('dhikr_count') ?? 0;
+      
+      if (mounted) {
+        setState(() {
+          _counter = savedCounter;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading counter: $e');
+    }
+  }
+
+  /// Save counter value to SharedPreferences
+  Future<void> _saveCounter() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('dhikr_count', _counter);
+    } catch (e) {
+      debugPrint('Error saving counter: $e');
+    }
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+    
+    // Haptic feedback for user engagement
+    HapticFeedback.lightImpact();
+    
+    // Save the updated counter
+    _saveCounter();
+    
+    // Animation feedback
     _scaleController.forward().then((_) {
       _scaleController.reverse();
     });
@@ -54,6 +94,12 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
     setState(() {
       _counter = 0;
     });
+    
+    // Save the reset counter
+    _saveCounter();
+    
+    // Haptic feedback for reset action
+    HapticFeedback.mediumImpact();
   }
 
   @override
@@ -62,17 +108,12 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
       appBar: AppBar(
         title: Text(
           'Zikirmatik',
-          style: GoogleFonts.ebGaramond(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _resetCounter,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _resetCounter),
         ],
       ),
       body: Container(
@@ -104,7 +145,9 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
                     LinearProgressIndicator(
                       value: _counter / _targetCount,
                       backgroundColor: Colors.green.shade100,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade600),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.green.shade600,
+                      ),
                       minHeight: 8,
                     ),
                     const SizedBox(height: 8),
@@ -118,7 +161,7 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
                   ],
                 ),
               ),
-              
+
               // Main counter area
               Expanded(
                 child: Center(
@@ -152,7 +195,7 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
                         ),
                       ),
                       const SizedBox(height: 60),
-                      
+
                       // Tap button with animation
                       GestureDetector(
                         onTap: _incrementCounter,
@@ -212,22 +255,22 @@ class _DhikrScreenState extends State<DhikrScreen> with TickerProviderStateMixin
                   ),
                 ),
               ),
-              
+
               // Bottom info
               Container(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  _counter >= _targetCount 
-                    ? '🎉 Tebrikler! Hedefinizi tamamladınız!' 
-                    : 'Zikir yapmak için büyük butona dokunun',
+                  _counter >= _targetCount
+                      ? '🎉 Tebrikler! Hedefinizi tamamladınız!'
+                      : 'Zikir yapmak için büyük butona dokunun',
                   style: GoogleFonts.ebGaramond(
                     fontSize: 16,
-                    color: _counter >= _targetCount 
-                      ? Colors.green.shade700 
-                      : Colors.green.shade600,
-                    fontWeight: _counter >= _targetCount 
-                      ? FontWeight.bold 
-                      : FontWeight.normal,
+                    color: _counter >= _targetCount
+                        ? Colors.green.shade700
+                        : Colors.green.shade600,
+                    fontWeight: _counter >= _targetCount
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                   textAlign: TextAlign.center,
                 ),

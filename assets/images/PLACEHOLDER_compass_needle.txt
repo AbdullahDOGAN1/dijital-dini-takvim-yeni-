@@ -1,0 +1,10 @@
+PLACEHOLDER for compass needle image (compass_needle.png)
+
+This should be a compass needle/arrow image showing:
+- Traditional red/gold arrow pointing upward
+- Clear directional indicator
+- Balanced design with tail
+- Size: 200x20 pixels approximately
+- Format: PNG with transparent background
+
+For now, we'll use a programmatically drawn arrow.

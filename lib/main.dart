@@ -37,7 +37,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  
+
   // Bottom navigation screens (without dhikr)
   final List<Widget> _screens = [
     const CalendarScreen(),
@@ -55,12 +55,7 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   // Bottom navigation labels
-  final List<String> _labels = [
-    'Takvim',
-    'Kıble',
-    'Namaz',
-    'Ayarlar',
-  ];
+  final List<String> _labels = ['Takvim', 'Kıble', 'Namaz', 'Ayarlar'];
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +63,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: Text(
           'Dijital Dini Takvim',
-          style: GoogleFonts.ebGaramond(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.brown.shade700,
         foregroundColor: Colors.white,
@@ -86,7 +79,9 @@ class _MainScreenState extends State<MainScreen> {
       endDrawer: _buildEndDrawer(),
       body: _screens[_selectedIndex],
       floatingActionButton: Container(
-        margin: const EdgeInsets.only(top: 10), // Push down to sit properly in notch
+        margin: const EdgeInsets.only(
+          top: 10,
+        ), // Push down to sit properly in notch
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -96,11 +91,7 @@ class _MainScreenState extends State<MainScreen> {
           },
           backgroundColor: Colors.green.shade600,
           elevation: 4,
-          child: const Icon(
-            Icons.spa,
-            color: Colors.white,
-            size: 24,
-          ),
+          child: const Icon(Icons.spa, color: Colors.white, size: 24),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -112,11 +103,7 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                _icons[index],
-                size: 24,
-                color: color,
-              ),
+              Icon(_icons[index], size: 24, color: color),
               const SizedBox(height: 4),
               Text(
                 _labels[index],
@@ -154,11 +141,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.menu_book,
-                  size: 48,
-                  color: Colors.white,
-                ),
+                Icon(Icons.menu_book, size: 48, color: Colors.white),
                 const SizedBox(height: 16),
                 Text(
                   'Dijital Dini Takvim',
@@ -191,12 +174,17 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const FavoritesScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.location_on_outlined, color: Colors.green.shade600),
+            leading: Icon(
+              Icons.location_on_outlined,
+              color: Colors.green.shade600,
+            ),
             title: Text(
               'Konum Ayarları',
               style: GoogleFonts.ebGaramond(
@@ -208,12 +196,17 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const LocationSettingsScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const LocationSettingsScreen(),
+                ),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings_outlined, color: Colors.brown.shade600),
+            leading: Icon(
+              Icons.settings_outlined,
+              color: Colors.brown.shade600,
+            ),
             title: Text(
               'Genel Ayarlar',
               style: GoogleFonts.ebGaramond(

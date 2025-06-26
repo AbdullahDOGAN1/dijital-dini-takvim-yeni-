@@ -10,9 +10,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Ayarlar',
-          style: GoogleFonts.ebGaramond(
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.brown.shade700,
         foregroundColor: Colors.white,
@@ -29,11 +27,7 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.settings,
-                size: 80,
-                color: Colors.brown.shade400,
-              ),
+              Icon(Icons.settings, size: 80, color: Colors.brown.shade400),
               const SizedBox(height: 20),
               Text(
                 'Ayarlar Sayfası',

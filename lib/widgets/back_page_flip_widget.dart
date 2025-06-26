@@ -18,13 +18,17 @@ class BackPageFlipWidget extends StatefulWidget {
   State<BackPageFlipWidget> createState() => _BackPageFlipWidgetState();
 }
 
-class _BackPageFlipWidgetState extends State<BackPageFlipWidget> with SingleTickerProviderStateMixin {
+class _BackPageFlipWidgetState extends State<BackPageFlipWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
   }
 
   @override

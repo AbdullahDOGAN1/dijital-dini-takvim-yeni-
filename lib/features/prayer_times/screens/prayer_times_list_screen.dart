@@ -22,7 +22,9 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
 
   Future<void> _loadPrayerTimes() async {
     try {
-      final prayerTimes = await PrayerApiService.getPrayerTimesForToday('Ankara');
+      final prayerTimes = await PrayerApiService.getPrayerTimesForToday(
+        'Ankara',
+      );
       setState(() {
         _prayerTimes = prayerTimes;
         _isLoading = false;
@@ -48,97 +50,126 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _prayerTimes == null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.red.shade400,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Namaz vakitleri yüklenemedi',
-                        style: GoogleFonts.ebGaramond(
-                          fontSize: 20,
-                          color: Colors.red.shade600,
-                        ),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red.shade400,
                   ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      // Header
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.indigo.shade600, Colors.purple.shade600],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.indigo.withOpacity(0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
+                  const SizedBox(height: 16),
+                  Text(
+                    'Namaz vakitleri yüklenemedi',
+                    style: GoogleFonts.ebGaramond(
+                      fontSize: 20,
+                      color: Colors.red.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.indigo.shade600,
+                          Colors.purple.shade600,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.indigo.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.access_time,
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Namaz Vakitleri',
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Ankara - Bugün',
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 16,
-                                      color: Colors.white.withOpacity(0.9),
-                                    ),
-                                  ),
-                                ],
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.access_time, color: Colors.white, size: 32),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Namaz Vakitleri',
+                                style: GoogleFonts.ebGaramond(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
+                              Text(
+                                'Ankara - Bugün',
+                                style: GoogleFonts.ebGaramond(
+                                  fontSize: 16,
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      
-                      // Prayer times list
-                      ..._buildPrayerTimesList(_prayerTimes!),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 24),
+
+                  // Prayer times list
+                  ..._buildPrayerTimesList(_prayerTimes!),
+                ],
+              ),
+            ),
     );
   }
 
   List<Widget> _buildPrayerTimesList(PrayerTimesModel prayerTimes) {
     final prayers = [
-      {'name': 'İmsak', 'time': prayerTimes.imsak, 'icon': Icons.nightlight_round, 'color': Colors.indigo},
-      {'name': 'Güneş', 'time': prayerTimes.gunes, 'icon': Icons.wb_sunny, 'color': Colors.orange},
-      {'name': 'Öğle', 'time': prayerTimes.ogle, 'icon': Icons.wb_sunny_outlined, 'color': Colors.amber},
-      {'name': 'İkindi', 'time': prayerTimes.ikindi, 'icon': Icons.wb_twilight, 'color': Colors.brown},
-      {'name': 'Akşam', 'time': prayerTimes.aksam, 'icon': Icons.wb_twilight, 'color': Colors.deepOrange},
-      {'name': 'Yatsı', 'time': prayerTimes.yatsi, 'icon': Icons.nights_stay, 'color': Colors.deepPurple},
+      {
+        'name': 'İmsak',
+        'time': prayerTimes.imsak,
+        'icon': Icons.nightlight_round,
+        'color': Colors.indigo,
+      },
+      {
+        'name': 'Güneş',
+        'time': prayerTimes.gunes,
+        'icon': Icons.wb_sunny,
+        'color': Colors.orange,
+      },
+      {
+        'name': 'Öğle',
+        'time': prayerTimes.ogle,
+        'icon': Icons.wb_sunny_outlined,
+        'color': Colors.amber,
+      },
+      {
+        'name': 'İkindi',
+        'time': prayerTimes.ikindi,
+        'icon': Icons.wb_twilight,
+        'color': Colors.brown,
+      },
+      {
+        'name': 'Akşam',
+        'time': prayerTimes.aksam,
+        'icon': Icons.wb_twilight,
+        'color': Colors.deepOrange,
+      },
+      {
+        'name': 'Yatsı',
+        'time': prayerTimes.yatsi,
+        'icon': Icons.nights_stay,
+        'color': Colors.deepPurple,
+      },
     ];
 
     return prayers.map((prayer) {
@@ -157,7 +188,10 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
           ],
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 8,
+          ),
           leading: Container(
             width: 48,
             height: 48,
@@ -181,10 +215,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
           ),
           subtitle: Text(
             'Namaz Vakti',
-            style: GoogleFonts.ebGaramond(
-              fontSize: 14,
-              color: color.shade500,
-            ),
+            style: GoogleFonts.ebGaramond(fontSize: 14, color: color.shade500),
           ),
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

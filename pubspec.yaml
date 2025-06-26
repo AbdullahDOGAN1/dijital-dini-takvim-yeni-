@@ -46,6 +46,18 @@ dependencies:
   
   # Date formatting and localization
   intl: ^0.19.0
+  
+  # GPS location access for Qibla finder
+  geolocator: ^10.1.0
+  
+  # Hardware compass access for Qibla direction
+  flutter_compass: ^0.8.0
+  
+  # Permission handling
+  permission_handler: ^11.0.1
+  
+  # Local data persistence for dhikr counter
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
