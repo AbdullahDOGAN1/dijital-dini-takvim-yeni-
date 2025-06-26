@@ -6,6 +6,7 @@ class PrayerTimesModel {
   final String ikindi;
   final String aksam;
   final String yatsi;
+  final String date; // Added date field
 
   const PrayerTimesModel({
     required this.imsak,
@@ -14,6 +15,7 @@ class PrayerTimesModel {
     required this.ikindi,
     required this.aksam,
     required this.yatsi,
+    required this.date, // Added date field
   });
 
   /// Factory constructor to create PrayerTimesModel from JSON
@@ -21,6 +23,20 @@ class PrayerTimesModel {
   factory PrayerTimesModel.fromJson(Map<String, dynamic> json) {
     // Handle the nested structure of Aladhan API
     final timings = json['data']?['timings'] ?? json['timings'] ?? json;
+    final dateData = json['data']?['date'] ?? json['date'] ?? {};
+
+    // Format date from API response
+    String formattedDate = '';
+    if (dateData['readable'] != null) {
+      formattedDate = dateData['readable'];
+    } else if (dateData['gregorian'] != null) {
+      final greg = dateData['gregorian'];
+      formattedDate = '${greg['day']} ${greg['month']['en']} ${greg['year']}';
+    } else {
+      // Fallback
+      final now = DateTime.now();
+      formattedDate = '${now.day} ${_getMonthName(now.month)} ${now.year}';
+    }
 
     return PrayerTimesModel(
       imsak: _parseTime(timings['Imsak'] ?? timings['imsak'] ?? ''),
@@ -31,6 +47,7 @@ class PrayerTimesModel {
       ikindi: _parseTime(timings['Asr'] ?? timings['ikindi'] ?? ''),
       aksam: _parseTime(timings['Maghrib'] ?? timings['aksam'] ?? ''),
       yatsi: _parseTime(timings['Isha'] ?? timings['yatsi'] ?? ''),
+      date: formattedDate,
     );
   }
 
@@ -47,6 +64,18 @@ class PrayerTimesModel {
     return timeMatch?.group(1) ?? cleanTime;
   }
 
+  /// Helper method to get month name
+  static String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    if (month >= 1 && month <= 12) {
+      return months[month - 1];
+    }
+    return 'Unknown';
+  }
+
   /// Convert model to JSON (for potential caching)
   Map<String, dynamic> toJson() {
     return {
@@ -56,6 +85,7 @@ class PrayerTimesModel {
       'ikindi': ikindi,
       'aksam': aksam,
       'yatsi': yatsi,
+      'date': date,
     };
   }
 
