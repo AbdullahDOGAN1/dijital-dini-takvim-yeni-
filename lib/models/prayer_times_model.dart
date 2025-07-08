@@ -1,3 +1,75 @@
+class HijriDate {
+  final String date;
+  final String format;
+  final String day;
+  final String weekday;
+  final String month;
+  final String year;
+  final String designation;
+  final List<String> holidays;
+
+  HijriDate({
+    required this.date,
+    required this.format,
+    required this.day,
+    required this.weekday,
+    required this.month,
+    required this.year,
+    required this.designation,
+    required this.holidays,
+  });
+
+  factory HijriDate.fromJson(Map<String, dynamic> json) {
+    return HijriDate(
+      date: json['date'] ?? '',
+      format: json['format'] ?? '',
+      day: json['day'] ?? '',
+      weekday: json['weekday']?['tr'] ?? json['weekday']?['en'] ?? '',
+      month: json['month']?['tr'] ?? json['month']?['en'] ?? '',
+      year: json['year'] ?? '',
+      designation: json['designation']?['abbreviated'] ?? '',
+      holidays: json['holidays'] != null ? List<String>.from(json['holidays']) : [],
+    );
+  }
+
+  String get formattedDate => '$day $month $year';
+  String get shortDate => '$day/$month/$year';
+}
+
+class GeorgianDate {
+  final String date;
+  final String format;
+  final String day;
+  final String weekday;
+  final String month;
+  final String year;
+  final String designation;
+
+  GeorgianDate({
+    required this.date,
+    required this.format,
+    required this.day,
+    required this.weekday,
+    required this.month,
+    required this.year,
+    required this.designation,
+  });
+
+  factory GeorgianDate.fromJson(Map<String, dynamic> json) {
+    return GeorgianDate(
+      date: json['date'] ?? '',
+      format: json['format'] ?? '',
+      day: json['day'] ?? '',
+      weekday: json['weekday']?['tr'] ?? json['weekday']?['en'] ?? '',
+      month: json['month']?['tr'] ?? json['month']?['en'] ?? '',
+      year: json['year'] ?? '',
+      designation: json['designation']?['abbreviated'] ?? '',
+    );
+  }
+
+  String get formattedDate => '$day $month $year';
+}
+
 /// Model class for daily prayer times
 class PrayerTimesModel {
   final String imsak;
@@ -6,7 +78,9 @@ class PrayerTimesModel {
   final String ikindi;
   final String aksam;
   final String yatsi;
-  final String date; // Added date field
+  final String date;
+  final HijriDate? hijriDate;
+  final GeorgianDate? gregorianDate;
 
   const PrayerTimesModel({
     required this.imsak,
@@ -15,7 +89,9 @@ class PrayerTimesModel {
     required this.ikindi,
     required this.aksam,
     required this.yatsi,
-    required this.date, // Added date field
+    required this.date,
+    this.hijriDate,
+    this.gregorianDate,
   });
 
   /// Factory constructor to create PrayerTimesModel from JSON
@@ -25,13 +101,24 @@ class PrayerTimesModel {
     final timings = json['data']?['timings'] ?? json['timings'] ?? json;
     final dateData = json['data']?['date'] ?? json['date'] ?? {};
 
+    // Parse Hijri and Gregorian dates if available
+    HijriDate? hijriDate;
+    GeorgianDate? gregorianDate;
+    
+    if (dateData['hijri'] != null) {
+      hijriDate = HijriDate.fromJson(dateData['hijri']);
+    }
+    
+    if (dateData['gregorian'] != null) {
+      gregorianDate = GeorgianDate.fromJson(dateData['gregorian']);
+    }
+
     // Format date from API response
     String formattedDate = '';
     if (dateData['readable'] != null) {
       formattedDate = dateData['readable'];
-    } else if (dateData['gregorian'] != null) {
-      final greg = dateData['gregorian'];
-      formattedDate = '${greg['day']} ${greg['month']['en']} ${greg['year']}';
+    } else if (gregorianDate != null) {
+      formattedDate = gregorianDate.formattedDate;
     } else {
       // Fallback
       final now = DateTime.now();
@@ -39,15 +126,15 @@ class PrayerTimesModel {
     }
 
     return PrayerTimesModel(
-      imsak: _parseTime(timings['Imsak'] ?? timings['imsak'] ?? ''),
-      gunes: _parseTime(
-        timings['Sunrise'] ?? timings['Fajr'] ?? timings['gunes'] ?? '',
-      ),
+      imsak: _parseTime(timings['Fajr'] ?? timings['imsak'] ?? ''),
+      gunes: _parseTime(timings['Sunrise'] ?? timings['gunes'] ?? ''),
       ogle: _parseTime(timings['Dhuhr'] ?? timings['ogle'] ?? ''),
       ikindi: _parseTime(timings['Asr'] ?? timings['ikindi'] ?? ''),
       aksam: _parseTime(timings['Maghrib'] ?? timings['aksam'] ?? ''),
       yatsi: _parseTime(timings['Isha'] ?? timings['yatsi'] ?? ''),
       date: formattedDate,
+      hijriDate: hijriDate,
+      gregorianDate: gregorianDate,
     );
   }
 

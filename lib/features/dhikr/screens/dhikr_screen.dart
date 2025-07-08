@@ -15,7 +15,6 @@ class _DhikrScreenState extends State<DhikrScreen>
   int _counter = 0;
   final int _targetCount = 33;
   late AnimationController _scaleController;
-  late AnimationController _rippleController;
   late Animation<double> _scaleAnimation;
 
   @override
@@ -23,10 +22,6 @@ class _DhikrScreenState extends State<DhikrScreen>
     super.initState();
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _rippleController = AnimationController(
-      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
@@ -40,7 +35,6 @@ class _DhikrScreenState extends State<DhikrScreen>
   @override
   void dispose() {
     _scaleController.dispose();
-    _rippleController.dispose();
     super.dispose();
   }
 
@@ -84,9 +78,6 @@ class _DhikrScreenState extends State<DhikrScreen>
     // Animation feedback
     _scaleController.forward().then((_) {
       _scaleController.reverse();
-    });
-    _rippleController.forward().then((_) {
-      _rippleController.reset();
     });
   }
 

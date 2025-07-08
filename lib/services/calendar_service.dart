@@ -1,31 +1,20 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import '../models/daily_content_model.dart';
+import 'daily_content_service.dart';
 
 class CalendarService {
-  /// Load calendar data from local JSON file
+  /// Load calendar data from local JSON file (365 days)
   static Future<List<DailyContentModel>> loadCalendarData() async {
-    try {
-      // Load the JSON file from assets
-      final String jsonString = await rootBundle.loadString(
-        'assets/data/sample_calendar_data.json',
-      );
+    // Use the new DailyContentService instead of loading the old JSON
+    return await DailyContentService.loadDailyContent();
+  }
 
-      // Parse the JSON string to a List<dynamic>
-      final List<dynamic> jsonList = json.decode(jsonString);
+  /// Get content for a specific day number (1-365)
+  static Future<DailyContentModel?> getContentForDay(int dayNumber) async {
+    return await DailyContentService.getContentForDay(dayNumber);
+  }
 
-      // Convert each JSON object to DailyContentModel
-      final List<DailyContentModel> calendarData = jsonList
-          .map(
-            (json) => DailyContentModel.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
-
-      return calendarData;
-    } catch (e) {
-      // If there's an error, return an empty list and log the error
-      print('Error loading calendar data: $e');
-      return [];
-    }
+  /// Get current day content based on current date
+  static Future<DailyContentModel?> getTodayContent() async {
+    return await DailyContentService.getTodaysContent();
   }
 }

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../models/daily_content_model.dart';
 import '../../../services/calendar_service.dart';
+import '../../../services/database_helper.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -19,6 +20,9 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   // Current day navigation
   int _currentPageIndex = 0;
+  
+  // Favorite state for current page
+  bool _isCurrentPageFavorited = false;
 
   // Page flip controller
   late AnimationController _pageTurnController;
@@ -43,6 +47,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   /// Load calendar data
+  /// Load calendar data
   Future<void> _loadData() async {
     try {
       final calendarData = await CalendarService.loadCalendarData();
@@ -51,6 +56,9 @@ class _CalendarScreenState extends State<CalendarScreen>
         _calendarData = calendarData;
         _isLoading = false;
       });
+      
+      // Check favorite status for initial page
+      _checkPageFavorites();
     } catch (e) {
       print('Error loading data: $e');
       setState(() {
@@ -77,7 +85,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     // Parse the Gregorian date from the data
     try {
-      final parts = currentData.miladiTarih.split(' ');
+      final parts = currentData.tarih.split(' ');
       if (parts.length >= 3) {
         final day = int.parse(parts[0]);
         final monthStr = parts[1];
@@ -207,6 +215,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   /// Navigate to previous day
+  /// Navigate to previous day
   void _goToPreviousDay() {
     if (_currentPageIndex > 0) {
       setState(() {
@@ -214,6 +223,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         _isFlipped = false;
       });
       _pageTurnController.reset();
+      _checkPageFavorites(); // Check if new page has favorites
     }
   }
 
@@ -225,14 +235,18 @@ class _CalendarScreenState extends State<CalendarScreen>
         _isFlipped = false;
       });
       _pageTurnController.reset();
+      _checkPageFavorites(); // Check if new page has favorites
     }
   }
 
   /// Build the prominent date header with rich hierarchical display
   Widget _buildDateHeader() {
+    // Always get fresh dates when building the header to ensure it updates on day change
     final dates = _getFormattedDates();
 
-    return Container(
+    return Stack(
+      children: [
+        Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -359,6 +373,41 @@ class _CalendarScreenState extends State<CalendarScreen>
           ),
         ],
       ),
+    ),
+        
+        // Favorite button in top-right corner
+        Positioned(
+          top: 8,
+          right: 16,
+          child: GestureDetector(
+            onLongPress: () {
+              // Show save favorite dialog on long press
+              if (_calendarData.isNotEmpty) {
+                _showSaveFavoriteDialog(context);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(
+                _isCurrentPageFavorited ? Icons.favorite : Icons.favorite_border,
+                color: Colors.red.shade600,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -619,8 +668,10 @@ class _CalendarScreenState extends State<CalendarScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Üst sıra - Başlık
                   Row(
                     children: [
+                      // Başlık kısmı
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -650,7 +701,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Tarihte Bugün (${data.frontPage.historicalEvent.year})',
+                          'Tarihte Bugün',
                           style: GoogleFonts.ebGaramond(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -663,7 +714,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    data.frontPage.historicalEvent.event,
+                    data.tarihteBugun,
                     style: GoogleFonts.ebGaramond(
                       fontSize: 16,
                       height: 1.6,
@@ -753,7 +804,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       ),
                     ),
                     child: Text(
-                      '"${data.frontPage.risaleQuote.text}"',
+                      '"${data.risaleINur.vecize}"',
                       style: GoogleFonts.ebGaramond(
                         fontSize: 16,
                         height: 1.6,
@@ -780,7 +831,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ),
                       ),
                       child: Text(
-                        '— ${data.frontPage.risaleQuote.source}',
+                        '— ${data.risaleINur.kaynak}',
                         style: GoogleFonts.ebGaramond(
                           fontSize: 13,
                           color: Colors.green.shade700,
@@ -1051,6 +1102,148 @@ class _CalendarScreenState extends State<CalendarScreen>
         ],
       ),
     );
+  }
+
+  /// Show save favorite dialog
+  void _showSaveFavoriteDialog(BuildContext context) {
+    if (_calendarData.isEmpty) return;
+    
+    final currentData = _calendarData[_currentPageIndex];
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Neyi Favorilere Eklemek İstersin?',
+            style: GoogleFonts.ebGaramond(
+              fontWeight: FontWeight.bold,
+              color: Colors.brown.shade800,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.auto_stories, color: Colors.green.shade600),
+                title: Text(
+                  'Risale-i Nur Metni',
+                  style: GoogleFonts.ebGaramond(fontWeight: FontWeight.w600),
+                ),
+                onTap: () => _saveFavorite(
+                  context,
+                  'Risale-i Nur',
+                  currentData.risaleINur.vecize,
+                  currentData.risaleINur.kaynak,
+                  currentData.miladiTarih,
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.book, color: Colors.blue.shade600),
+                title: Text(
+                  'Ayet/Hadis',
+                  style: GoogleFonts.ebGaramond(fontWeight: FontWeight.w600),
+                ),
+                onTap: () => _saveFavorite(
+                  context,
+                  'Ayet/Hadis',
+                  currentData.backPage.dailyVerseOrHadith.text,
+                  currentData.backPage.dailyVerseOrHadith.source,
+                  currentData.miladiTarih,
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.history, color: Colors.brown.shade600),
+                title: Text(
+                  'Tarihte Bugün Olayı',
+                  style: GoogleFonts.ebGaramond(fontWeight: FontWeight.w600),
+                ),
+                onTap: () => _saveFavorite(
+                  context,
+                  'Tarihte Bugün',
+                  currentData.tarihteBugun,
+                  '',
+                  currentData.miladiTarih,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'İptal',
+                style: GoogleFonts.ebGaramond(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Save favorite to database
+  Future<void> _saveFavorite(
+    BuildContext context,
+    String favoriteType,
+    String contentText,
+    String contentSource,
+    String pageDate,
+  ) async {
+    try {
+      await DatabaseHelper.instance.addFavorite(
+        favoriteType: favoriteType,
+        contentText: contentText,
+        contentSource: contentSource,
+        pageDate: pageDate,
+      );
+
+      // Close dialog
+      Navigator.of(context).pop();
+      
+      // Update favorite state
+      setState(() {
+        _isCurrentPageFavorited = true;
+      });
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Favorilere eklendi!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      // Close dialog
+      Navigator.of(context).pop();
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().contains('zaten favorilerde') 
+              ? 'Bu içerik zaten favorilerde mevcut!'
+              : 'Favorilere eklenirken hata oluştu!'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  /// Check if current page has favorites
+  Future<void> _checkPageFavorites() async {
+    if (_calendarData.isNotEmpty) {
+      final currentData = _calendarData[_currentPageIndex];
+      final hasFavorites = await DatabaseHelper.instance.hasPageFavorites(currentData.miladiTarih);
+      
+      setState(() {
+        _isCurrentPageFavorited = hasFavorites;
+      });
+    }
   }
 
   @override

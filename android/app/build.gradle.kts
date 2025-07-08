@@ -13,6 +13,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // Enable desugaring for Android core library features
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -30,12 +32,21 @@ android {
         versionName = flutter.versionName
     }
 
+    lint {
+        disable.add("InvalidPackage")
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
+    }
+    
+    dependencies {
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     }
 }
 

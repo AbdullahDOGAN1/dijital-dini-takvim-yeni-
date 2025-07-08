@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../models/prayer_times_model.dart';
 import '../../../services/prayer_api_service.dart';
 
@@ -18,6 +18,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
   List<PrayerTimesModel> _monthlyPrayerTimes = [];
   String _currentMonthName = '';
   String _errorMessage = '';
+  String _currentLocation = 'Konum alınıyor...';
   
   // Live dashboard variables
   Timer? _timer;
@@ -34,6 +35,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
   @override
   void initState() {
     super.initState();
+    _loadLocationInfo();
     _loadMonthlyPrayerTimes();
   }
 
@@ -41,6 +43,46 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  /// Load current location information
+  Future<void> _loadLocationInfo() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
+      
+      if (!usingCurrentLocation) {
+        // User has selected a specific city
+        final String? city = prefs.getString('selected_city');
+        final String? country = prefs.getString('selected_country');
+        
+        if (city != null) {
+          setState(() {
+            _currentLocation = country != null ? '$city, $country' : city;
+          });
+        }
+      } else {
+        // Using current GPS location
+        final double? lat = prefs.getDouble('current_latitude');
+        final double? lng = prefs.getDouble('current_longitude');
+        
+        if (lat != null && lng != null) {
+          // Try to get city name from coordinates
+          final cityName = PrayerApiService.getCityFromCoordinates(lat, lng);
+          setState(() {
+            _currentLocation = '$cityName (GPS)';
+          });
+        } else {
+          setState(() {
+            _currentLocation = 'Konum belirlenemiyor';
+          });
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _currentLocation = 'Konum hatası';
+      });
+    }
   }
 
   /// Load monthly prayer times with location
@@ -51,29 +93,6 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
         _errorMessage = '';
       });
 
-      // Get current location
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      double latitude = 39.9334; // Default to Ankara
-      double longitude = 32.8597;
-
-      if (permission == LocationPermission.whileInUse ||
-          permission == LocationPermission.always) {
-        try {
-          Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
-            timeLimit: const Duration(seconds: 10),
-          );
-          latitude = position.latitude;
-          longitude = position.longitude;
-        } catch (e) {
-          print('Location error, using default: $e');
-        }
-      }
-
       // Get current date
       final now = DateTime.now();
       final year = now.year;
@@ -82,32 +101,24 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
       // Set month name
       _currentMonthName = '${_turkishMonths[month - 1]} $year';
 
-      // Fetch monthly prayer times
-      final monthlyData = await PrayerApiService.getPrayerTimesForMonth(
-        latitude: latitude,
-        longitude: longitude,
+      // Fetch monthly prayer times with automatic location detection
+      final monthlyDataMap = await PrayerApiService.getPrayerTimesForMonth(
         year: year,
         month: month,
+        // latitude and longitude will be auto-detected by the service
       );
 
-      // Convert to PrayerTimesModel objects
-      final prayerTimesList = monthlyData.map((dayData) {
-        return PrayerTimesModel.fromJson(dayData);
-      }).toList();
+      // Convert Map to List of PrayerTimesModel objects
+      final prayerTimesList = monthlyDataMap.values.toList();
 
       // Find today's prayer times
-      final today = now.day;
+      final today = now.day.toString();
       PrayerTimesModel? todaysPrayer;
       
-      try {
-        todaysPrayer = prayerTimesList.firstWhere(
-          (prayer) => int.parse(prayer.date.split(' ')[0]) == today,
-        );
-      } catch (e) {
-        print('Could not find today\'s prayer times: $e');
-        if (prayerTimesList.isNotEmpty) {
-          todaysPrayer = prayerTimesList.first;
-        }
+      if (monthlyDataMap.containsKey(today)) {
+        todaysPrayer = monthlyDataMap[today];
+      } else if (prayerTimesList.isNotEmpty) {
+        todaysPrayer = prayerTimesList.first;
       }
 
       setState(() {
@@ -486,16 +497,40 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _currentMonthName,
-          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _currentMonthName,
+              style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              _currentLocation,
+              style: GoogleFonts.ebGaramond(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withOpacity(0.9),
+              ),
+            ),
+          ],
         ),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
+            icon: const Icon(Icons.location_on),
+            onPressed: () {
+              Navigator.pushNamed(context, '/location_settings');
+            },
+            tooltip: 'Konum Ayarları',
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadMonthlyPrayerTimes,
+            onPressed: () {
+              _loadLocationInfo();
+              _loadMonthlyPrayerTimes();
+            },
+            tooltip: 'Yenile',
           ),
         ],
       ),

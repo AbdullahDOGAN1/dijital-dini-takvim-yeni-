@@ -1,29 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:provider/provider.dart';
 import 'core/theme.dart';
-import 'features/calendar_page/screens/calendar_screen.dart';
+import 'core/providers/settings_provider.dart';
+import 'features/calendar_page/screens/simple_calendar_screen.dart';
 import 'features/qibla/screens/qibla_screen.dart';
 import 'features/prayer_times/screens/prayer_times_list_screen.dart';
 import 'features/dhikr/screens/dhikr_screen.dart';
+import './features/favorites/screens/my_favorites_page_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
-import 'features/favorites/screens/favorites_screen.dart';
 import 'features/location/screens/location_settings_screen.dart';
+import 'features/daily_content/screens/daily_content_screen.dart';
+import 'features/religious_days/screens/religious_days_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // Ensure that plugin services are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Create and load settings provider
+  final settingsProvider = SettingsProvider();
+  await settingsProvider.loadSettings();
+  
+  runApp(MyApp(settingsProvider: settingsProvider));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SettingsProvider settingsProvider;
+  
+  const MyApp({super.key, required this.settingsProvider});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dijital Dini Takvim',
-      theme: AppTheme.getThemeData(),
-      home: const MainScreen(),
-      debugShowCheckedModeBanner: false,
+    return ChangeNotifierProvider.value(
+      value: settingsProvider,
+      child: Consumer<SettingsProvider>(
+        builder: (context, settings, child) {
+          return MaterialApp(
+            title: 'Nur Vakti',
+            themeMode: settings.themeMode,
+            theme: AppTheme.getLightThemeData(settings.fontFamily),
+            darkTheme: AppTheme.getDarkThemeData(settings.fontFamily),
+            home: const MainScreen(),
+            debugShowCheckedModeBanner: false,
+            routes: {
+              '/location_settings': (context) => const LocationSettingsScreen(),
+              '/settings': (context) => const SettingsScreen(),
+              '/daily_content': (context) => const DailyContentScreen(),
+              '/religious_days': (context) => const ReligiousDaysScreen(),
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -40,10 +68,10 @@ class _MainScreenState extends State<MainScreen> {
 
   // Bottom navigation screens (without dhikr)
   final List<Widget> _screens = [
-    const CalendarScreen(),
+    const SimpleCalendarScreen(),
     const QiblaScreen(),
     const PrayerTimesListScreen(),
-    const SettingsScreen(),
+    const MyFavoritesPageScreen(),
   ];
 
   // Bottom navigation icons
@@ -51,28 +79,30 @@ class _MainScreenState extends State<MainScreen> {
     Icons.calendar_today,
     Icons.explore,
     Icons.access_time,
-    Icons.settings,
+    Icons.favorite,
   ];
 
   // Bottom navigation labels
-  final List<String> _labels = ['Takvim', 'Kıble', 'Namaz', 'Ayarlar'];
+  final List<String> _labels = ['Takvim', 'Kıble', 'Namaz', 'Favoriler'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Dijital Dini Takvim',
+          'Nur Vakti',
           style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.brown.shade700,
         foregroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              Scaffold.of(context).openEndDrawer();
-            },
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
           ),
         ],
       ),
@@ -144,7 +174,7 @@ class _MainScreenState extends State<MainScreen> {
                 Icon(Icons.menu_book, size: 48, color: Colors.white),
                 const SizedBox(height: 16),
                 Text(
-                  'Dijital Dini Takvim',
+                  'Nur Vakti',
                   style: GoogleFonts.ebGaramond(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -162,6 +192,25 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           ListTile(
+            leading: Icon(Icons.auto_stories, color: Colors.deepPurple.shade600),
+            title: Text(
+              'Bugünün İçeriği',
+              style: GoogleFonts.ebGaramond(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DailyContentScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.favorite_border, color: Colors.pink.shade600),
             title: Text(
               'Favorilerim',
@@ -175,7 +224,26 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const FavoritesScreen(),
+                  builder: (context) => const MyFavoritesPageScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.star_border, color: Colors.green.shade600),
+            title: Text(
+              'Dini Günler ve Kandiller',
+              style: GoogleFonts.ebGaramond(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReligiousDaysScreen(),
                 ),
               );
             },
@@ -218,7 +286,9 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
               );
             },
           ),
