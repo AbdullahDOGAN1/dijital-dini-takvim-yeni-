@@ -15,7 +15,7 @@ class DhikrScreen extends StatefulWidget {
 class _DhikrScreenState extends State<DhikrScreen>
     with TickerProviderStateMixin {
   int _counter = 0;
-  String _selectedDhikr = 'Subhanallah';
+  String _selectedDhikr = 'Sübhanallah';
   late AnimationController _scaleController;
   late AnimationController _rippleController;
   late Animation<double> _scaleAnimation;
@@ -23,42 +23,42 @@ class _DhikrScreenState extends State<DhikrScreen>
 
   // Zikir çeşitleri ve hedef sayıları
   final Map<String, Map<String, dynamic>> _dhikrOptions = {
-    'Subhanallah': {
+    'Sübhanallah': {
       'text': 'سُبْحَانَ اللَّه',
       'meaning': 'Allah tüm noksanlıklardan uzaktır',
       'target': 33,
       'color': Colors.green,
       'isCustom': false,
     },
-    'Alhamdulillah': {
+    'Elhamdülillah': {
       'text': 'الْحَمْدُ لِلَّه',
       'meaning': 'Hamd Allah\'a mahsustur',
       'target': 33,
       'color': Colors.blue,
       'isCustom': false,
     },
-    'Allahu Akbar': {
+    'Allahu Ekber': {
       'text': 'اللَّهُ أَكْبَر',
       'meaning': 'Allah en büyüktür',
-      'target': 34,
+      'target': 33,
       'color': Colors.purple,
       'isCustom': false,
     },
     'La ilahe illallah': {
       'text': 'لَا إِلَٰهَ إِلَّا اللَّهُ',
       'meaning': 'Allah\'tan başka ilah yoktur',
-      'target': 100,
+      'target': 33,
       'color': Colors.orange,
       'isCustom': false,
     },
-    'Astağfirullah': {
+    'Estağfirullah': {
       'text': 'أَسْتَغْفِرُ اللَّهَ',
       'meaning': 'Allah\'tan bağışlanma dilerim',
       'target': 100,
       'color': Colors.red,
       'isCustom': false,
     },
-    'La havle ve la quvvete illa billah': {
+    'La havle vela kuvvete illa billah': {
       'text': 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
       'meaning': 'Güç ve kuvvet yalnızca Allah\'tandır',
       'target': 100,
@@ -148,7 +148,7 @@ class _DhikrScreenState extends State<DhikrScreen>
   Future<void> _loadDhikrData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedDhikr = prefs.getString('selected_dhikr') ?? 'Subhanallah';
+      final savedDhikr = prefs.getString('selected_dhikr') ?? 'Sübhanallah';
       
       setState(() {
         _selectedDhikr = savedDhikr;
@@ -379,7 +379,7 @@ class _DhikrScreenState extends State<DhikrScreen>
             onPressed: () async {
               // Eğer seçili zikir siliniyorsa, varsayılan zikre geç
               if (_selectedDhikr == dhikrName) {
-                await _changeDhikr('Subhanallah');
+                await _changeDhikr('Sübhanallah');
               }
               
               setState(() {
