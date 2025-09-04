@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Islamic themed colors -->
+    <color name="islamic_green">#1a4d2e</color>
+    <color name="islamic_gold">#ffd700</color>
+    <color name="islamic_light_green">#2d4a3e</color>
+</resources>

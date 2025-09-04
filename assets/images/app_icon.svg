@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="backgroundGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#2d4a3e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2e23;stop-opacity:1" />
+    </radialGradient>
+    <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f4d03f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4ac0d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f7dc6f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f1c40f;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#backgroundGradient)" filter="url(#shadow)"/>
+  
+  <!-- Moon Crescent -->
+  <path d="M 180 120 A 100 100 0 1 1 180 392 A 80 80 0 1 0 180 120 Z" 
+        fill="url(#moonGradient)" 
+        filter="url(#shadow)"/>
+  
+  <!-- Book -->
+  <g transform="translate(256, 256)">
+    <!-- Book Base -->
+    <rect x="-60" y="-40" width="120" height="80" rx="8" ry="8" 
+          fill="url(#bookGradient)" 
+          filter="url(#shadow)"/>
+    
+    <!-- Book Spine -->
+    <rect x="-2" y="-40" width="4" height="80" fill="#d4ac0d"/>
+    
+    <!-- Book Pages -->
+    <rect x="-55" y="-35" width="110" height="70" rx="4" ry="4" 
+          fill="#fdfefe" opacity="0.9"/>
+    
+    <!-- Book Text Lines -->
+    <rect x="-45" y="-25" width="40" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="-45" y="-18" width="35" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="-45" y="-11" width="38" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="-45" y="-4" width="32" height="2" fill="#2c3e50" opacity="0.6"/>
+    
+    <rect x="5" y="-25" width="40" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="5" y="-18" width="35" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="5" y="-11" width="38" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="5" y="-4" width="32" height="2" fill="#2c3e50" opacity="0.6"/>
+    
+    <!-- Book Bottom Lines -->
+    <rect x="-45" y="8" width="40" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="-45" y="15" width="35" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="-45" y="22" width="25" height="2" fill="#2c3e50" opacity="0.6"/>
+    
+    <rect x="5" y="8" width="40" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="5" y="15" width="35" height="2" fill="#2c3e50" opacity="0.6"/>
+    <rect x="5" y="22" width="30" height="2" fill="#2c3e50" opacity="0.6"/>
+  </g>
+  
+  <!-- Light Rays -->
+  <g transform="translate(256, 180)">
+    <rect x="-1" y="-30" width="2" height="20" fill="url(#moonGradient)" opacity="0.8" transform="rotate(0)"/>
+    <rect x="-1" y="-30" width="2" height="15" fill="url(#moonGradient)" opacity="0.6" transform="rotate(30)"/>
+    <rect x="-1" y="-30" width="2" height="20" fill="url(#moonGradient)" opacity="0.8" transform="rotate(60)"/>
+    <rect x="-1" y="-30" width="2" height="15" fill="url(#moonGradient)" opacity="0.6" transform="rotate(90)"/>
+    <rect x="-1" y="-30" width="2" height="20" fill="url(#moonGradient)" opacity="0.8" transform="rotate(120)"/>
+    <rect x="-1" y="-30" width="2" height="15" fill="url(#moonGradient)" opacity="0.6" transform="rotate(150)"/>
+    <rect x="-1" y="-30" width="2" height="20" fill="url(#moonGradient)" opacity="0.8" transform="rotate(180)"/>
+    <rect x="-1" y="-30" width="2" height="15" fill="url(#moonGradient)" opacity="0.6" transform="rotate(210)"/>
+    <rect x="-1" y="-30" width="2" height="20" fill="url(#moonGradient)" opacity="0.8" transform="rotate(240)"/>
+    <rect x="-1" y="-30" width="2" height="15" fill="url(#moonGradient)" opacity="0.6" transform="rotate(270)"/>
+    <rect x="-1" y="-30" width="2" height="20" fill="url(#moonGradient)" opacity="0.8" transform="rotate(300)"/>
+    <rect x="-1" y="-30" width="2" height="15" fill="url(#moonGradient)" opacity="0.6" transform="rotate(330)"/>
+  </g>
+</svg>
