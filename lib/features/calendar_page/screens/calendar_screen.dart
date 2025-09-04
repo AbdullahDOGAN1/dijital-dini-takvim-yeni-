@@ -531,7 +531,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   /// Build page content with flip animation
   Widget _buildPageContent() {
-    if (_calendarData.isEmpty) return const SizedBox();
+    if (_calendarData.isEmpty) return const SizedBox.shrink();
 
     final currentData = _calendarData[_currentPageIndex];
 
@@ -1250,32 +1250,59 @@ class _CalendarScreenState extends State<CalendarScreen>
   Widget build(BuildContext context) {
     // Show loading indicator while data is being loaded
     if (_isLoading) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
+            ),
+          ),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Takvim yükleniyor...'),
+                ],
+              ),
+            ),
           ),
         ),
-        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
     // Show error state if no data is loaded
     if (_calendarData.isEmpty) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [const Color(0xFFF1EAD9), Colors.brown.shade50],
+            ),
           ),
-        ),
-        child: const Center(
-          child: Text(
-            'Veri yüklenemedi. Lütfen tekrar deneyin.',
-            style: TextStyle(fontSize: 16),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 48),
+                  SizedBox(height: 16),
+                  Text(
+                    'Veri yüklenemedi. Lütfen tekrar deneyin.',
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );

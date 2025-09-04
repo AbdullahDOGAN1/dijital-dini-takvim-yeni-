@@ -10,12 +10,11 @@ class DailyContentService {
 
   /// JSON dosyasından günlük içerikleri yükler
   static Future<List<DailyContentModel>> loadDailyContent() async {
-    if (_cachedContent != null) {
-      return _cachedContent!;
-    }
-
+    // Cache'i her zaman temizle (güncellenmiş veri için)
+    _cachedContent = null;
+    
     try {
-      final String jsonString = await rootBundle.loadString('assets/data/veri_seti_365_gun.json');
+      final String jsonString = await rootBundle.loadString('assets/data/veri_seti_365_gun_vecizeler_temiz.json');
       final List<dynamic> jsonList = json.decode(jsonString);
       
       _cachedContent = jsonList.map((json) => DailyContentModel.fromJson(json)).toList();
@@ -68,7 +67,7 @@ class DailyContentService {
     return content.where((item) {
       return item.tarih.toLowerCase().contains(lowercaseQuery) ||
              item.ayetHadis.metin.toLowerCase().contains(lowercaseQuery) ||
-             item.tarihteBugun.toLowerCase().contains(lowercaseQuery) ||
+             item.tariheBugun.toLowerCase().contains(lowercaseQuery) ||
              item.risaleINur.vecize.toLowerCase().contains(lowercaseQuery) ||
              item.aksamYemegi.toLowerCase().contains(lowercaseQuery);
     }).toList();

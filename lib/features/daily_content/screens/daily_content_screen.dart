@@ -237,7 +237,7 @@ $content
           _buildSimpleContentCard(
             title: 'Tarihte Bugün',
             icon: Icons.history,
-            content: _content!.tarihteBugun,
+            content: _content!.tariheBugun,
             color: Colors.orange,
           ),
 

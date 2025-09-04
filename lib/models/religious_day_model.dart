@@ -57,4 +57,31 @@ class ReligiousDay {
         return 'Diğer';
     }
   }
+
+  // JSON serialization methods
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'date': date.toIso8601String(),
+      'hijriDate': hijriDate,
+      'category': category,
+      'description': description,
+      'importance': importance,
+      'traditions': traditions,
+      'prayers': prayers,
+    };
+  }
+
+  factory ReligiousDay.fromJson(Map<String, dynamic> json) {
+    return ReligiousDay(
+      name: json['name'] ?? '',
+      date: DateTime.parse(json['date']),
+      hijriDate: json['hijriDate'] ?? '',
+      category: json['category'] ?? 'ozel_gun',
+      description: json['description'] ?? '',
+      importance: json['importance'] ?? '',
+      traditions: List<String>.from(json['traditions'] ?? []),
+      prayers: List<String>.from(json['prayers'] ?? []),
+    );
+  }
 }

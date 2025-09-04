@@ -60,9 +60,9 @@ class _DailyContentWidgetState extends State<DailyContentWidget> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      widget.content.tarihteBugun.length > 50
-                          ? '${widget.content.tarihteBugun.substring(0, 50)}...'
-                          : widget.content.tarihteBugun,
+                      widget.content.tariheBugun.length > 50
+                          ? '${widget.content.tariheBugun.substring(0, 50)}...'
+                          : widget.content.tariheBugun,
                       style: Theme.of(context).textTheme.bodySmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -70,7 +70,7 @@ class _DailyContentWidgetState extends State<DailyContentWidget> {
                   ),
                   // Paylaş butonu
                   IconButton(
-                    onPressed: () => _shareContent('Tarihte Bugün', widget.content.tarihteBugun),
+                    onPressed: () => _shareContent('Tarihte Bugün', widget.content.tariheBugun),
                     icon: const Icon(Icons.share, size: 16),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Fast transition to Flutter splash screen -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+    <!-- Background with Islamic green -->
+    <item android:drawable="@color/islamic_green" />
+    
+    <!-- Simplified center design for faster loading -->
+    <item android:gravity="center">
+        <bitmap android:src="@mipmap/ic_launcher" 
+                android:gravity="center" />
+    </item>
 </layer-list>

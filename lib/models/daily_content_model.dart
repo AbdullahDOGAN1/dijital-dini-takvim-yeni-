@@ -1,37 +1,28 @@
 class DailyContentModel {
   final int gunNo;
   final String tarih;
-  final String miladiTarih;
   final AyetHadis ayetHadis;
-  final String tarihteBugun;
+  final String tariheBugun;
   final RisaleINur risaleINur;
   final String aksamYemegi;
-  final Map<String, dynamic>? frontPage;
-  final Map<String, dynamic>? backPage;
 
   DailyContentModel({
     required this.gunNo,
     required this.tarih,
-    required this.miladiTarih,
     required this.ayetHadis,
-    required this.tarihteBugun,
+    required this.tariheBugun,
     required this.risaleINur,
     required this.aksamYemegi,
-    this.frontPage,
-    this.backPage,
   });
 
   factory DailyContentModel.fromJson(Map<String, dynamic> json) {
     return DailyContentModel(
       gunNo: json['gun_no'] ?? 0,
       tarih: json['tarih'] ?? '',
-      miladiTarih: json['miladi_tarih'] ?? '',
       ayetHadis: AyetHadis.fromJson(json['ayet_hadis'] ?? {}),
-      tarihteBugun: json['tarihte_bugun'] ?? '',
+      tariheBugun: json['tarihte_bugun'] ?? '',
       risaleINur: RisaleINur.fromJson(json['risale_i_nur'] ?? {}),
       aksamYemegi: json['aksam_yemegi'] ?? '',
-      frontPage: json['front_page'],
-      backPage: json['back_page'],
     );
   }
 
@@ -39,13 +30,10 @@ class DailyContentModel {
     return {
       'gun_no': gunNo,
       'tarih': tarih,
-      'miladi_tarih': miladiTarih,
       'ayet_hadis': ayetHadis.toJson(),
-      'tarihte_bugun': tarihteBugun,
+      'tarihte_bugun': tariheBugun,
       'risale_i_nur': risaleINur.toJson(),
       'aksam_yemegi': aksamYemegi,
-      'front_page': frontPage,
-      'back_page': backPage,
     };
   }
 }

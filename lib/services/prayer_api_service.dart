@@ -1,5 +1,6 @@
 import '../models/prayer_times_model.dart';
 import 'aladhan_api_service.dart';
+import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -93,34 +94,81 @@ class PrayerApiService {
     'Zonguldak': {'lat': 41.4564, 'lng': 31.7987},
   };
 
-  /// Get current location using Geolocator
+  /// Get current location using Geolocator with improved error handling and permission handling
+  /// Returns null if location cannot be retrieved for any reason
   static Future<Position?> getCurrentLocation() async {
     try {
-      // Check location permissions
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          print('Location permissions are denied');
-          return null;
+      // 1. Önce son bilinen konum var mı diye kontrol et (en hızlı yöntem)
+      try {
+        Position? lastPosition = await Geolocator.getLastKnownPosition();
+        // Son konum varsa ve yeterince yeni ise (son 15 dakika içinde alınmış) kullan
+        final fifteenMinutesAgo = DateTime.now().subtract(const Duration(minutes: 15));
+        if (lastPosition != null && lastPosition.timestamp.isAfter(fifteenMinutesAgo)) {
+          print('Son bilinen konum kullanılıyor (son 15 dk): ${lastPosition.latitude}, ${lastPosition.longitude}');
+          return lastPosition;
         }
+      } catch (e) {
+        print('Son konum kontrolünde hata: $e');
+        // Son konum alınamazsa, devam et ve başka yöntemler dene
       }
 
-      if (permission == LocationPermission.deniedForever) {
-        print('Location permissions are permanently denied');
+      // 2. Konum servisi aktif mi kontrol et
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Konum servisleri kapalı');
+        // Konum servisini açma seçeneği sunulabilir
+        // await Geolocator.openLocationSettings(); - Bunu yapmak yerine buraya düşersen varsayılan konum kullan
         return null;
       }
 
-      // Get current position
-      final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
-      );
+      // 3. İzinleri kontrol et
+      LocationPermission permission = await Geolocator.checkPermission();
+      
+      // 4. İzin verilmemişse, izin iste
+      if (permission == LocationPermission.denied) {
+        print('Konum izni için dialog gösteriliyor...');
+        
+        // Sistem iznini göster
+        permission = await Geolocator.requestPermission();
+        
+        // Cevap hala reddedilmişse
+        if (permission == LocationPermission.denied) {
+          print('Konum izinleri reddedildi');
+          return null;
+        }
+      }
+      
+      // 5. İzin kalıcı olarak reddedilmişse, direkt olarak uygulamaya dön
+      if (permission == LocationPermission.deniedForever) {
+        print('Konum izinleri kalıcı olarak reddedildi');
+        return null;
+      }
 
-      print('Current location: ${position.latitude}, ${position.longitude}');
-      return position;
+      // 6. Artık izin var, konumu almayı dene - düşük doğruluk hızlı sonuç verir
+      try {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low, 
+          timeLimit: const Duration(seconds: 10),
+        );
+        print('Güncel konum alındı: ${position.latitude}, ${position.longitude}');
+        return position;
+      } catch (e) {
+        // 7. Zaman aşımı veya başka bir hata durumunda son bilinen konumu kullan
+        try {
+          final lastPosition = await Geolocator.getLastKnownPosition();
+          if (lastPosition != null) {
+            print('Güncel konum alınamadı, son bilinen konum kullanılıyor: ${lastPosition.latitude}, ${lastPosition.longitude}');
+            return lastPosition;
+          }
+        } catch (_) {
+          // Son konumu alamazsa sessizce devam et
+        }
+        
+        print('Konum alınamadı: $e');
+        return null;
+      }
     } catch (e) {
-      print('Error getting location: $e');
+      print('Konum servisinde beklenmeyen hata: $e');
       return null;
     }
   }
@@ -195,6 +243,7 @@ class PrayerApiService {
   }
 
   /// Fetch prayer times for today with automatic location detection
+  /// Bu metot güncel ve doğru namaz vakitlerini almak için iyileştirildi
   static Future<PrayerTimesModel> getPrayerTimesForToday([
     double? latitude,
     double? longitude,
@@ -202,50 +251,85 @@ class PrayerApiService {
     try {
       double? lat = latitude;
       double? lng = longitude;
+      String? selectedCity;
 
-      // If coordinates not provided, try to get from saved preferences first
+      // Koordinat sağlanmadıysa, önce kaydedilmiş ayarlardan al
       if (lat == null || lng == null) {
-        final savedLocation = await getSavedLocation();
-        if (savedLocation != null) {
-          lat = savedLocation['latitude'];
-          lng = savedLocation['longitude'];
-        } else {
-          // Try to get current location
-          final position = await getCurrentLocation();
-          if (position != null) {
-            lat = position.latitude;
-            lng = position.longitude;
-            
-            // Save current location to preferences for future use
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setDouble('current_latitude', lat);
-            await prefs.setDouble('current_longitude', lng);
+        final prefs = await SharedPreferences.getInstance();
+        final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
+        
+        if (!usingCurrentLocation) {
+          // Kullanıcı belirli bir şehir seçmiş
+          selectedCity = prefs.getString('selected_city');
+          
+          if (selectedCity != null && turkishCities.containsKey(selectedCity)) {
+            lat = turkishCities[selectedCity]!['lat'];
+            lng = turkishCities[selectedCity]!['lng'];
+            print('Seçilen şehir kullanılıyor: $selectedCity ($lat, $lng)');
           } else {
-            // Fallback to Ankara coordinates
-            lat = 39.9334;
-            lng = 32.8597;
-            print('Using default Ankara coordinates');
+            // Şehir adı eksik veya geçersizse, koordinatları kontrol et
+            lat = prefs.getDouble('selected_latitude');
+            lng = prefs.getDouble('selected_longitude');
+            
+            if (lat != null && lng != null) {
+              print('Kaydedilmiş şehir koordinatları kullanılıyor: ($lat, $lng)');
+            }
+          }
+        } else {
+          // Güncel konumu kullanıyor
+          // Önce son kaydedilen konumu dene (daha hızlı)
+          lat = prefs.getDouble('current_latitude');
+          lng = prefs.getDouble('current_longitude');
+          
+          // 1 saatlik bir zaman aşımı belirle
+          final lastLocationUpdate = prefs.getInt('last_location_update') ?? 0;
+          final oneHourAgo = DateTime.now().subtract(const Duration(hours: 1)).millisecondsSinceEpoch;
+          
+          // Son konum güncel değilse veya hiç yoksa, yeni konum al
+          if (lat == null || lng == null || lastLocationUpdate < oneHourAgo) {
+            print('Konum güncelleniyor...');
+            final position = await getCurrentLocation();
+            if (position != null) {
+              lat = position.latitude;
+              lng = position.longitude;
+              
+              // Yeni konumu kaydet
+              await prefs.setDouble('current_latitude', lat);
+              await prefs.setDouble('current_longitude', lng);
+              await prefs.setInt('last_location_update', DateTime.now().millisecondsSinceEpoch);
+              print('Konum güncellendi: ($lat, $lng)');
+            } else if (lat == null || lng == null) {
+              // Konum alınamadı ve eski konum yoksa, Ankara'yı kullan
+              lat = 39.9334;
+              lng = 32.8597;
+              print('Konum alınamadı, varsayılan Ankara koordinatları kullanılıyor');
+            } else {
+              print('Konum güncellenemedi, son bilinen konum kullanılıyor: ($lat, $lng)');
+            }
+          } else {
+            print('Son kaydedilen konum kullanılıyor: ($lat, $lng)');
           }
         }
       }
 
-      // Use AlAdhan API service for accurate prayer times
+      // AlAdhan API servisini kullanarak güncel namaz vakitlerini al
       final prayerTimes = await _alAdhanService.getTodaysPrayerTimes(
         latitude: lat,
         longitude: lng,
       );
 
       if (prayerTimes != null) {
-        // Add city information to the prayer times
-        final cityName = getCityFromCoordinates(lat!, lng!);
-        print('Prayer times for: $cityName ($lat, $lng)');
+        // Namaz vakitlerine şehir bilgisini ekle
+        final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
+        print('Namaz vakitleri: $cityName ($lat, $lng)');
         return prayerTimes;
       } else {
-        // Return default prayer times if API fails
+        // API başarısız olursa varsayılan namaz vakitlerini döndür
+        print('API\'dan veri alınamadı, varsayılan namaz vakitleri kullanılıyor');
         return _getDefaultPrayerTimes();
       }
     } catch (e) {
-      print('Error fetching prayer times: $e');
+      print('Namaz vakitlerini alırken hata: $e');
       return _getDefaultPrayerTimes();
     }
   }
@@ -279,6 +363,7 @@ class PrayerApiService {
   }
 
   /// Fetch prayer times for a specific date and location
+  /// Belirli bir tarih için namaz vakitlerini getirir ve Türkçe tarih formatını kullanır
   static Future<PrayerTimesModel> getPrayerTimesForDate({
     required DateTime date,
     double? latitude,
@@ -287,18 +372,36 @@ class PrayerApiService {
     try {
       double? lat = latitude;
       double? lng = longitude;
+      String? selectedCity;
 
-      // If coordinates not provided, try to get from saved preferences
+      // Koordinat sağlanmadıysa, önce kaydedilmiş ayarlardan al
       if (lat == null || lng == null) {
-        final savedLocation = await getSavedLocation();
-        if (savedLocation != null) {
-          lat = savedLocation['latitude'];
-          lng = savedLocation['longitude'];
+        final prefs = await SharedPreferences.getInstance();
+        final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
+        
+        if (!usingCurrentLocation) {
+          // Kullanıcı belirli bir şehir seçmiş
+          selectedCity = prefs.getString('selected_city');
+          
+          if (selectedCity != null && turkishCities.containsKey(selectedCity)) {
+            lat = turkishCities[selectedCity]!['lat'];
+            lng = turkishCities[selectedCity]!['lng'];
+            print('Tarih verileri: Seçilen şehir kullanılıyor: $selectedCity');
+          } else {
+            lat = prefs.getDouble('selected_latitude');
+            lng = prefs.getDouble('selected_longitude');
+          }
         } else {
-          // Fallback to Ankara coordinates
-          lat = 39.9334;
-          lng = 32.8597;
-          print('Using default Ankara coordinates for date: ${date.toString()}');
+          // Son kaydedilen konumu kullan
+          lat = prefs.getDouble('current_latitude');
+          lng = prefs.getDouble('current_longitude');
+          
+          if (lat == null || lng == null) {
+            // Fallback to Ankara coordinates
+            lat = 39.9334;
+            lng = 32.8597;
+            print('Konum bilgisi bulunamadı, varsayılan Ankara koordinatları kullanılıyor: ${date.toString()}');
+          }
         }
       }
 
@@ -309,17 +412,55 @@ class PrayerApiService {
       );
 
       if (prayerTimes != null) {
-        return prayerTimes;
+        // Tarih formatını Türkçe olarak güncelle
+        final turkishDate = '${date.day} ${_getMonthName(date.month)} ${date.year}';
+        print('Namaz vakitleri alındı: $turkishDate');
+        
+        // Modeldeki tarihi Türkçe formatta güncelle
+        return PrayerTimesModel(
+          imsak: prayerTimes.imsak,
+          gunes: prayerTimes.gunes,
+          ogle: prayerTimes.ogle,
+          ikindi: prayerTimes.ikindi,
+          aksam: prayerTimes.aksam,
+          yatsi: prayerTimes.yatsi,
+          date: turkishDate,
+        );
       } else {
-        return _getDefaultPrayerTimes();
+        // Varsayılan değerlere Türkçe tarih ekle
+        final defaultPrayerTimes = _getDefaultPrayerTimes();
+        final turkishDate = '${date.day} ${_getMonthName(date.month)} ${date.year}';
+        
+        return PrayerTimesModel(
+          imsak: defaultPrayerTimes.imsak,
+          gunes: defaultPrayerTimes.gunes,
+          ogle: defaultPrayerTimes.ogle,
+          ikindi: defaultPrayerTimes.ikindi,
+          aksam: defaultPrayerTimes.aksam,
+          yatsi: defaultPrayerTimes.yatsi,
+          date: turkishDate,
+        );
       }
     } catch (e) {
-      print('Error fetching prayer times for date: $e');
-      return _getDefaultPrayerTimes();
+      print('Namaz vakitlerini alırken hata: $e');
+      // Varsayılan değerlere Türkçe tarih ekle
+      final defaultPrayerTimes = _getDefaultPrayerTimes();
+      final turkishDate = '${date.day} ${_getMonthName(date.month)} ${date.year}';
+      
+      return PrayerTimesModel(
+        imsak: defaultPrayerTimes.imsak,
+        gunes: defaultPrayerTimes.gunes,
+        ogle: defaultPrayerTimes.ogle,
+        ikindi: defaultPrayerTimes.ikindi,
+        aksam: defaultPrayerTimes.aksam,
+        yatsi: defaultPrayerTimes.yatsi,
+        date: turkishDate,
+      );
     }
   }
 
   /// Fetch prayer times for entire month using coordinates with automatic location
+  /// Güncellenmiş ve daha güvenilir konum verisi kullanır
   static Future<Map<String, PrayerTimesModel>> getPrayerTimesForMonth({
     required int year,
     required int month,
@@ -329,39 +470,70 @@ class PrayerApiService {
     try {
       double? lat = latitude;
       double? lng = longitude;
+      String? selectedCity;
 
-      // If coordinates not provided, try to get from saved preferences
+      // Koordinat sağlanmadıysa, önce kaydedilmiş ayarlardan al
       if (lat == null || lng == null) {
-        final savedLocation = await getSavedLocation();
-        if (savedLocation != null) {
-          lat = savedLocation['latitude'];
-          lng = savedLocation['longitude'];
-        } else {
-          // Try to get current location
-          final position = await getCurrentLocation();
-          if (position != null) {
-            lat = position.latitude;
-            lng = position.longitude;
+        final prefs = await SharedPreferences.getInstance();
+        final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
+        
+        if (!usingCurrentLocation) {
+          // Kullanıcı belirli bir şehir seçmiş
+          selectedCity = prefs.getString('selected_city');
+          
+          if (selectedCity != null && turkishCities.containsKey(selectedCity)) {
+            lat = turkishCities[selectedCity]!['lat'];
+            lng = turkishCities[selectedCity]!['lng'];
+            print('Aylık veri: Seçilen şehir kullanılıyor: $selectedCity');
           } else {
-            // Fallback to Ankara coordinates
-            lat = 39.9334;
-            lng = 32.8597;
-            print('Using default Ankara coordinates for monthly data');
+            lat = prefs.getDouble('selected_latitude');
+            lng = prefs.getDouble('selected_longitude');
+          }
+        } else {
+          // Güncel konum kaydını kullan
+          lat = prefs.getDouble('current_latitude');
+          lng = prefs.getDouble('current_longitude');
+          
+          // Kayıtlı konum yoksa güncel konumu al
+          if (lat == null || lng == null) {
+            final position = await getCurrentLocation();
+            if (position != null) {
+              lat = position.latitude;
+              lng = position.longitude;
+              
+              // Yeni konumu kaydet
+              await prefs.setDouble('current_latitude', lat);
+              await prefs.setDouble('current_longitude', lng);
+            } else {
+              // Konum alınamazsa Ankara kullan
+              lat = 39.9334;
+              lng = 32.8597;
+              print('Konum alınamadı, aylık veri için Ankara kullanılıyor');
+            }
           }
         }
       }
 
-      final cityName = getCityFromCoordinates(lat!, lng!);
-      print('Monthly prayer times for: $cityName ($lat, $lng)');
+      // Şehir adını belirle
+      final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
+      print('Aylık namaz vakitleri: $cityName ($lat, $lng)');
 
-      return await _alAdhanService.getMonthlyPrayerTimes(
+      // API'dan verileri al
+      final monthlyTimes = await _alAdhanService.getMonthlyPrayerTimes(
         month: month,
         year: year,
         latitude: lat,
         longitude: lng,
       );
+
+      if (monthlyTimes.isEmpty) {
+        print('Aylık veriler API\'dan alınamadı, varsayılan değerler kullanılıyor');
+        return _getDefaultMonthlyPrayerTimes(year, month);
+      }
+      
+      return monthlyTimes;
     } catch (e) {
-      print('Error fetching monthly prayer times: $e');
+      print('Aylık namaz vakitlerini alırken hata: $e');
       return _getDefaultMonthlyPrayerTimes(year, month);
     }
   }
@@ -432,25 +604,44 @@ class PrayerApiService {
   }
 
   /// Provide default monthly prayer times as fallback
+  /// Türkçe tarih formatını kullanan varsayılan aylık namaz vakitleri
   static Map<String, PrayerTimesModel> _getDefaultMonthlyPrayerTimes(
     int year,
     int month,
   ) {
-    print('Using default monthly prayer times (API unavailable)');
+    print('API kullanılamıyor, varsayılan aylık namaz vakitleri kullanılıyor');
     
-    // Get the number of days in the month
+    // Aydaki gün sayısını hesapla
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final Map<String, PrayerTimesModel> defaultMonth = {};
+
+    // Güncel aya göre namaz vakitleri oluştur (mevsime göre)
+    String imsak, gunes, ogle, ikindi, aksam, yatsi;
+    
+    // Mevsime göre kabaca varsayılan değerler belirle
+    if (month >= 3 && month <= 5) {  // İlkbahar
+      imsak = '04:45'; gunes = '06:15'; ogle = '13:00'; 
+      ikindi = '16:45'; aksam = '19:45'; yatsi = '21:15';
+    } else if (month >= 6 && month <= 8) {  // Yaz
+      imsak = '03:45'; gunes = '05:30'; ogle = '13:15'; 
+      ikindi = '17:15'; aksam = '20:45'; yatsi = '22:30';
+    } else if (month >= 9 && month <= 11) {  // Sonbahar
+      imsak = '05:15'; gunes = '06:45'; ogle = '13:00'; 
+      ikindi = '16:15'; aksam = '18:45'; yatsi = '20:15';
+    } else {  // Kış
+      imsak = '06:15'; gunes = '07:45'; ogle = '12:45'; 
+      ikindi = '15:15'; aksam = '17:30'; yatsi = '19:00';
+    }
 
     for (int day = 1; day <= daysInMonth; day++) {
       final date = DateTime(year, month, day);
       defaultMonth[day.toString()] = PrayerTimesModel(
-        imsak: '05:30',
-        gunes: '07:00',
-        ogle: '12:30',
-        ikindi: '15:45',
-        aksam: '18:30',
-        yatsi: '20:00',
+        imsak: imsak,
+        gunes: gunes,
+        ogle: ogle,
+        ikindi: ikindi,
+        aksam: aksam,
+        yatsi: yatsi,
         date: '${date.day} ${_getMonthName(date.month)} ${date.year}',
       );
     }
@@ -458,11 +649,11 @@ class PrayerApiService {
     return defaultMonth;
   }
 
-  /// Helper method to get month name
+  /// Helper method to get month name in Turkish
   static String _getMonthName(int month) {
     const months = [
-      '', 'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      '', 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
     ];
     return months[month];
   }

@@ -5,14 +5,20 @@ class SettingsProvider extends ChangeNotifier {
   // Private state properties with default values
   ThemeMode _themeMode = ThemeMode.system;
   String _fontFamily = 'Merriweather';
+  bool _azanSoundEnabled = false;
+  String _azanSoundName = 'athan';
 
   // Public getters
   ThemeMode get themeMode => _themeMode;
   String get fontFamily => _fontFamily;
+  bool get azanSoundEnabled => _azanSoundEnabled;
+  String get azanSoundName => _azanSoundName;
 
   // Keys for SharedPreferences
   static const String _themeModeKey = 'theme_mode';
   static const String _fontFamilyKey = 'font_family';
+  static const String _azanSoundEnabledKey = 'azan_sound_enabled';
+  static const String _azanSoundNameKey = 'azan_sound_name';
 
   // Load settings from SharedPreferences
   Future<void> loadSettings() async {
@@ -31,7 +37,11 @@ class SettingsProvider extends ChangeNotifier {
         _fontFamily = savedFont;
       }
       
-      print('DEBUG SettingsProvider: Loaded settings - Theme: $_themeMode, Font: $_fontFamily');
+      // Load azan sound settings
+      _azanSoundEnabled = prefs.getBool(_azanSoundEnabledKey) ?? false;
+      _azanSoundName = prefs.getString(_azanSoundNameKey) ?? 'athan';
+      
+      print('DEBUG SettingsProvider: Loaded settings - Theme: $_themeMode, Font: $_fontFamily, Azan: $_azanSoundEnabled');
     } catch (e) {
       print('Error loading settings: $e');
     }
@@ -103,6 +113,36 @@ class SettingsProvider extends ChangeNotifier {
         return 'Open Sans (Açık)';
       default:
         return font;
+    }
+  }
+
+  // Set azan sound enabled/disabled
+  Future<void> setAzanSoundEnabled(bool enabled) async {
+    try {
+      _azanSoundEnabled = enabled;
+      
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_azanSoundEnabledKey, enabled);
+      
+      print('DEBUG SettingsProvider: Azan sound enabled set to $_azanSoundEnabled');
+      notifyListeners();
+    } catch (e) {
+      print('Error setting azan sound enabled: $e');
+    }
+  }
+
+  // Set azan sound name
+  Future<void> setAzanSoundName(String soundName) async {
+    try {
+      _azanSoundName = soundName;
+      
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_azanSoundNameKey, soundName);
+      
+      print('DEBUG SettingsProvider: Azan sound name set to $_azanSoundName');
+      notifyListeners();
+    } catch (e) {
+      print('Error setting azan sound name: $e');
     }
   }
 }

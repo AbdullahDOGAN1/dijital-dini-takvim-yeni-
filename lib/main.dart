@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +14,27 @@ import 'features/settings/screens/settings_screen.dart';
 import 'features/location/screens/location_settings_screen.dart';
 import 'features/daily_content/screens/daily_content_screen.dart';
 import 'features/religious_days/screens/religious_days_screen.dart';
+import 'services/notification_service_fixed.dart';
+import 'screens/splash_screen.dart';
+import 'widgets/app_logo.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   // Ensure that plugin services are initialized
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Force portrait orientation only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
+  // Initialize timezone data
+  tz.initializeTimeZones();
+  
+  // Initialize notification service
+  final notificationInitialized = await NotificationServiceFixed.initialize();
+  print('🔔 Notification service initialized: $notificationInitialized');
   
   // Create and load settings provider
   final settingsProvider = SettingsProvider();
@@ -25,15 +43,22 @@ void main() async {
   runApp(MyApp(settingsProvider: settingsProvider));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final SettingsProvider settingsProvider;
   
   const MyApp({super.key, required this.settingsProvider});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _showSplash = true;
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: settingsProvider,
+      value: widget.settingsProvider,
       child: Consumer<SettingsProvider>(
         builder: (context, settings, child) {
           return MaterialApp(
@@ -41,7 +66,15 @@ class MyApp extends StatelessWidget {
             themeMode: settings.themeMode,
             theme: AppTheme.getLightThemeData(settings.fontFamily),
             darkTheme: AppTheme.getDarkThemeData(settings.fontFamily),
-            home: const MainScreen(),
+            home: _showSplash 
+              ? SplashScreen(
+                  onSplashComplete: () {
+                    setState(() {
+                      _showSplash = false;
+                    });
+                  },
+                )
+              : const MainScreen(),
             debugShowCheckedModeBanner: false,
             routes: {
               '/location_settings': (context) => const LocationSettingsScreen(),
@@ -86,15 +119,40 @@ class _MainScreenState extends State<MainScreen> {
   final List<String> _labels = ['Takvim', 'Kıble', 'Namaz', 'Favoriler'];
 
   @override
+  void initState() {
+    super.initState();
+    // Schedule prayer notifications on app start
+    _schedulePrayerNotifications();
+  }
+
+  Future<void> _schedulePrayerNotifications() async {
+    try {
+      await NotificationServiceFixed.schedulePrayerNotifications();
+    } catch (e) {
+      print('Error scheduling notifications: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Nur Vakti',
-          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+        title: Row(
+          children: [
+            AppLogo(size: 32),
+            SizedBox(width: 12),
+            Text(
+              'Nur Vakti',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
-        backgroundColor: Colors.brown.shade700,
-        foregroundColor: Colors.white,
+        backgroundColor: Color(0xFF1a4d2e), // Daha koyu yeşil
+        foregroundColor: Color(0xFFffd700), // Altın sarısı
+        elevation: 2,
         actions: [
           Builder(
             builder: (context) => IconButton(
@@ -306,7 +364,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.pop(context);
               showAboutDialog(
                 context: context,
-                applicationName: 'Dijital Dini Takvim',
+                applicationName: 'Nur Vakti',
                 applicationVersion: '1.0.0',
                 applicationIcon: Icon(
                   Icons.calendar_today,

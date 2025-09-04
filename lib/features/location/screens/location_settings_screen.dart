@@ -155,47 +155,185 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
     LocationPermission permission;
 
     try {
+      // 1. Önce konum servisinin açık olup olmadığını kontrol et
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() {
-          _locationStatus = 'Location services are disabled';
+          _locationStatus = 'Konum servisleri kapalı';
           _isLocationEnabled = false;
         });
+        
+        // Kullanıcıya konum servisini açma fırsatı ver
+        final bool? result = await _showLocationServicesDialog();
+        if (result == true) {
+          // Konum ayarlarına yönlendir
+          await Geolocator.openLocationSettings();
+        }
         return;
       }
 
+      // 2. Konum iznini kontrol et
       permission = await Geolocator.checkPermission();
+      
+      // 3. İzin reddedilmişse, istenmelidir
       if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
+        // İzin iste diyaloğunu göstermeden önce kullanıcıya açıklayıcı diyalog göster
+        final bool? shouldRequest = await _showPermissionExplanationDialog();
+        if (shouldRequest == true) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            setState(() {
+              _locationStatus = 'Konum izinleri reddedildi';
+              _isLocationEnabled = false;
+            });
+            return;
+          }
+        } else {
           setState(() {
-            _locationStatus = 'Location permissions are denied';
+            _locationStatus = 'Konum izni isteme işlemi iptal edildi';
             _isLocationEnabled = false;
           });
           return;
         }
       }
 
+      // 4. İzin kalıcı olarak reddedilmişse
       if (permission == LocationPermission.deniedForever) {
         setState(() {
-          _locationStatus = 'Location permissions are permanently denied';
+          _locationStatus = 'Konum izinleri kalıcı olarak reddedildi';
           _isLocationEnabled = false;
         });
+        
+        // Kullanıcıya uygulama ayarlarına gitme seçeneği sun
+        final bool? openSettings = await _showAppSettingsDialog();
+        if (openSettings == true) {
+          await Geolocator.openAppSettings();
+        }
         return;
       }
 
+      // 5. İzin verilmişse, konum servisini kullan
       setState(() {
-        _locationStatus = 'Location permission granted';
+        _locationStatus = 'Konum izni verildi';
         _isLocationEnabled = true;
       });
 
       _getCurrentLocation();
     } catch (e) {
       setState(() {
-        _locationStatus = 'Error: $e';
+        _locationStatus = 'Hata: $e';
         _isLocationEnabled = false;
       });
     }
+  }
+  
+  // Konum servisleri kapalı diyaloğu
+  Future<bool?> _showLocationServicesDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Konum Servisleri Kapalı',
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Namaz vakitlerini doğru şekilde görüntüleyebilmemiz için konum servislerini açmanız gerekiyor. Konum ayarlarını açmak istiyor musunuz?',
+          style: GoogleFonts.ebGaramond(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Hayır',
+              style: GoogleFonts.ebGaramond(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: Text(
+              'Ayarları Aç',
+              style: GoogleFonts.ebGaramond(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // İzin açıklaması diyaloğu
+  Future<bool?> _showPermissionExplanationDialog() {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Konum İzni Gerekli',
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Nur Vakti, doğru namaz vakitleri ve kıble yönü gösterebilmek için konumunuza ihtiyaç duyar.\n\nKonum bilgileriniz sadece bu amaçla kullanılır ve hiçbir şekilde başkalarıyla paylaşılmaz.\n\nDevam etmek ve konum izni istemek istiyor musunuz?',
+          style: GoogleFonts.ebGaramond(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'İptal',
+              style: GoogleFonts.ebGaramond(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: Text(
+              'İzin İste',
+              style: GoogleFonts.ebGaramond(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // Uygulama ayarları diyaloğu
+  Future<bool?> _showAppSettingsDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Konum İzni Reddedildi',
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold, color: Colors.red),
+        ),
+        content: Text(
+          'Konum izni kalıcı olarak reddedildi. Uygulamanın namaz vakitlerini doğru gösterebilmesi için konum iznini vermeniz gerekiyor.\n\nUygulama ayarlarında izinleri düzenleyebilirsiniz.',
+          style: GoogleFonts.ebGaramond(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Kapat',
+              style: GoogleFonts.ebGaramond(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+            ),
+            child: Text(
+              'Ayarları Aç',
+              style: GoogleFonts.ebGaramond(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _getCurrentLocation() async {
@@ -656,6 +794,12 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
               if (!_isLocationEnabled)
                 Card(
                   elevation: 4,
+                  color: Colors.red.shade50,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.red.shade200, width: 1),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -663,38 +807,89 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.warning_outlined,
-                              color: Colors.red,
-                              size: 24,
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.warning_outlined,
+                                color: Colors.red.shade700,
+                                size: 24,
+                              ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Konum İzni Gerekli',
-                              style: GoogleFonts.ebGaramond(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Konum İzni Gerekli',
+                                style: GoogleFonts.ebGaramond(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red.shade800,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Text(
-                          'Namaz vakitleri ve kıble yönü için konum izni gereklidir.',
+                          'Namaz vakitleri ve kıble yönü için konum izni gereklidir. İzin vermeden uygulama doğru çalışamaz.',
                           style: GoogleFonts.ebGaramond(
-                            fontSize: 14,
-                            color: Colors.red,
+                            fontSize: 16,
+                            height: 1.4,
+                            color: Colors.red.shade700,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: _checkLocationPermission,
-                          icon: const Icon(Icons.location_on),
-                          label: const Text('İzin Ver'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
+                        const SizedBox(height: 8),
+                        Text(
+                          'Not: İzin istendikten sonra "İzin Ver" seçeneğine tıklamanız gerekecektir.',
+                          style: GoogleFonts.ebGaramond(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton.icon(
+                            onPressed: _checkLocationPermission,
+                            icon: const Icon(Icons.location_searching, size: 24),
+                            label: Text(
+                              'Konum İzni Ver',
+                              style: GoogleFonts.ebGaramond(
+                                fontSize: 18, 
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              foregroundColor: Colors.white,
+                              elevation: 4,
+                              shadowColor: Colors.red.shade300,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: () async {
+                              await Geolocator.openAppSettings();
+                            },
+                            icon: Icon(Icons.settings, size: 18, color: Colors.blue.shade700),
+                            label: Text(
+                              'Uygulama Ayarlarını Aç',
+                              style: GoogleFonts.ebGaramond(
+                                color: Colors.blue.shade700,
+                                fontSize: 16,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ),
                       ],
