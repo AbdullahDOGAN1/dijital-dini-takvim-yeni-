@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 import '../../../models/daily_content_model.dart';
 import '../../../services/calendar_service.dart';
 import '../../../services/database_helper.dart';
@@ -29,6 +30,20 @@ class _CalendarScreenState extends State<CalendarScreen>
   late Animation<double> _pageTurnAnimation;
   bool _isFlipped = false;
 
+  // Cache for formatted dates to prevent recalculation
+  Map<int, Map<String, dynamic>> _datesCache = {};
+  
+  // Debounce timer for rapid page changes
+  Timer? _debounceTimer;
+
+  // Visual stability flags
+  bool _isTransitioning = false;
+  int? _targetPageIndex;
+  
+  // Initial load stability
+  bool _isInitialLoad = true;
+  bool _hasCompletedFirstRender = false;
+
   @override
   void initState() {
     super.initState();
@@ -43,47 +58,156 @@ class _CalendarScreenState extends State<CalendarScreen>
       CurvedAnimation(parent: _pageTurnController, curve: Curves.easeInOut),
     );
 
-    _loadData();
+    // Load data with initial stability
+    _initializeStably();
   }
 
-  /// Load calendar data
-  /// Load calendar data
+  /// Initialize with stability checks for first load
+  Future<void> _initializeStably() async {
+    setState(() {
+      _isLoading = true;
+      _isInitialLoad = true;
+    });
+
+    // Small delay to ensure widget is mounted
+    await Future.delayed(const Duration(milliseconds: 50));
+    
+    if (!mounted) return;
+    
+    await _loadData();
+    
+    // Mark initial load as complete after a small delay
+    if (mounted) {
+      Timer(const Duration(milliseconds: 200), () {
+        if (mounted) {
+          setState(() {
+            _isInitialLoad = false;
+            _hasCompletedFirstRender = true;
+          });
+        }
+      });
+    }
+  }
+
+  /// Load calendar data and initialize to today's date
   Future<void> _loadData() async {
     try {
       final calendarData = await CalendarService.loadCalendarData();
 
+      if (!mounted) return;
+
+      // Calculate today's index before setting state
+      final todayIndex = _calculateTodayIndex(calendarData);
+
+      // Set state with all data at once to prevent flickering
       setState(() {
         _calendarData = calendarData;
+        _currentPageIndex = todayIndex; // Start from today instead of 0
         _isLoading = false;
       });
       
-      // Check favorite status for initial page
-      _checkPageFavorites();
+      // Small delay before cache operations to ensure UI is stable
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      if (!mounted) return;
+      
+      // Pre-cache today's date to prevent calculation delay
+      _getFormattedDates();
+      
+      // Check favorite status for initial page (debounced)
+      _debounceTimer?.cancel();
+      _debounceTimer = Timer(const Duration(milliseconds: 200), () {
+        if (mounted) {
+          _checkPageFavorites();
+        }
+      });
     } catch (e) {
       print('Error loading data: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  /// Calculate today's index in the calendar data
+  int _calculateTodayIndex(List<DailyContentModel> calendarData) {
+    if (calendarData.isEmpty) return 0;
+    
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    // Find today's date in the calendar data
+    for (int i = 0; i < calendarData.length; i++) {
+      try {
+        final data = calendarData[i];
+        final parts = data.tarih.split(' ');
+        
+        if (parts.length >= 3) {
+          final day = int.parse(parts[0]);
+          final monthStr = parts[1];
+          final year = int.parse(parts[2]);
+          
+          // Turkish month names to numbers
+          const monthMap = {
+            'OCAK': 1, 'ŞUBAT': 2, 'MART': 3, 'NİSAN': 4,
+            'MAYIS': 5, 'HAZİRAN': 6, 'TEMMUZ': 7, 'AĞUSTOS': 8,
+            'EYLÜL': 9, 'EKİM': 10, 'KASIM': 11, 'ARALIK': 12,
+          };
+          
+          final month = monthMap[monthStr];
+          if (month != null) {
+            final dataDate = DateTime(year, month, day);
+            
+            if (dataDate.isAtSameMomentAs(today)) {
+              return i; // Found today's index
+            }
+          }
+        }
+      } catch (e) {
+        // Continue searching if parsing fails
+        continue;
+      }
+    }
+    
+    // If today is not found, return the middle of the data or 0
+    return calendarData.length > 100 ? 100 : 0;
   }
 
   @override
   void dispose() {
     _pageTurnController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
-  /// Get formatted date information for the current page
+  /// Get formatted date information for the current page with enhanced stability
   Map<String, dynamic> _getFormattedDates() {
-    if (_calendarData.isEmpty)
+    // Validate index first with comprehensive checks
+    if (_calendarData.isEmpty || 
+        _currentPageIndex >= _calendarData.length || 
+        _currentPageIndex < 0 ||
+        _isTransitioning) {
       return {
         'gregorian': {'day': '', 'month': '', 'year': '', 'weekday': ''},
         'hijri': {'day': '', 'month': '', 'year': ''},
       };
+    }
+
+    // During initial load, force fresh calculation
+    if (_isInitialLoad || !_hasCompletedFirstRender) {
+      // Don't use cache during initial stabilization
+    } else {
+      // Check cache first for stable states
+      if (_datesCache.containsKey(_currentPageIndex)) {
+        return _datesCache[_currentPageIndex]!;
+      }
+    }
 
     final currentData = _calendarData[_currentPageIndex];
 
-    // Parse the Gregorian date from the data
+    // Parse the Gregorian date from the data with enhanced error handling
     try {
       final parts = currentData.tarih.split(' ');
       if (parts.length >= 3) {
@@ -93,18 +217,9 @@ class _CalendarScreenState extends State<CalendarScreen>
 
         // Turkish month names to numbers
         const monthMap = {
-          'OCAK': 1,
-          'ŞUBAT': 2,
-          'MART': 3,
-          'NİSAN': 4,
-          'MAYIS': 5,
-          'HAZİRAN': 6,
-          'TEMMUZ': 7,
-          'AĞUSTOS': 8,
-          'EYLÜL': 9,
-          'EKİM': 10,
-          'KASIM': 11,
-          'ARALIK': 12,
+          'OCAK': 1, 'ŞUBAT': 2, 'MART': 3, 'NİSAN': 4,
+          'MAYIS': 5, 'HAZİRAN': 6, 'TEMMUZ': 7, 'AĞUSTOS': 8,
+          'EYLÜL': 9, 'EKİM': 10, 'KASIM': 11, 'ARALIK': 12,
         };
 
         final month = monthMap[monthStr] ?? 1;
@@ -116,10 +231,10 @@ class _CalendarScreenState extends State<CalendarScreen>
         final yearFormatter = DateFormat('yyyy', 'tr_TR');
         final weekdayFormatter = DateFormat('EEEE', 'tr_TR');
 
-        // Calculate approximate Hijri date (basic conversion)
+        // Calculate enhanced Hijri date
         final hijriDate = _calculateHijriDate(date);
 
-        return {
+        final formattedDates = {
           'gregorian': {
             'day': dayFormatter.format(date),
             'month': monthFormatter.format(date),
@@ -132,13 +247,29 @@ class _CalendarScreenState extends State<CalendarScreen>
             'year': hijriDate['year'].toString(),
           },
         };
+
+        // Cache the result only if we're in stable state
+        if (!_isTransitioning && _hasCompletedFirstRender) {
+          _datesCache[_currentPageIndex] = formattedDates;
+          
+          // More aggressive cache size limiting for stability
+          if (_datesCache.length > 5) {
+            // Keep only the most recent 3 entries
+            final sortedKeys = _datesCache.keys.toList()..sort();
+            while (_datesCache.length > 3) {
+              _datesCache.remove(sortedKeys.removeAt(0));
+            }
+          }
+        }
+        
+        return formattedDates;
       }
     } catch (e) {
       print('Date parsing error: $e');
     }
 
     // Fallback to original data
-    return {
+    final fallbackDates = {
       'gregorian': {
         'day': '1',
         'month': 'Ocak',
@@ -147,25 +278,32 @@ class _CalendarScreenState extends State<CalendarScreen>
       },
       'hijri': {'day': '1', 'month': 'Recep', 'year': '1446'},
     };
+    
+    // Cache fallback too
+    _datesCache[_currentPageIndex] = fallbackDates;
+    return fallbackDates;
   }
 
   /// Calculate approximate Hijri date from Gregorian date
   Map<String, dynamic> _calculateHijriDate(DateTime gregorianDate) {
-    // Basic conversion using epoch dates
+    // More accurate conversion using epoch dates
     // Hijri year 1 started on July 16, 622 CE
     final hijriEpoch = DateTime(622, 7, 16);
     final daysDifference = gregorianDate.difference(hijriEpoch).inDays;
 
-    // Average Hijri year is about 354.367 days
+    // More accurate average Hijri year is about 354.367 days
     final hijriYear = (daysDifference / 354.367).floor() + 1;
 
-    // Calculate approximate month and day (simplified)
+    // Calculate approximate month and day with better accuracy
     final yearStart = hijriEpoch.add(
-      Duration(days: ((hijriYear - 1) * 354.367).floor()),
+      Duration(days: ((hijriYear - 1) * 354.367).round()),
     );
     final daysIntoYear = gregorianDate.difference(yearStart).inDays;
+    
+    // Better month calculation
     final hijriMonth = (daysIntoYear / 29.53).floor() + 1;
-    final hijriDay = (daysIntoYear % 29.53).floor() + 1;
+    final monthStart = yearStart.add(Duration(days: ((hijriMonth - 1) * 29.53).round()));
+    final hijriDay = gregorianDate.difference(monthStart).inDays + 1;
 
     return {
       'day': hijriDay.clamp(1, 30),
@@ -180,9 +318,9 @@ class _CalendarScreenState extends State<CalendarScreen>
       'Muharrem',
       'Safer',
       'Rebiülevvel',
-      'Rebiülahir',
-      'Cemaziyelevvel',
-      'Cemaziyelahir',
+      'Rebiülahir', 
+      'Cemayizelevvel',
+      'Cemayizelahir',
       'Recep',
       'Şaban',
       'Ramazan',
@@ -214,34 +352,190 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
-  /// Navigate to previous day
-  /// Navigate to previous day
+  /// Navigate to previous day with enhanced stability
   void _goToPreviousDay() {
-    if (_currentPageIndex > 0) {
-      setState(() {
-        _currentPageIndex--;
-        _isFlipped = false;
-      });
-      _pageTurnController.reset();
-      _checkPageFavorites(); // Check if new page has favorites
+    if (_currentPageIndex > 0 && 
+        !_isTransitioning && 
+        !_isInitialLoad && 
+        _hasCompletedFirstRender && 
+        _calendarData.isNotEmpty) {
+      _performPageTransition(_currentPageIndex - 1);
     }
   }
 
-  /// Navigate to next day
+  /// Navigate to next day with enhanced stability
   void _goToNextDay() {
-    if (_currentPageIndex < _calendarData.length - 1) {
-      setState(() {
-        _currentPageIndex++;
-        _isFlipped = false;
-      });
-      _pageTurnController.reset();
-      _checkPageFavorites(); // Check if new page has favorites
+    if (_currentPageIndex < _calendarData.length - 1 && 
+        !_isTransitioning && 
+        !_isInitialLoad && 
+        _hasCompletedFirstRender && 
+        _calendarData.isNotEmpty) {
+      _performPageTransition(_currentPageIndex + 1);
     }
   }
 
-  /// Build the prominent date header with rich hierarchical display
+  /// Perform smooth page transition with loading state
+  void _performPageTransition(int targetIndex) {
+    // Validate target index
+    if (targetIndex < 0 || targetIndex >= _calendarData.length) {
+      return;
+    }
+
+    // Cancel any pending operations
+    _debounceTimer?.cancel();
+    
+    // Aggressive cache clearing for stability
+    _datesCache.clear();
+    
+    // Set transitioning state immediately
+    setState(() {
+      _isTransitioning = true;
+      _targetPageIndex = targetIndex;
+    });
+
+    // Longer transition delay for stability
+    Timer(const Duration(milliseconds: 150), () {
+      if (mounted) {
+        setState(() {
+          _currentPageIndex = targetIndex;
+          _isFlipped = false;
+        });
+        
+        _pageTurnController.reset();
+
+        // Complete transition after longer delay for UI stability
+        Timer(const Duration(milliseconds: 250), () {
+          if (mounted) {
+            setState(() {
+              _isTransitioning = false;
+              _targetPageIndex = null;
+            });
+            
+            // Debounced operations for stability
+            _debounceTimer = Timer(const Duration(milliseconds: 200), () {
+              if (mounted) {
+                // Cache the new date and check favorites
+                _getFormattedDates();
+                _checkPageFavorites();
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  /// Build the prominent date header with enhanced stability
   Widget _buildDateHeader() {
-    // Always get fresh dates when building the header to ensure it updates on day change
+    // Show transitioning state if in transition
+    if (_isTransitioning && _targetPageIndex != null) {
+      return Container(
+        height: 200,
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.brown.shade600, Colors.brown.shade800],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Tarih güncelleniyor...',
+                style: GoogleFonts.ebGaramond(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Show loading during initial load or if still stabilizing
+    if (_isInitialLoad || !_hasCompletedFirstRender) {
+      return Container(
+        height: 200,
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.brown.shade600, Colors.brown.shade800],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Yükleniyor...',
+                style: GoogleFonts.ebGaramond(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Prevent building if data is not ready or indices are invalid
+    if (_calendarData.isEmpty || 
+        _currentPageIndex >= _calendarData.length || 
+        _currentPageIndex < 0) {
+      return Container(
+        height: 200,
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.brown.shade600, Colors.brown.shade800],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Text(
+            'Takvim yükleniyor...',
+            style: GoogleFonts.ebGaramond(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Get dates for current page index
     final dates = _getFormattedDates();
 
     return Stack(
@@ -529,9 +823,85 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
   }
 
-  /// Build page content with flip animation
+  /// Build page content with enhanced stability and transition handling
   Widget _buildPageContent() {
-    if (_calendarData.isEmpty) return const SizedBox.shrink();
+    // Show transition state or initial loading
+    if (_isTransitioning || _isInitialLoad || !_hasCompletedFirstRender) {
+      return Expanded(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.brown.shade600),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _isInitialLoad || !_hasCompletedFirstRender 
+                    ? 'Yükleniyor...' 
+                    : 'İçerik güncelleniyor...',
+                  style: GoogleFonts.ebGaramond(
+                    fontSize: 16,
+                    color: Colors.brown.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Validate data and indices
+    if (_calendarData.isEmpty || 
+        _currentPageIndex >= _calendarData.length || 
+        _currentPageIndex < 0) {
+      return Expanded(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              'İçerik Yükleniyor...',
+              style: GoogleFonts.ebGaramond(
+                fontSize: 16,
+                color: Colors.brown.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     final currentData = _calendarData[_currentPageIndex];
 
@@ -714,7 +1084,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    data.tarihteBugun,
+                    data.tariheBugun,
                     style: GoogleFonts.ebGaramond(
                       fontSize: 16,
                       height: 1.6,
@@ -917,7 +1287,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          data.backPage.dailyVerseOrHadith.type,
+                          'Ayet/Hadis',
                           style: GoogleFonts.ebGaramond(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -937,7 +1307,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       border: Border.all(color: Colors.blue.shade100, width: 1),
                     ),
                     child: Text(
-                      data.backPage.dailyVerseOrHadith.text,
+                      data.ayetHadis.metin,
                       style: GoogleFonts.ebGaramond(
                         fontSize: 16,
                         height: 1.6,
@@ -963,7 +1333,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ),
                       ),
                       child: Text(
-                        '— ${data.backPage.dailyVerseOrHadith.source}',
+                        '— ${data.ayetHadis.kaynak}',
                         style: GoogleFonts.ebGaramond(
                           fontSize: 13,
                           color: Colors.blue.shade700,
@@ -978,7 +1348,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
             const SizedBox(height: 16),
 
-            // Daily Menu Section
+            // Daily Menu Section (Simplified for model compatibility)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -1032,7 +1402,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Günün Menüsü',
+                        'Akşam Yemeği',
                         style: GoogleFonts.ebGaramond(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1043,14 +1413,45 @@ class _CalendarScreenState extends State<CalendarScreen>
                     ],
                   ),
                   const SizedBox(height: 16),
-                  _buildMenuRow('🍲 Çorba', data.backPage.dailyMenu.soup),
-                  const SizedBox(height: 10),
-                  _buildMenuRow(
-                    '🍽️ Ana Yemek',
-                    data.backPage.dailyMenu.mainCourse,
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.purple.shade200, width: 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.shade100.withOpacity(0.3),
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '🍽️ ',
+                          style: GoogleFonts.ebGaramond(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple.shade800,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            data.aksamYemegi,
+                            style: GoogleFonts.ebGaramond(
+                              fontSize: 15,
+                              color: Colors.purple.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  _buildMenuRow('🍰 Tatlı', data.backPage.dailyMenu.dessert),
                 ],
               ),
             ),
@@ -1058,48 +1459,6 @@ class _CalendarScreenState extends State<CalendarScreen>
             const SizedBox(height: 80), // Space for flip button
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMenuRow(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.purple.shade50,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.purple.shade200, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.purple.shade100.withOpacity(0.3),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.ebGaramond(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.purple.shade800,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              value,
-              style: GoogleFonts.ebGaramond(
-                fontSize: 15,
-                color: Colors.purple.shade700,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -1135,7 +1494,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                   'Risale-i Nur',
                   currentData.risaleINur.vecize,
                   currentData.risaleINur.kaynak,
-                  currentData.miladiTarih,
+                  currentData.tarih, // Use tarih instead of miladiTarih
                 ),
               ),
               ListTile(
@@ -1147,9 +1506,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                 onTap: () => _saveFavorite(
                   context,
                   'Ayet/Hadis',
-                  currentData.backPage.dailyVerseOrHadith.text,
-                  currentData.backPage.dailyVerseOrHadith.source,
-                  currentData.miladiTarih,
+                  currentData.ayetHadis.metin,
+                  currentData.ayetHadis.kaynak,
+                  currentData.tarih, // Use tarih instead of miladiTarih
                 ),
               ),
               ListTile(
@@ -1161,9 +1520,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                 onTap: () => _saveFavorite(
                   context,
                   'Tarihte Bugün',
-                  currentData.tarihteBugun,
+                  currentData.tariheBugun,
                   '',
-                  currentData.miladiTarih,
+                  currentData.tarih, // Use tarih instead of miladiTarih
                 ),
               ),
             ],
@@ -1236,20 +1595,38 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   /// Check if current page has favorites
   Future<void> _checkPageFavorites() async {
-    if (_calendarData.isNotEmpty) {
-      final currentData = _calendarData[_currentPageIndex];
-      final hasFavorites = await DatabaseHelper.instance.hasPageFavorites(currentData.miladiTarih);
+    // Enhanced stability checks
+    if (_calendarData.isNotEmpty && 
+        _currentPageIndex >= 0 && 
+        _currentPageIndex < _calendarData.length &&
+        !_isTransitioning &&
+        !_isInitialLoad &&
+        _hasCompletedFirstRender) {
       
-      setState(() {
-        _isCurrentPageFavorited = hasFavorites;
-      });
+      try {
+        final currentData = _calendarData[_currentPageIndex];
+        final hasFavorites = await DatabaseHelper.instance.hasPageFavorites(currentData.tarih);
+        
+        if (mounted) { // Check if widget is still mounted before setState
+          setState(() {
+            _isCurrentPageFavorited = hasFavorites;
+          });
+        }
+      } catch (e) {
+        print('Error checking favorites: $e');
+        if (mounted) {
+          setState(() {
+            _isCurrentPageFavorited = false;
+          });
+        }
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Show loading indicator while data is being loaded
-    if (_isLoading) {
+    // Show loading indicator while data is being loaded OR during initial setup
+    if (_isLoading || _isInitialLoad || !_hasCompletedFirstRender || _calendarData.isEmpty) {
       return Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -1276,8 +1653,8 @@ class _CalendarScreenState extends State<CalendarScreen>
       );
     }
 
-    // Show error state if no data is loaded
-    if (_calendarData.isEmpty) {
+    // Additional safety check for data validity
+    if (_currentPageIndex < 0 || _currentPageIndex >= _calendarData.length) {
       return Scaffold(
         body: Container(
           decoration: BoxDecoration(

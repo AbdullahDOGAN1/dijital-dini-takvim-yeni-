@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'models/daily_content_model.dart';
 import 'services/daily_content_service.dart';
+import 'features/calendar_page/screens/calendar_screen_new.dart';
 
 /// Yeni veri dosyasını test etmek için geçici ekran
 class TestNewDataScreen extends StatefulWidget {
@@ -50,7 +51,7 @@ class _TestNewDataScreenState extends State<TestNewDataScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Yeni Veri Testi',
+          'Yeni Takvim Testi',
           style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.teal.shade700,
@@ -64,244 +65,183 @@ class _TestNewDataScreenState extends State<TestNewDataScreen> {
             colors: [Colors.teal.shade50, Colors.green.shade50],
           ),
         ),
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error, size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text(
-                          _error!,
-                          style: GoogleFonts.ebGaramond(fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _loadTodaysContent,
-                          child: const Text('Tekrar Dene'),
-                        ),
-                      ],
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  )
-                : _todaysContent != null
-                    ? SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Başlık
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.teal.shade600, Colors.green.shade600],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Bugünün İçeriği',
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    _todaysContent!.tarih,
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Gün No: ${_todaysContent!.gunNo}',
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 16,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            
-                            const SizedBox(height: 16),
-                            
-                            // Ayet/Hadis
-                            _buildContentCard(
-                              'Ayet/Hadis',
-                              _todaysContent!.ayetHadis.metin,
-                              _todaysContent!.ayetHadis.kaynak,
-                              Colors.blue,
-                              Icons.menu_book,
-                            ),
-                            
-                            const SizedBox(height: 16),
-                            
-                            // Risale-i Nur
-                            _buildContentCard(
-                              'Risale-i Nur',
-                              _todaysContent!.risaleINur.vecize,
-                              _todaysContent!.risaleINur.kaynak,
-                              Colors.amber,
-                              Icons.auto_stories,
-                            ),
-                            
-                            const SizedBox(height: 16),
-                            
-                            // Tarihte Bugün
-                            _buildSimpleCard(
-                              'Tarihte Bugün',
-                              _todaysContent!.tariheBugun,
-                              Colors.purple,
-                              Icons.history,
-                            ),
-                            
-                            const SizedBox(height: 16),
-                            
-                            // Akşam Yemeği
-                            _buildSimpleCard(
-                              'Akşam Yemeği Önerisi',
-                              _todaysContent!.aksamYemegi,
-                              Colors.orange,
-                              Icons.restaurant,
-                            ),
-                          ],
-                        ),
-                      )
-                    : const Center(
-                        child: Text('İçerik bulunamadı'),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.calendar_month,
+                      size: 64,
+                      color: Colors.teal.shade600,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Yeni PageView Takvimi',
+                      style: GoogleFonts.ebGaramond(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal.shade700,
                       ),
-      ),
-    );
-  }
-  
-  Widget _buildContentCard(String title, String content, String source, Color color, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Yeni PageView tabanlı takvim ekranını test edin',
+                      style: GoogleFonts.ebGaramond(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CalendarScreenNew(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.launch),
+                      label: const Text('Yeni Takvimi Aç'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: _loadTodaysContent,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Veri Testini Gör'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.teal.shade600,
+                        side: BorderSide(color: Colors.teal.shade600),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Icon(icon, color: color, size: 24),
               ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: GoogleFonts.ebGaramond(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+              
+              // Veri testi sonuçları
+              if (_isLoading) ...[
+                const SizedBox(height: 32),
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(
+                  'Veri yükleniyor...',
+                  style: GoogleFonts.ebGaramond(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
-              ),
+              ] else if (_error != null) ...[
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.shade200),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.error, color: Colors.red.shade600, size: 32),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Hata',
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _error!,
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 14,
+                          color: Colors.red.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ] else if (_todaysContent != null) ...[
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.green.shade200),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green.shade600, size: 32),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Veri Başarıyla Yüklendi',
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Tarih: ${_todaysContent!.tarih}',
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 14,
+                          color: Colors.green.shade600,
+                        ),
+                      ),
+                      Text(
+                        'Gün No: ${_todaysContent!.gunNo}',
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 14,
+                          color: Colors.green.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            content,
-            style: GoogleFonts.ebGaramond(
-              fontSize: 16,
-              height: 1.4,
-              color: Colors.grey.shade800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              source,
-              style: GoogleFonts.ebGaramond(
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey.shade700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildSimpleCard(String title, String content, Color color, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 24),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: GoogleFonts.ebGaramond(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            content,
-            style: GoogleFonts.ebGaramond(
-              fontSize: 16,
-              height: 1.4,
-              color: Colors.grey.shade800,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

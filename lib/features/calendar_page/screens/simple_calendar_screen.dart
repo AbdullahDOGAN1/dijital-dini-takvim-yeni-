@@ -17,15 +17,22 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
   bool _isLoading = true;
   String? _error;
   int _currentPage = 0;
-  final PageController _pageController = PageController();
+  late PageController _pageController;
   
   // Hijri tarih için
   HijriDate? _currentHijriDate;
   bool _isLoadingHijri = false;
+  
+  // Navigation kontrolü için
+  bool _isNavigating = false;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    final todayIndex = _getTodayIndex();
+    _currentPage = todayIndex;
+    _pageController = PageController(initialPage: todayIndex);
     _loadContent();
   }
 
@@ -37,40 +44,38 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
 
     try {
       final content = await DailyContentService.loadDailyContent();
-      setState(() {
-        _content = content;
-        _isLoading = false;
-        // Bugüne göre sayfa ayarla
-        _currentPage = _getTodayIndex();
+      if (mounted) {
+        setState(() {
+          _content = content;
+          _isLoading = false;
+          _isInitialized = true;
+        });
+        
+        // İlk Hijri tarih güncellemesi
         if (_content.isNotEmpty) {
-          // İlk Hijri tarih güncellemesi
           _updateHijriDate(_content[_currentPage].gunNo);
-          
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _pageController.animateToPage(
-              _currentPage,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          });
         }
-      });
+      }
     } catch (e) {
-      setState(() {
-        _error = 'İçerik yüklenirken hata oluştu: $e';
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'İçerik yüklenirken hata oluştu: $e';
+          _isLoading = false;
+        });
+      }
     }
   }
 
   int _getTodayIndex() {
     final now = DateTime.now();
     final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays + 1;
-    return (dayOfYear - 1).clamp(0, _content.length - 1);
+    return (dayOfYear - 1).clamp(0, 364); // 365 gün max
   }
 
   /// AlAdhan API kullanarak doğru Hijri tarihini getir
   Future<void> _updateHijriDate(int dayNumber) async {
+    if (_isLoadingHijri) return; // Zaten yükleniyorsa bekle
+    
     setState(() {
       _isLoadingHijri = true;
     });
@@ -83,33 +88,49 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       // AlAdhan API'den Hijri tarihi al
       final hijriDate = await DailyContentService.getCachedHijriDate(currentDate);
       
-      setState(() {
-        _currentHijriDate = hijriDate;
-        _isLoadingHijri = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentHijriDate = hijriDate;
+          _isLoadingHijri = false;
+        });
+      }
     } catch (e) {
       print('Hijri tarih güncellenirken hata: $e');
-      setState(() {
-        _currentHijriDate = null;
-        _isLoadingHijri = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentHijriDate = null;
+          _isLoadingHijri = false;
+        });
+      }
     }
   }
 
   String _getHijriDateForDay(int dayNumber) {
     if (_currentHijriDate != null) {
+      // API'den gelen tarihi Türkçe formatla
+      final parts = _currentHijriDate!.formattedDate.split(' ');
+      if (parts.length >= 3) {
+        final day = parts[0];
+        final monthEng = parts[1];
+        final year = parts[2];
+        
+        // İngilizce ay isimlerini Türkçe'ye çevir
+        final monthTr = _convertEnglishMonthToTurkish(monthEng);
+        return '$day $monthTr $year';
+      }
       return _currentHijriDate!.formattedDate;
     }
     
-    // Fallback - eski hesaplama
+    // Fallback - Türkçe ay isimleri ile doğru hesaplama
     const hijriMonths = [
       'Muharrem', 'Safer', 'Rebiülevvel', 'Rebiülahir',
-      'Cemaziyelevvel', 'Cemaziyelahir', 'Recep', 'Şaban',
+      'Cemayizelevvel', 'Cemayizelahir', 'Recep', 'Şaban',
       'Ramazan', 'Şevval', 'Zilkade', 'Zilhicce'
     ];
     
-    var hijriDay = 2 + (dayNumber - 1);
-    var hijriMonth = 6; // Recep (0-11 indeksi)
+    // 2025 için doğru başlangıç tarihi (1 Ocak 2025 = 21 Cemayizelahir 1446)
+    var hijriDay = 21 + (dayNumber - 1);
+    var hijriMonth = 5; // Cemayizelahir (0-11 indeksi)
     var hijriYear = 1446;
     
     const monthDays = [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
@@ -133,6 +154,24 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
     }
     
     return '$hijriDay ${hijriMonths[hijriMonth]} $hijriYear';
+  }
+
+  String _convertEnglishMonthToTurkish(String englishMonth) {
+    const monthMap = {
+      'Muharram': 'Muharrem',
+      'Safar': 'Safer', 
+      'Rabi\' al-awwal': 'Rebiülevvel',
+      'Rabi\' al-thani': 'Rebiülahir',
+      'Jumada al-awwal': 'Cemayizelevvel',
+      'Jumada al-thani': 'Cemayizelahir',
+      'Rajab': 'Recep',
+      'Sha\'ban': 'Şaban',
+      'Ramadan': 'Ramazan',
+      'Shawwal': 'Şevval',
+      'Dhu al-Qi\'dah': 'Zilkade',
+      'Dhu al-Hijjah': 'Zilhicce',
+    };
+    return monthMap[englishMonth] ?? englishMonth;
   }
 
   @override
@@ -283,14 +322,20 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
                         
                         // İçerik
                         Expanded(
-                          child: PageView.builder(
+                          child: _isInitialized ? PageView.builder(
                             controller: _pageController,
                             onPageChanged: (index) {
-                              setState(() {
-                                _currentPage = index;
-                              });
-                              // Hijri tarih güncelle
-                              _updateHijriDate(_content[index].gunNo);
+                              if (!_isNavigating && mounted) {
+                                setState(() {
+                                  _currentPage = index;
+                                });
+                                // Hijri tarih güncelleme - daha uzun debounce
+                                Future.delayed(const Duration(milliseconds: 300), () {
+                                  if (_currentPage == index && mounted && !_isLoadingHijri) {
+                                    _updateHijriDate(_content[index].gunNo);
+                                  }
+                                });
+                              }
                             },
                             itemCount: _content.length,
                             itemBuilder: (context, index) {
@@ -303,7 +348,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
                                 ),
                               );
                             },
-                          ),
+                          ) : const Center(child: CircularProgressIndicator()),
                         ),
                       ],
                     ),
@@ -331,30 +376,66 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
   }
 
   void _previousPage() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
+    if (_currentPage > 0 && !_isNavigating && _isInitialized) {
+      _isNavigating = true;
+      final targetPage = _currentPage - 1;
+      _pageController.animateToPage(
+        targetPage,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-      );
+      ).then((_) {
+        if (mounted) {
+          setState(() {
+            _currentPage = targetPage;
+            _isNavigating = false;
+          });
+        }
+      });
     }
   }
 
   void _nextPage() {
-    if (_currentPage < _content.length - 1) {
-      _pageController.nextPage(
+    if (_currentPage < _content.length - 1 && !_isNavigating && _isInitialized) {
+      _isNavigating = true;
+      final targetPage = _currentPage + 1;
+      _pageController.animateToPage(
+        targetPage,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-      );
+      ).then((_) {
+        if (mounted) {
+          setState(() {
+            _currentPage = targetPage;
+            _isNavigating = false;
+          });
+        }
+      });
     }
   }
 
   void _goToToday() {
-    final todayIndex = _getTodayIndex();
-    _pageController.animateToPage(
-      todayIndex,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
+    if (!_isNavigating && _isInitialized) {
+      _isNavigating = true;
+      final todayIndex = _getTodayIndex().clamp(0, _content.length - 1);
+      _pageController.animateToPage(
+        todayIndex,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      ).then((_) {
+        if (mounted) {
+          setState(() {
+            _currentPage = todayIndex;
+            _isNavigating = false;
+          });
+          // Bugüne gittikten sonra Hijri tarihi güncelle
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted && !_isLoadingHijri) {
+              _updateHijriDate(_content[todayIndex].gunNo);
+            }
+          });
+        }
+      });
+    }
   }
 
   void _openDetailScreen(DailyContentModel content) {
