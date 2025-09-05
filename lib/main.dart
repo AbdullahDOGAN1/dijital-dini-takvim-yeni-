@@ -15,7 +15,6 @@ import 'features/location/screens/location_settings_screen.dart';
 import 'features/daily_content/screens/daily_content_screen.dart';
 import 'features/religious_days/screens/religious_days_screen.dart';
 import 'services/notification_service_fixed.dart';
-import 'screens/splash_screen.dart';
 import 'widgets/app_logo.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -43,22 +42,15 @@ void main() async {
   runApp(MyApp(settingsProvider: settingsProvider));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   final SettingsProvider settingsProvider;
   
   const MyApp({super.key, required this.settingsProvider});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _showSplash = true;
-
-  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: widget.settingsProvider,
+      value: settingsProvider,
       child: Consumer<SettingsProvider>(
         builder: (context, settings, child) {
           return MaterialApp(
@@ -66,15 +58,7 @@ class _MyAppState extends State<MyApp> {
             themeMode: settings.themeMode,
             theme: AppTheme.getLightThemeData(settings.fontFamily),
             darkTheme: AppTheme.getDarkThemeData(settings.fontFamily),
-            home: _showSplash 
-              ? SplashScreen(
-                  onSplashComplete: () {
-                    setState(() {
-                      _showSplash = false;
-                    });
-                  },
-                )
-              : const MainScreen(),
+            home: const MainScreen(),
             debugShowCheckedModeBanner: false,
             routes: {
               '/location_settings': (context) => const LocationSettingsScreen(),
