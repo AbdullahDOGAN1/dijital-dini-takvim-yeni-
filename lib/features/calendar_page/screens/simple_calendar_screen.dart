@@ -108,17 +108,23 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
   String _getHijriDateForDay(int dayNumber) {
     if (_currentHijriDate != null) {
       // API'den gelen tarihi Türkçe formatla
-      final parts = _currentHijriDate!.formattedDate.split(' ');
-      if (parts.length >= 3) {
-        final day = parts[0];
-        final monthEng = parts[1];
-        final year = parts[2];
+      final originalDate = _currentHijriDate!.formattedDate;
+      
+      // Tarihten gün ve yıl numarasını çıkar
+      final regex = RegExp(r'^(\d+)\s+(.+?)\s+(\d+)$');
+      final match = regex.firstMatch(originalDate);
+      
+      if (match != null) {
+        final day = match.group(1)!;
+        final monthEng = match.group(2)!;
+        final year = match.group(3)!;
         
         // İngilizce ay isimlerini Türkçe'ye çevir
         final monthTr = _convertEnglishMonthToTurkish(monthEng);
         return '$day $monthTr $year';
       }
-      return _currentHijriDate!.formattedDate;
+      
+      return originalDate;
     }
     
     // Fallback - Türkçe ay isimleri ile doğru hesaplama
@@ -157,21 +163,156 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
   }
 
   String _convertEnglishMonthToTurkish(String englishMonth) {
-    const monthMap = {
+    // Tüm Hicri ayları için kapsamlı mapping - 12 ay
+    final Map<String, String> monthMap = {
+      // Muharrem - 1. ay
       'Muharram': 'Muharrem',
+      'Muḥarram': 'Muharrem',
+      'Moharram': 'Muharrem',
+      
+      // Safer - 2. ay
       'Safar': 'Safer', 
-      'Rabi\' al-awwal': 'Rebiülevvel',
-      'Rabi\' al-thani': 'Rebiülahir',
+      'Ṣafar': 'Safer',
+      'Saffar': 'Safer',
+      
+      // Rebiülevvel - 3. ay
+      "Rabi' al-awwal": 'Rebiülevvel',
+      'Rabi al-awwal': 'Rebiülevvel',
+      'Rabīʿ al-awwal': 'Rebiülevvel',
+      'Rabi-ul-awwal': 'Rebiülevvel',
+      'Rabiulewwel': 'Rebiülevvel',
+      'Rabi I': 'Rebiülevvel',
+      'Rabi 1': 'Rebiülevvel',
+      
+      // Rebiülahir - 4. ay
+      "Rabi' al-thani": 'Rebiülahir',
+      'Rabi al-thani': 'Rebiülahir', 
+      'Rabīʿ al-thānī': 'Rebiülahir',
+      'Rabi-ul-thani': 'Rebiülahir',
+      'Rabiulahir': 'Rebiülahir',
+      "Rabi' al-akhir": 'Rebiülahir',
+      'Rabi al-akhir': 'Rebiülahir',
+      'Rabi II': 'Rebiülahir',
+      'Rabi 2': 'Rebiülahir',
+      
+      // Cemayizelevvel - 5. ay
       'Jumada al-awwal': 'Cemayizelevvel',
+      'Jumādā al-awwal': 'Cemayizelevvel',
+      'Jumada al-ula': 'Cemayizelevvel',
+      'Jumada I': 'Cemayizelevvel',
+      'Jumada 1': 'Cemayizelevvel',
+      'Jumada-ul-awwal': 'Cemayizelevvel',
+      
+      // Cemayizelahir - 6. ay
       'Jumada al-thani': 'Cemayizelahir',
+      'Jumādā al-thānī': 'Cemayizelahir',
+      'Jumada al-akhir': 'Cemayizelahir',
+      'Jumada II': 'Cemayizelahir',
+      'Jumada 2': 'Cemayizelahir',
+      'Jumada-ul-thani': 'Cemayizelahir',
+      
+      // Recep - 7. ay
       'Rajab': 'Recep',
-      'Sha\'ban': 'Şaban',
+      'Rajjab': 'Recep',
+      'Rajab al-murajjab': 'Recep',
+      
+      // Şaban - 8. ay
+      "Sha'ban": 'Şaban',
+      'Shaban': 'Şaban',
+      "Sha'aban": 'Şaban',
+      'Shaʿbān': 'Şaban',
+      'Sha-ban': 'Şaban',
+      
+      // Ramazan - 9. ay
       'Ramadan': 'Ramazan',
+      'Ramaḍān': 'Ramazan',
+      'Ramzan': 'Ramazan',
+      'Ramadhan': 'Ramazan',
+      
+      // Şevval - 10. ay
       'Shawwal': 'Şevval',
-      'Dhu al-Qi\'dah': 'Zilkade',
+      'Shawwāl': 'Şevval',
+      'Shawal': 'Şevval',
+      'Shauwal': 'Şevval',
+      
+      // Zilkade - 11. ay
+      "Dhu al-Qi'dah": 'Zilkade',
+      'Dhu al-Qadah': 'Zilkade',
+      'Dhū al-Qiʿdah': 'Zilkade',
+      "Dhul-Qa'dah": 'Zilkade',
+      'Zilqade': 'Zilkade',
+      'Zul-Qadah': 'Zilkade',
+      'Zil-Qadah': 'Zilkade',
+      
+      // Zilhicce - 12. ay
       'Dhu al-Hijjah': 'Zilhicce',
+      'Dhu al-Hijja': 'Zilhicce',
+      'Dhū al-Ḥijjah': 'Zilhicce',
+      'Dhul-Hijjah': 'Zilhicce',
+      'Zilhijje': 'Zilhicce',
+      'Zul-Hijjah': 'Zilhicce',
+      'Zil-Hijjah': 'Zilhicce',
     };
-    return monthMap[englishMonth] ?? englishMonth;
+    
+    // Önce exact match kontrol et
+    if (monthMap.containsKey(englishMonth)) {
+      print('🗓️ Month converted: "$englishMonth" → "${monthMap[englishMonth]}"');
+      return monthMap[englishMonth]!;
+    }
+    
+    // Case-insensitive kontrol
+    final cleanMonth = englishMonth.trim().toLowerCase();
+    for (final entry in monthMap.entries) {
+      if (entry.key.toLowerCase() == cleanMonth) {
+        print('🗓️ Month converted (case insensitive): "$englishMonth" → "${entry.value}"');
+        return entry.value;
+      }
+    }
+
+    // Unicode karakterleri normalize et ve tekrar dene
+    final normalizedInput = englishMonth
+        .replaceAll('ʿ', '\'')
+        .replaceAll('ā', 'a')
+        .replaceAll('ī', 'i')
+        .replaceAll('ū', 'u')
+        .replaceAll('ḥ', 'h')
+        .replaceAll('ḍ', 'd')
+        .replaceAll('ṣ', 's')
+        .replaceAll('ḥ', 'h')
+        .toLowerCase();
+        
+    for (final entry in monthMap.entries) {
+      final normalizedKey = entry.key
+          .replaceAll('ʿ', '\'')
+          .replaceAll('ā', 'a')
+          .replaceAll('ī', 'i')
+          .replaceAll('ū', 'u')
+          .replaceAll('ḥ', 'h')
+          .replaceAll('ḍ', 'd')
+          .replaceAll('ṣ', 's')
+          .replaceAll('ḥ', 'h')
+          .toLowerCase();
+          
+      if (normalizedKey == normalizedInput) {
+        print('🗓️ Month converted (normalized): "$englishMonth" → "${entry.value}"');
+        return entry.value;
+      }
+    }
+    
+    // Partial match - contains kontrolü
+    for (final entry in monthMap.entries) {
+      final key = entry.key.toLowerCase();
+      if (key.contains(cleanMonth) || cleanMonth.contains(key)) {
+        print('🗓️ Month converted (partial): "$englishMonth" → "${entry.value}"');
+        return entry.value;
+      }
+    }
+    
+    // Debugging için
+    print('🗓️ WARNING - Month not found: "$englishMonth"');
+    print('🗓️   Sample mappings: Muharram→Muharrem, Safar→Safer, Ramadan→Ramazan');
+    
+    return englishMonth; // Bulunamazsa orijinal döndür
   }
 
   @override
@@ -389,6 +530,12 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
             _currentPage = targetPage;
             _isNavigating = false;
           });
+          // Önceki güne gittikten sonra Hijri tarihi güncelle
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted && !_isLoadingHijri) {
+              _updateHijriDate(_content[targetPage].gunNo);
+            }
+          });
         }
       });
     }
@@ -407,6 +554,12 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
           setState(() {
             _currentPage = targetPage;
             _isNavigating = false;
+          });
+          // Sonraki güne gittikten sonra Hijri tarihi güncelle
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted && !_isLoadingHijri) {
+              _updateHijriDate(_content[targetPage].gunNo);
+            }
           });
         }
       });
