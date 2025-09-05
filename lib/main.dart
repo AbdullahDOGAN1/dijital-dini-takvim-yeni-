@@ -14,7 +14,9 @@ import 'features/settings/screens/settings_screen.dart';
 import 'features/location/screens/location_settings_screen.dart';
 import 'features/daily_content/screens/daily_content_screen.dart';
 import 'features/religious_days/screens/religious_days_screen.dart';
+import 'features/widgets/screens/widget_management_screen.dart';
 import 'services/notification_service_fixed.dart';
+import 'services/widget_service.dart';
 import 'widgets/app_logo.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -34,6 +36,9 @@ void main() async {
   // Initialize notification service
   final notificationInitialized = await NotificationServiceFixed.initialize();
   print('🔔 Notification service initialized: $notificationInitialized');
+  
+  // Initialize widget service
+  await WidgetService.initialize();
   
   // Create and load settings provider
   final settingsProvider = SettingsProvider();
@@ -112,6 +117,8 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _schedulePrayerNotifications() async {
     try {
       await NotificationServiceFixed.schedulePrayerNotifications();
+      // Also update widgets when scheduling notifications
+      await WidgetService.updateAllWidgets();
     } catch (e) {
       print('Error scheduling notifications: $e');
     }
@@ -286,6 +293,25 @@ class _MainScreenState extends State<MainScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ReligiousDaysScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.widgets, color: Colors.blue.shade600),
+            title: Text(
+              'Ana Ekran Widget\'ları',
+              style: GoogleFonts.ebGaramond(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WidgetManagementScreen(),
                 ),
               );
             },

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ayet_widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/ayet_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bugünün Ayeti"
+        android:textColor="#1a4d2e"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/ayet_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Yükleniyor..."
+        android:textColor="#2d2d2d"
+        android:textSize="12sp"
+        android:lineSpacingExtra="2dp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/ayet_source"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#666666"
+        android:textSize="10sp"
+        android:textStyle="italic"
+        android:gravity="end" />
+
+</LinearLayout>

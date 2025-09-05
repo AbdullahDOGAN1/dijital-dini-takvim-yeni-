@@ -89,6 +89,9 @@ dependencies:
   
   # Background service for continuous notification monitoring
   flutter_background_service: ^5.0.5
+  
+  # Home screen widgets for Android and iOS
+  home_widget: ^0.6.0
 
 dev_dependencies:
   flutter_test:
