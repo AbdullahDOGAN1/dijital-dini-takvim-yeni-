@@ -13,7 +13,7 @@ import './features/favorites/screens/my_favorites_page_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
 import 'features/location/screens/location_settings_screen.dart';
 import 'features/daily_content/screens/daily_content_screen.dart';
-import 'features/religious_days/screens/religious_days_screen.dart';
+import 'features/religious_events/screens/religious_events_screen.dart';
 import 'features/widgets/screens/widget_management_screen.dart';
 import 'services/notification_service_fixed.dart';
 import 'services/widget_service.dart';
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
               '/location_settings': (context) => const LocationSettingsScreen(),
               '/settings': (context) => const SettingsScreen(),
               '/daily_content': (context) => const DailyContentScreen(),
-              '/religious_days': (context) => const ReligiousDaysScreen(),
+              '                  builder: (context) => const ReligiousEventsScreen(),': (context) => const ReligiousEventsScreen(),
             },
           );
         },
@@ -292,7 +292,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ReligiousDaysScreen(),
+                  builder: (context) => const ReligiousEventsScreen(),
                 ),
               );
             },
