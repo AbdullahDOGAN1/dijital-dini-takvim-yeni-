@@ -10,7 +10,7 @@ void main() async {
     
     // 2025 yılı dini günlerini test et
     print('\n📅 2025 Yılı Dini Günleri Yükleniyor...');
-    final events2025 = await service.getCurrentYearEvents();
+    final events2025 = service.getCurrentYearEvents();
     print('✅ ${events2025.length} adet dini gün yüklendi');
     
     // İlk 5 etkinliği göster
@@ -22,7 +22,7 @@ void main() async {
     
     // Yaklaşan etkinlikleri test et
     print('\n🔔 Yaklaşan Dini Günler Yükleniyor...');
-    final upcomingEvents = await service.getUpcomingEvents();
+    final upcomingEvents = service.getUpcomingEvents();
     print('✅ ${upcomingEvents.length} adet yaklaşan etkinlik bulundu');
     
     // İlk 3 yaklaşan etkinliği göster

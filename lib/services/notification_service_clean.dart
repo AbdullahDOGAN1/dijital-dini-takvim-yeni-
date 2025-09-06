@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:path_provider/path_provider.dart';
-import '../models/prayer_times_model.dart';
 import 'prayer_api_service.dart';
 
 class NotificationService {

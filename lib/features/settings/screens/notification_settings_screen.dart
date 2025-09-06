@@ -369,8 +369,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         ),
       },
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
+        padding = EdgeInsets.all(16),
+        child = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Info

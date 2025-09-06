@@ -164,7 +164,7 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
   }
 
   Widget _buildUpdateButton() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isUpdating ? null : _updateAllWidgets,

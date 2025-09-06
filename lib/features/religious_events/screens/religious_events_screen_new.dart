@@ -247,7 +247,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
     final grouped = <String, List<ReligiousEvent>>{};
     
     for (final event in events) {
-      final category = event.category ?? 'Özel';
+      final category = event.category;
       if (!grouped.containsKey(category)) {
         grouped[category] = [];
       }
@@ -312,8 +312,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
   }
 
   Widget _buildEventCard(ReligiousEvent event, {bool showCountdown = false}) {
-    final category = event.category ?? 'Özel';
-    final colors = _getCategoryColors(category);
+    final colors = _getCategoryColors(event.category);
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -349,7 +348,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    _getCategoryIcon(category),
+                    _getCategoryIcon(event.category),
                     color: Colors.white,
                     size: 24,
                   ),

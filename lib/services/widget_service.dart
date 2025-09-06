@@ -1,7 +1,5 @@
 import 'package:home_widget/home_widget.dart';
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/daily_content_model.dart';
 import '../models/prayer_times_model.dart';
 import '../services/daily_content_service.dart';
 import '../services/aladhan_api_service.dart';

@@ -444,7 +444,7 @@ class NotificationService {
       print('✅ Test notification scheduled and sound attempted');
     } catch (e) {
       print('❌ Error sending test notification: $e');
-      throw e; // Re-throw to be caught by UI
+      rethrow; // Re-throw to be caught by UI
     }
   }
 

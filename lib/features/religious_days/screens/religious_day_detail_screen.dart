@@ -11,9 +11,9 @@ class ReligiousDayDetailScreen extends StatefulWidget {
   final ReligiousDay religiousDay;
 
   const ReligiousDayDetailScreen({
-    Key? key,
+    super.key,
     required this.religiousDay,
-  }) : super(key: key);
+  });
 
   @override
   State<ReligiousDayDetailScreen> createState() => _ReligiousDayDetailScreenState();
@@ -479,7 +479,7 @@ Nur Vakti uygulamasından paylaşıldı.
                     ),
                   ],
                 ),
-              )).toList(),
+              )),
             ],
           ),
         ),

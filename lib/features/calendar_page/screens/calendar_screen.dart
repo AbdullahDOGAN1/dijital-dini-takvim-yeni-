@@ -31,7 +31,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   bool _isFlipped = false;
 
   // Cache for formatted dates to prevent recalculation
-  Map<int, Map<String, dynamic>> _datesCache = {};
+  final Map<int, Map<String, dynamic>> _datesCache = {};
   
   // Debounce timer for rapid page changes
   Timer? _debounceTimer;

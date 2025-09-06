@@ -123,6 +123,7 @@ flutter:
     - assets/images/
     - assets/data/
     - assets/sounds/
+    - yeni_veri_detay.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

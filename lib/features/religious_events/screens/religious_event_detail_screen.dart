@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/religious_event_model.dart';
-import '../../../services/religious_events_service.dart';
+import '../../../services/religious_events_service_fixed.dart';
 
 class ReligiousEventDetailScreen extends StatefulWidget {
   final ReligiousEvent event;
@@ -208,58 +208,38 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
             _buildSectionCard(
               title: 'Açıklama',
               icon: Icons.info_outline,
-              content: _eventDetails!.description,
+              content: _eventDetails!.fullDescription,
               color: Colors.blue,
             ),
             const SizedBox(height: 16),
           ],
           
-          if (_eventDetails!.importance.isNotEmpty) ...[
+          if (_eventDetails!.worshipsAndPrayers.isNotEmpty) ...[
             _buildSectionCard(
-              title: 'Önemi ve Fazileti',
-              icon: Icons.star_outline,
-              content: _eventDetails!.importance,
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 16),
-          ],
-          
-          if (_eventDetails!.prayers.isNotEmpty) ...[
-            _buildSectionCard(
-              title: 'Yapılan Dua ve İbadetler',
+              title: 'Yapılan İbadetler ve Dualar',
               icon: Icons.favorite,
-              content: _eventDetails!.prayers,
+              content: _eventDetails!.fullWorshipText,
               color: Colors.green,
             ),
             const SizedBox(height: 16),
           ],
           
-          if (_eventDetails!.verses.isNotEmpty) ...[
+          if (_eventDetails!.versesAndHadiths.isNotEmpty) ...[
             _buildSectionCard(
               title: 'İlgili Ayet ve Hadisler',
               icon: Icons.menu_book,
-              content: _eventDetails!.verses,
+              content: _eventDetails!.fullVersesText,
               color: Colors.purple,
             ),
             const SizedBox(height: 16),
           ],
           
-          if (_eventDetails!.hadith.isNotEmpty) ...[
+          if (_eventDetails!.recommendations.isNotEmpty) ...[
             _buildSectionCard(
-              title: 'Hadis-i Şerifler',
-              icon: Icons.format_quote,
-              content: _eventDetails!.hadith,
-              color: Colors.teal,
-            ),
-            const SizedBox(height: 16),
-          ],
-          
-          if (_eventDetails!.sources.isNotEmpty) ...[
-            _buildSectionCard(
-              title: 'Kaynaklar',
-              icon: Icons.source,
-              content: _eventDetails!.sources,
-              color: Colors.grey,
+              title: 'Tavsiyeler',
+              icon: Icons.tips_and_updates,
+              content: _eventDetails!.fullRecommendationsText,
+              color: Colors.orange,
             ),
           ],
         ],

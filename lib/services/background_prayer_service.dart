@@ -57,7 +57,7 @@ class BackgroundPrayerService {
   static Future<void> stopService() async {
     try {
       final service = FlutterBackgroundService();
-      await service.invoke('stop');
+      service.invoke('stop');
       print('🛑 Background prayer service stopped');
     } catch (e) {
       print('❌ Failed to stop background service: $e');

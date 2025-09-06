@@ -6,7 +6,7 @@ import 'package:flutter_compass/flutter_compass.dart';
 
 /// Kıble pusulası ekranı
 class QiblaScreen extends StatefulWidget {
-  const QiblaScreen({Key? key}) : super(key: key);
+  const QiblaScreen({super.key});
 
   @override
   State<QiblaScreen> createState() => _QiblaScreenState();

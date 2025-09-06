@@ -135,97 +135,77 @@ class ReligiousEvent {
 
 class ReligiousEventDetails {
   final String name;
-  final String description;
-  final String importance;
-  final String prayers;
-  final String verses;
-  final String hadith;
-  final String sources;
+  final List<String> description;
+  final List<String> worshipsAndPrayers;
+  final List<String> versesAndHadiths;
+  final List<String> recommendations;
 
   const ReligiousEventDetails({
     required this.name,
     required this.description,
-    required this.importance,
-    required this.prayers,
-    required this.verses,
-    required this.hadith,
-    required this.sources,
+    required this.worshipsAndPrayers,
+    required this.versesAndHadiths,
+    required this.recommendations,
   });
 
   factory ReligiousEventDetails.fromJson(Map<String, dynamic> json) {
-    final fullDescription = json['açıklama'] as String? ?? '';
-    final sections = _parseDescription(fullDescription);
-    
     return ReligiousEventDetails(
       name: json['isim'] as String? ?? '',
-      description: sections['description'] ?? '',
-      importance: sections['importance'] ?? '',
-      prayers: sections['prayers'] ?? '',
-      verses: sections['verses'] ?? '',
-      hadith: sections['hadith'] ?? '',
-      sources: sections['sources'] ?? '',
+      description: _parseStringList(json['aciklama']),
+      worshipsAndPrayers: _parseStringList(json['yapilan_ibadetler_ve_dualar']),
+      versesAndHadiths: _parseStringList(json['ilgili_ayet_ve_hadisler']),
+      recommendations: _parseStringList(json['tavsiyeler']),
     );
   }
 
-  static Map<String, String> _parseDescription(String fullText) {
-    final sections = <String, String>{};
+  static List<String> _parseStringList(dynamic data) {
+    if (data == null) return [];
     
-    // Açıklama kısmı (baştan CEVAP'a kadar)
-    final descriptionMatch = RegExp(r'Sual:.*?CEVAP[:\s]*(.*?)(?=\n\n|\nSual:|$)', 
-        dotAll: true).firstMatch(fullText);
-    if (descriptionMatch != null) {
-      sections['description'] = descriptionMatch.group(1)?.trim() ?? '';
-    } else {
-      // Alternatif: ilk paragrafı al
-      final firstParagraph = fullText.split('\n\n').first;
-      sections['description'] = firstParagraph;
+    if (data is List) {
+      return data.map((item) => item.toString()).toList();
+    } else if (data is String) {
+      // String ise satırlarına böl
+      return data.split('\n').where((line) => line.trim().isNotEmpty).toList();
     }
+    
+    return [];
+  }
 
-    // Önem kısmı (fazileti, kıymeti vs.)
-    final importanceKeywords = ['fazileti', 'kıymeti', 'önemi', 'ehemmiyeti'];
-    for (final keyword in importanceKeywords) {
-      final pattern = RegExp('$keyword.*?(?=\n\n|Hadis|Dua|\$)', 
-          caseSensitive: false, dotAll: true);
-      final match = pattern.firstMatch(fullText);
-      if (match != null) {
-        sections['importance'] = match.group(0) ?? '';
-        break;
-      }
-    }
+  // Açıklama metni olarak birleştir
+  String get fullDescription {
+    return description.join('\n\n');
+  }
 
-    // Hadis kısmı
-    final hadisPattern = RegExp(r'[Hh]adis.*?(?=\n\n|Dua|Ayet|$)', dotAll: true);
-    final hadisMatch = hadisPattern.firstMatch(fullText);
-    if (hadisMatch != null) {
-      sections['hadith'] = hadisMatch.group(0) ?? '';
-    }
+  // İbadet ve dualar metni olarak birleştir
+  String get fullWorshipText {
+    return worshipsAndPrayers.join('\n\n');
+  }
 
-    // Dua kısmı
-    final prayerPattern = RegExp(r'[Dd]ua.*?(?=\n\n|Hadis|Ayet|$)', dotAll: true);
-    final prayerMatch = prayerPattern.firstMatch(fullText);
-    if (prayerMatch != null) {
-      sections['prayers'] = prayerMatch.group(0) ?? '';
-    }
+  // Ayet ve hadisler metni olarak birleştir
+  String get fullVersesText {
+    return versesAndHadiths.join('\n\n');
+  }
 
-    // Ayet kısmı
-    final versePattern = RegExp(r'[Aa]yet.*?(?=\n\n|Hadis|Dua|$)', dotAll: true);
-    final verseMatch = versePattern.firstMatch(fullText);
-    if (verseMatch != null) {
-      sections['verses'] = verseMatch.group(0) ?? '';
-    }
+  // Tavsiyeler metni olarak birleştir
+  String get fullRecommendationsText {
+    return recommendations.join('\n\n');
+  }
 
-    // Kaynak kısmı
-    final sourcePattern = RegExp(r'\[.*?\]', dotAll: true);
-    final sourceMatches = sourcePattern.allMatches(fullText);
-    if (sourceMatches.isNotEmpty) {
-      sections['sources'] = sourceMatches.map((m) => m.group(0)).join(', ');
-    }
+  // Kısa açıklama (ilk paragraf)
+  String get shortDescription {
+    return description.isNotEmpty ? description.first : '';
+  }
 
-    return sections;
+  // Detay var mı kontrol et
+  bool get hasDetails {
+    return description.isNotEmpty || 
+           worshipsAndPrayers.isNotEmpty || 
+           versesAndHadiths.isNotEmpty || 
+           recommendations.isNotEmpty;
   }
 
   @override
   String toString() {
-    return 'ReligiousEventDetails(name: $name)';
+    return 'ReligiousEventDetails(name: $name, sections: ${description.length + worshipsAndPrayers.length + versesAndHadiths.length + recommendations.length})';
   }
 }

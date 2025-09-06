@@ -16,7 +16,7 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
     with TickerProviderStateMixin {
   int _count = 0;
   int _target = 33;
-  bool _isCompact = true;
+  final bool _isCompact = true;
   
   late AnimationController _pulseController;
   late AnimationController _progressController;
@@ -241,7 +241,7 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                 ),
               ),
               const SizedBox(height: 8),
-              Container(
+              SizedBox(
                 height: 200,
                 child: ListView.builder(
                   itemCount: _dhikrPhrases.length,

@@ -30,7 +30,7 @@ class ReligiousEventsService {
       final datesJson = json.decode(datesData) as Map<String, dynamic>;
       
       _allEvents.clear();
-      _eventDetails.clear();
+      // _eventDetails.clear(); // REMOVED: Detayları temizleme, bir kez yüklenince kalıcı olsun
 
       // Mevcut yıl ve sonraki yılı yükle
       final currentYear = DateTime.now().year;
@@ -61,26 +61,46 @@ class ReligiousEventsService {
         print('📅 Loaded ${eventsNextYear.length} events for $nextYearStr');
       }
 
-      // Detay verilerini yükle - YENİ KAPSAMLı VERİ SİSTEMİ
-      try {
-        final detailsData = await rootBundle.loadString('yeni_veri_detay.json');
+      // Detay verilerini yükle (sadece boşsa)
+      if (_eventDetails.isEmpty) {
+        print('🔄 Starting to load event details...');
+        try {
+          print('📁 Attempting to load: assets/data/yeni_veri_detay.json');
+          final detailsData = await rootBundle.loadString('assets/data/yeni_veri_detay.json');
+        print('✅ JSON file loaded successfully, length: ${detailsData.length}');
         final detailsList = json.decode(detailsData) as List<dynamic>;
+        print('✅ JSON parsed successfully, items count: ${detailsList.length}');
         
-        // Detayları parse et ve debug bilgilerini yazdır
+        // Detayları parse et
         for (final detailJson in detailsList) {
           final detail = ReligiousEventDetails.fromJson(detailJson);
           _eventDetails.add(detail);
           print('📋 Loaded detail for: "${detail.name}" -> normalized: "${_normalizeEventName(detail.name)}"');
         }
-        
         print('✅ New categorized religious events data has been successfully integrated: ${_eventDetails.length} events');
         print('📋 Available details for:');
         for (final detail in _eventDetails) {
           print('   - "${detail.name}" -> "${_normalizeEventName(detail.name)}"');
         }
-      } catch (e) {
-        print('⚠️ Warning: Could not load event details: $e');
-        _eventDetails.clear();
+        } catch (e) {
+          print('⚠️ Warning: Could not load new event details from assets/data/yeni_veri_detay.json: $e');
+          // Fallback: eski format dene
+          try {
+            final fallbackData = await rootBundle.loadString('assets/data/dinigünler_açıklama.json');
+            final fallbackList = json.decode(fallbackData) as List<dynamic>;
+            
+            for (final detailJson in fallbackList) {
+              final detail = ReligiousEventDetails.fromJson(detailJson);
+              _eventDetails.add(detail);
+            }
+            print('✅ Fallback event details loaded: ${_eventDetails.length}');
+          } catch (fallbackError) {
+            print('❌ Could not load any event details: $fallbackError');
+            _eventDetails.clear();
+          }
+        }
+      } else {
+        print('📋 Event details already loaded: ${_eventDetails.length} events');
       }
 
       // Tarihe göre sırala (miladi tarihe göre kronolojik)
@@ -150,7 +170,7 @@ class ReligiousEventsService {
 
   /// Kategoriye göre dini günleri getir
   static List<ReligiousEvent> getEventsByCategory(String category) {
-    return _allEvents.where((event) => (event.category ?? 'diger') == category).toList();
+    return _allEvents.where((event) => event.category == category).toList();
   }
 
   /// Belirli yıla ait dini günleri getir
@@ -203,7 +223,7 @@ class ReligiousEventsService {
 
   /// Event detaylarını getir
   static ReligiousEventDetails? getEventDetails(String eventName) {
-    // Önce tam isim eşleştirmesi dene - DOĞRUDAN MAPPING
+    // DOĞRUDAN MAPPING - En problemli isimleri direkt eşle
     Map<String, String> directMapping = {
       'RAMAZAN BAY. AREFESİ': 'Ramazan Bayramı Arefesi',
       'KURBAN BAY. AREFESİ': 'Kurban Bayramı Arefesi',
@@ -229,21 +249,25 @@ class ReligiousEventsService {
     };
     
     print('🔍 Looking for event details: "$eventName"');
-    print('🔍 Event name length: ${eventName.length}');
-    print('🔍 Event name bytes: ${eventName.codeUnits}');
+    print('🔍 Total _eventDetails count: ${_eventDetails.length}');
+    print('🔍 First 3 details: ${_eventDetails.take(3).map((d) => d.name).toList()}');
     
-    // Önce direkt mapping dene
+    // Önce direkt mapping dene (NORMALIZATION YOK!)
     String? mappedName = directMapping[eventName];
-    print('🔄 Direct mapping lookup result: $mappedName');
     if (mappedName != null) {
-      print('   ✅ DIRECT MAPPING: "$eventName" -> "$mappedName"');
-      // Bu mapped name ile detay ara
+      print('   🔄 DIRECT MAPPING: "$eventName" -> "$mappedName"');
+      
+      // Bu mapped name ile EXACT match ara (normalization YOK!)
+      print('   🔍 Available details count: ${_eventDetails.length}');
       for (final detail in _eventDetails) {
+        print('   📋 EXACT CHECK: "${detail.name}" == "$mappedName" -> ${detail.name == mappedName}');
+        
         if (detail.name == mappedName) {
-          print('   ✅ DIRECT MATCH found for: $eventName');
+          print('   ✅ DIRECT EXACT MATCH found for: $eventName');
           return detail;
         }
       }
+      print('   ⚠️ Direct mapping buldu ama exact detay bulunamadı: "$mappedName"');
     }
     
     // Direkt mapping başarısızsa normalizasyon ile dene
@@ -255,7 +279,7 @@ class ReligiousEventsService {
       print('   📋 Checking against: "${detail.name}" -> normalized: "$detailName"');
       
       if (detailName == normalizedName) {
-        print('   ✅ NORMALIZED MATCH found for: $eventName');
+        print('   ✅ EXACT MATCH found for: $eventName');
         return detail;
       } else if (detailName.contains(normalizedName) || normalizedName.contains(detailName)) {
         print('   ✅ PARTIAL MATCH found for: $eventName');
@@ -271,65 +295,61 @@ class ReligiousEventsService {
     return null;
   }
 
-  /// Event isimlerini normalize et - GELİŞMİŞ NORMALIZASYON
+  /// Event isimlerini normalize et ve eşleştir
   static String _normalizeEventName(String name) {
-    print('🔧 Normalizing: "$name"');
-    
     // Önce büyük/küçük harf dönüşümü ve Türkçe karakter normalize etme
-    String step1 = name
+    String normalized = name
         .toLowerCase()
         .replaceAll('i̇', 'i')
-        .replaceAll('ı', 'i')  // ı karakterini i'ye çevir (detail dosyasıyla tutarlılık)
+        // "bayram" kelimesini normalize et (hem "bay." hem "bayrami" -> "bayram")
+        .replaceAll('bay.', 'bayram')
+        .replaceAll('bay ', 'bayram ')
+        .replaceAll('bayrami', 'bayram')  // "bayrami" -> "bayram"
+        .replaceAll('bayramı', 'bayram')  // "bayramı" -> "bayram"
+        .replaceAll('ı', '')  // ı karakterini tamamen çıkar (detail dosyasındaki gibi)
         .replaceAll('ğ', 'g')
         .replaceAll('ü', 'u')
         .replaceAll('ş', 's')
         .replaceAll('ö', 'o')
-        .replaceAll('ç', 'c');
-    
-    print('🔧 Step 1 (Turkish chars): "$step1"');
-    
-    String step2 = step1
+        .replaceAll('ç', 'c')
         .replaceAll(RegExp(r'[^\w\s]'), '')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
-        
-    print('🔧 Step 2 (clean): "$step2"');
     
     // İsim eşleştirme tablosu - debug loglarından elde edilen problemli durumlar için
     Map<String, String> nameMapping = {
-      // Debug loglarından kesin mapping'ler - ı->i dönüşümü ile:
-      'uc ayların baslangiçi': 'uc aylarin baslangiçi',  // Map to detail file format
-      'ramazan baslangiçi': 'ramazan baslangiçi',       // Map to detail file format
-      'hicri yilbasi': 'hicri yilbasi',                 // Map to detail file format
-      // Bayram günleri (X. GÜN) formatı için:
-      'ramazan bayrami 1 gun': 'ramazan bayrami',       // 1. gün -> genel bayram
-      'ramazan bayrami 2 gun': 'ramazan bayrami',       // 2. gün -> genel bayram
-      'ramazan bayrami 3 gun': 'ramazan bayrami',       // 3. gün -> genel bayram
-      'kurban bayrami 1 gun': 'kurban bayrami',         // 1. gün -> genel bayram
-      'kurban bayrami 2 gun': 'kurban bayrami',         // 2. gün -> genel bayram
-      'kurban bayrami 3 gun': 'kurban bayrami',         // 3. gün -> genel bayram
-      'kurban bayrami 4 gun': 'kurban bayrami',         // 4. gün -> genel bayram
-      // Arefe mappings - updated with new names (ı->i conversion applied)
-      'ramazan bay arefesi': 'ramazan bayrami arefesi',
-      'kurban bay arefesi': 'kurban bayrami arefesi', 
-      'ramazan bayram arefesi': 'ramazan bayrami arefesi',
-      'kurban bayram arefesi': 'kurban bayrami arefesi',
-      // Exact mappings for consistency (ı->i conversion applied)
-      'regaib kandili': 'regaib kandili',              // Perfect match
-      'mirac kandili': 'mirac kandili',                // Perfect match
-      'berat kandili': 'berat kandili',                // Perfect match
-      'kadir gecesi': 'kadir gecesi',                  // Perfect match
-      'ramazan bayrami': 'ramazan bayrami',            // Perfect match
-      'kurban bayrami': 'kurban bayrami',              // Perfect match
-      'asure gunu': 'asure gunu',                      // Perfect match
-      'mevlid kandili': 'mevlid kandili',              // Perfect match
-      'uc aylarin baslangiçi': 'uc aylarin baslangiçi' // Perfect match
+      // Debug loglarından kesin mapping'ler:
+      'uc aylarin baslangici': 'uc aylarn baslangc',  // Map to detail file format
+      'ramazan baslangici': 'ramazan baslangc',       // Map to detail file format
+      'hicri yilbasi': 'hicri ylbas',                 // Map to detail file format
+      // Exact matches needed:
+      'uc aylarn baslangc': 'uc aylarn baslangc',     // Match detail file exactly
+      'ramazan baslangc': 'ramazan baslangc',         // Match detail file exactly  
+      'hcr ylbas': 'hicri ylbas',                     // Match detail file exactly
+      // Arefe mappings - updated with new names
+      'ramazan bay arefs': 'ramazan bayram arefesi',
+      'kurban bay arefs': 'kurban bayram arefesi', 
+      'ramazan bay arefes': 'ramazan bayram arefesi',
+      'kurban bay arefes': 'kurban bayram arefesi',
+      'ramazan bay arefesi': 'ramazan bayram arefesi',
+      'kurban bay arefesi': 'kurban bayram arefesi',
+      'ramazan bayram arefs': 'ramazan bayram arefesi',
+      'kurban bayram arefs': 'kurban bayram arefesi',
+      'ramazan bayram arefes': 'ramazan bayram arefesi',
+      'kurban bayram arefes': 'kurban bayram arefesi',
+      // Exact mappings for consistency
+      'regab kandl': 'regaib kandili',
+      'mrac kandl': 'mirac kandili',
+      'berat kandl': 'berat kandili',
+      'kadr geces': 'kadir gecesi',
+      'ramazan bayram': 'ramazan bayram',
+      'kurban bayram': 'kurban bayram',
+      'asure gunu': 'asure gunu',
+      'mevld kandl': 'mevlid kandili'
     };
     
     // Eğer eşleştirme tablosunda varsa o değeri döndür
-    String result = nameMapping[step2] ?? step2;
-    print('🔧 Final result: "$result"');
-    return result;
+    return nameMapping[normalized] ?? normalized;
   }
 
   /// Event istatistiklerini getir
@@ -388,20 +408,6 @@ class ReligiousEventsService {
     } catch (e) {
       print('Error converting to Gregorian: $e');
       return null;
-    }
-  }
-
-  /// Tarih formatını kısalt
-  static String _formatShortDate(String fullDate) {
-    try {
-      // "01 OCAK-2025" -> "01/OCAK" formatına çevir
-      if (fullDate.contains('-')) {
-        final parts = fullDate.split('-');
-        return parts[0]; // Sadece gün ve ay kısmını al
-      }
-      return fullDate;
-    } catch (e) {
-      return fullDate;
     }
   }
 

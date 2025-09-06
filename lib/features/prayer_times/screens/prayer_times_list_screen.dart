@@ -259,7 +259,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
               ),
             ),
             Text(
-              '${_currentLocation}',
+              _currentLocation,
               style: GoogleFonts.ebGaramond(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,

@@ -441,7 +441,7 @@ class _LocationSettingsScreenState extends State<LocationSettingsScreen> {
                   color: Colors.brown.shade800,
                 ),
               ),
-              content: Container(
+              content: SizedBox(
                 width: double.maxFinite,
                 height: 500,
                 child: Column(
