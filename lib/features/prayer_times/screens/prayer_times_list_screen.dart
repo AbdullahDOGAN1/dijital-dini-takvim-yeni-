@@ -12,7 +12,7 @@ class PrayerTimesListScreen extends StatefulWidget {
   State<PrayerTimesListScreen> createState() => _PrayerTimesListScreenState();
 }
 
-class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
+class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with WidgetsBindingObserver {
   bool _isLoading = true;
   List<PrayerTimesModel> _monthlyPrayerTimes = [];
   String _errorMessage = '';
@@ -23,18 +23,66 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
   String _timeUntilNextPrayer = '';
   String _nextPrayerName = '';
   PrayerTimesModel? _todaysPrayerTimes;
+  
+  // Tarih kontrolü için
+  DateTime? _lastLoadedDate;
+  bool _isRefreshing = false;
+  
+  // Sonraki günler için cached liste
+  List<PrayerTimesModel> _nextDays = [];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadLocationInfo();
     _loadMonthlyPrayerTimes();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    // Uygulama ön plana geçtiğinde tarihi kontrol et
+    if (state == AppLifecycleState.resumed) {
+      _checkDateAndRefresh();
+    }
+  }
+
+
+
+  /// Tarih değişip değişmediğini kontrol et ve gerekirse yenile
+  void _checkDateAndRefresh() {
+    // Eğer zaten yenileme yapılıyorsa, tekrar yapma
+    if (_isRefreshing) return;
+    
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    // Eğer son yükleme farklı bir güne aitse, yenile
+    if (_lastLoadedDate == null || !_isSameDay(_lastLoadedDate!, today)) {
+      print('📅 Tarih değişti, namaz vakitleri yenileniyor...');
+      print('📅 Eski tarih: $_lastLoadedDate');
+      print('📅 Yeni tarih: $today');
+      _isRefreshing = true;
+      _loadMonthlyPrayerTimes().then((_) {
+        _isRefreshing = false;
+      });
+    }
+  }
+
+  /// İki tarihin aynı gün olup olmadığını kontrol et
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && 
+           date1.month == date2.month && 
+           date1.day == date2.day;
   }
 
   /// Load current location information
@@ -85,6 +133,9 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
       final now = DateTime.now();
       final year = now.year;
       final month = now.month;
+      
+      // Yükleme tarihini kaydet
+      _lastLoadedDate = DateTime(now.year, now.month, now.day);
 
       final monthlyDataMap = await PrayerApiService.getPrayerTimesForMonth(
         year: year,
@@ -130,6 +181,9 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
         _isLoading = false;
       });
 
+      // Sonraki günleri hesapla
+      _calculateNextDays();
+
       if (todaysPrayer != null) {
         _startTimer();
       }
@@ -139,6 +193,8 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
         _isLoading = false;
         _errorMessage = 'Namaz vakitleri yüklenemedi: $e';
       });
+    } finally {
+      _isRefreshing = false;
     }
   }
 
@@ -252,7 +308,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Eylül 2025',
+              '${DateTime.now().day} ${_getMonthName(DateTime.now().month)} ${DateTime.now().year}',
               style: GoogleFonts.ebGaramond(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
@@ -442,7 +498,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              'Perşembe, 4 Eylül 2025',
+              '${_getDayName(DateTime.now())}, ${DateTime.now().day} ${_getMonthName(DateTime.now().month)} ${DateTime.now().year}',
               style: GoogleFonts.ebGaramond(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -614,22 +670,20 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
     );
   }
 
-  /// Sonraki günlerin namaz vakitleri kartları
-  Widget _buildNextDaysCards() {
-    if (_monthlyPrayerTimes.isEmpty) return const SizedBox.shrink();
+  /// Sonraki günlerin listesini hesapla ve önbelleğe al
+  void _calculateNextDays() {
+    if (_monthlyPrayerTimes.isEmpty) {
+      _nextDays = [];
+      return;
+    }
 
     final today = DateTime.now();
     final nextDays = <PrayerTimesModel>[];
-    
-    print('🔍 Looking for next days starting from: ${today.day}');
-    print('🔍 Available prayer data days: ${_monthlyPrayerTimes.map((p) => p.date).toList()}');
     
     // Sonraki 6 günü bul
     for (int i = 1; i <= 6; i++) {
       final targetDate = today.add(Duration(days: i));
       final targetDay = targetDate.day;
-      
-      print('🔍 Looking for day: $targetDay');
       
       // Aylık verilerden bu günü bul - hem "4" hem "04" formatını kontrol et
       for (final prayer in _monthlyPrayerTimes) {
@@ -639,22 +693,19 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
           final prayerDay = int.tryParse(dayPart) ?? 0;
           
           if (prayerDay == targetDay) {
-            print('✅ Found prayer data for day $targetDay: ${prayer.date}');
             nextDays.add(prayer);
             break;
           }
         }
       }
-      
-      // Eğer bulamazsak, ay sonunda bir sonraki aya geçebiliriz
-      if (nextDays.length < i) {
-        print('❌ Could not find prayer data for day $targetDay');
-      }
     }
 
-    print('📋 Total next days found: ${nextDays.length}');
+    _nextDays = nextDays;
+  }
 
-    if (nextDays.isEmpty) {
+  /// Sonraki günlerin namaz vakitleri kartları
+  Widget _buildNextDaysCards() {
+    if (_nextDays.isEmpty) {
       return Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
@@ -674,9 +725,10 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> {
     }
 
     return Column(
-      children: nextDays.asMap().entries.map((entry) {
+      children: _nextDays.asMap().entries.map((entry) {
         final index = entry.key;
         final prayer = entry.value;
+        final today = DateTime.now();
         final targetDate = today.add(Duration(days: index + 1));
         final dayName = _getDayName(targetDate);
         final monthName = _getMonthName(targetDate.month);
