@@ -1,0 +1,4019 @@
+{
+  "menus": {
+    "1": {
+      "gun": 1,
+      "tarih": "1 Ocak",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salatası",
+        "tatli": "Sütlaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "2": {
+      "gun": 2,
+      "tarih": "2 Ocak",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "3": {
+      "gun": 3,
+      "tarih": "3 Ocak",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "4": {
+      "gun": 4,
+      "tarih": "4 Ocak",
+      "menu": {
+        "ana_yemek": "Mercimek Çorbası + Etli Kuru Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salatası",
+        "tatli": "Keşkül",
+        "kategori": "Çorba + Ana Yemek"
+      }
+    },
+    "5": {
+      "gun": 5,
+      "tarih": "5 Ocak",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Yeşillik",
+        "tatli": "Kazandibi",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "6": {
+      "gun": 6,
+      "tarih": "6 Ocak",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Pide + Közlenmiş Biber",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "7": {
+      "gun": 7,
+      "tarih": "7 Ocak",
+      "menu": {
+        "ana_yemek": "Ezogelin Çorbası + Tavuk Sote",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Akdeniz Salata",
+        "tatli": "Muhallebi",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "8": {
+      "gun": 8,
+      "tarih": "8 Ocak",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşil Salata",
+        "tatli": "Revani",
+        "kategori": "Börek"
+      }
+    },
+    "9": {
+      "gun": 9,
+      "tarih": "9 Ocak",
+      "menu": {
+        "ana_yemek": "Hamsi Tava",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Roka Salata",
+        "tatli": "Höşmerim",
+        "kategori": "Balık"
+      }
+    },
+    "10": {
+      "gun": 10,
+      "tarih": "10 Ocak",
+      "menu": {
+        "ana_yemek": "Tarhana Çorbası + Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Şekerpare",
+        "kategori": "Özel Menü"
+      }
+    },
+    "11": {
+      "gun": 11,
+      "tarih": "11 Ocak",
+      "menu": {
+        "ana_yemek": "Etli Bamya",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Yoğurtlu Semizotu",
+        "tatli": "Güllaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "12": {
+      "gun": 12,
+      "tarih": "12 Ocak",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Roka Salata",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "13": {
+      "gun": 13,
+      "tarih": "13 Ocak",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "14": {
+      "gun": 14,
+      "tarih": "14 Ocak",
+      "menu": {
+        "ana_yemek": "Yayla Çorbası + Tavuklu Pilav",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "15": {
+      "gun": 15,
+      "tarih": "15 Ocak",
+      "menu": {
+        "ana_yemek": "Köfte + Patates Kızartması",
+        "yan_yemek": "Pilav",
+        "salata": "Domates Salata",
+        "tatli": "Aşure",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "16": {
+      "gun": 16,
+      "tarih": "16 Ocak",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "17": {
+      "gun": 17,
+      "tarih": "17 Ocak",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "18": {
+      "gun": 18,
+      "tarih": "18 Ocak",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "19": {
+      "gun": 19,
+      "tarih": "19 Ocak",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka Salata",
+        "tatli": "Keşkül",
+        "kategori": "Balık"
+      }
+    },
+    "20": {
+      "gun": 20,
+      "tarih": "20 Ocak",
+      "menu": {
+        "ana_yemek": "Kavurma + Yumurta",
+        "yan_yemek": "Pide Ekmeği",
+        "salata": "Domates Salata",
+        "tatli": "Helva",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "21": {
+      "gun": 21,
+      "tarih": "21 Ocak",
+      "menu": {
+        "ana_yemek": "Mercimek Çorbası + Tas Kebabı",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Revani",
+        "kategori": "Kebap"
+      }
+    },
+    "22": {
+      "gun": 22,
+      "tarih": "22 Ocak",
+      "menu": {
+        "ana_yemek": "Sebze Türlü",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "23": {
+      "gun": 23,
+      "tarih": "23 Ocak",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates + Biber",
+        "salata": "Soğan Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "24": {
+      "gun": 24,
+      "tarih": "24 Ocak",
+      "menu": {
+        "ana_yemek": "Terbiyeli Köfte",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Yeşillik",
+        "tatli": "Muhallebi",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "25": {
+      "gun": 25,
+      "tarih": "25 Ocak",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka Salata",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "26": {
+      "gun": 26,
+      "tarih": "26 Ocak",
+      "menu": {
+        "ana_yemek": "Etli Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "27": {
+      "gun": 27,
+      "tarih": "27 Ocak",
+      "menu": {
+        "ana_yemek": "Kol Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "28": {
+      "gun": 28,
+      "tarih": "28 Ocak",
+      "menu": {
+        "ana_yemek": "Etli Türlü",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Yeşillik",
+        "tatli": "Güllaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "29": {
+      "gun": 29,
+      "tarih": "29 Ocak",
+      "menu": {
+        "ana_yemek": "Balık Ekmek",
+        "yan_yemek": "Turşu + Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Sokak Lezzeti"
+      }
+    },
+    "30": {
+      "gun": 30,
+      "tarih": "30 Ocak",
+      "menu": {
+        "ana_yemek": "Ezogelin Çorbası + Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Özel Menü"
+      }
+    },
+    "31": {
+      "gun": 31,
+      "tarih": "31 Ocak",
+      "menu": {
+        "ana_yemek": "Tarhana Çorbası + İçli Köfte",
+        "yan_yemek": "Yoğurt",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "32": {
+      "gun": 32,
+      "tarih": "1 Şubat",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "33": {
+      "gun": 33,
+      "tarih": "2 Şubat",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan + Biber",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "34": {
+      "gun": 34,
+      "tarih": "3 Şubat",
+      "menu": {
+        "ana_yemek": "Mücver",
+        "yan_yemek": "Yoğurt + Cacık",
+        "salata": "Mevsim Salata",
+        "tatli": "Muhallebi",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "35": {
+      "gun": 35,
+      "tarih": "4 Şubat",
+      "menu": {
+        "ana_yemek": "Hamsi Tava",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "36": {
+      "gun": 36,
+      "tarih": "5 Şubat",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "37": {
+      "gun": 37,
+      "tarih": "6 Şubat",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "38": {
+      "gun": 38,
+      "tarih": "7 Şubat",
+      "menu": {
+        "ana_yemek": "Etli Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "39": {
+      "gun": 39,
+      "tarih": "8 Şubat",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Enginar",
+        "yan_yemek": "Havuçlu Pilav",
+        "salata": "Roka Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "40": {
+      "gun": 40,
+      "tarih": "9 Şubat",
+      "menu": {
+        "ana_yemek": "Çılbır",
+        "yan_yemek": "Pide Ekmeği",
+        "salata": "Domates Salata",
+        "tatli": "Baklava",
+        "kategori": "Kahvaltılık"
+      }
+    },
+    "41": {
+      "gun": 41,
+      "tarih": "10 Şubat",
+      "menu": {
+        "ana_yemek": "Paça Çorbası",
+        "yan_yemek": "Ekmek",
+        "salata": "Turşu",
+        "tatli": "Muhallebi",
+        "kategori": "Çorba"
+      }
+    },
+    "42": {
+      "gun": 42,
+      "tarih": "11 Şubat",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "43": {
+      "gun": 43,
+      "tarih": "12 Şubat",
+      "menu": {
+        "ana_yemek": "Kuzu Pirzola",
+        "yan_yemek": "Patates Püresi",
+        "salata": "Roka Salata",
+        "tatli": "Şekerpare",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "44": {
+      "gun": 44,
+      "tarih": "13 Şubat",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "45": {
+      "gun": 45,
+      "tarih": "14 Şubat",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "46": {
+      "gun": 46,
+      "tarih": "15 Şubat",
+      "menu": {
+        "ana_yemek": "Kumpir",
+        "yan_yemek": "Meşrubat",
+        "salata": "Turşu",
+        "tatli": "Dondurma",
+        "kategori": "Sokak Lezzeti"
+      }
+    },
+    "47": {
+      "gun": 47,
+      "tarih": "16 Şubat",
+      "menu": {
+        "ana_yemek": "Etli Bezelye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Yeşillik",
+        "tatli": "Revani",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "48": {
+      "gun": 48,
+      "tarih": "17 Şubat",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Çoban Salata",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "49": {
+      "gun": 49,
+      "tarih": "18 Şubat",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka Salata",
+        "tatli": "Güllaç",
+        "kategori": "Balık"
+      }
+    },
+    "50": {
+      "gun": 50,
+      "tarih": "19 Şubat",
+      "menu": {
+        "ana_yemek": "Etli Bamya",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "51": {
+      "gun": 51,
+      "tarih": "20 Şubat",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "52": {
+      "gun": 52,
+      "tarih": "21 Şubat",
+      "menu": {
+        "ana_yemek": "Patlıcan Kebap",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Keşkül",
+        "kategori": "Kebap"
+      }
+    },
+    "53": {
+      "gun": 53,
+      "tarih": "22 Şubat",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "54": {
+      "gun": 54,
+      "tarih": "23 Şubat",
+      "menu": {
+        "ana_yemek": "Menemen",
+        "yan_yemek": "Simit + Çay",
+        "salata": "Domates Salata",
+        "tatli": "Poğaça",
+        "kategori": "Kahvaltılık"
+      }
+    },
+    "55": {
+      "gun": 55,
+      "tarih": "24 Şubat",
+      "menu": {
+        "ana_yemek": "Patlıcan Dolma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Yeşillik",
+        "tatli": "Muhallebi",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "56": {
+      "gun": 56,
+      "tarih": "25 Şubat",
+      "menu": {
+        "ana_yemek": "Köri Soslu Tavuk",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Karışık Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "57": {
+      "gun": 57,
+      "tarih": "26 Şubat",
+      "menu": {
+        "ana_yemek": "Lahmacun + Ayran",
+        "yan_yemek": "Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "58": {
+      "gun": 58,
+      "tarih": "27 Şubat",
+      "menu": {
+        "ana_yemek": "Midye Dolma + Midye Tava",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "59": {
+      "gun": 59,
+      "tarih": "28 Şubat",
+      "menu": {
+        "ana_yemek": "Tas Kebabı",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "60": {
+      "gun": 60,
+      "tarih": "1 Mart",
+      "menu": {
+        "ana_yemek": "Çerkez Tavuğu",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kazandibi",
+        "kategori": "Özel Menü"
+      }
+    },
+    "61": {
+      "gun": 61,
+      "tarih": "2 Mart",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Helva",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "62": {
+      "gun": 62,
+      "tarih": "3 Mart",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "63": {
+      "gun": 63,
+      "tarih": "4 Mart",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "64": {
+      "gun": 64,
+      "tarih": "5 Mart",
+      "menu": {
+        "ana_yemek": "Barbunya Pilaki",
+        "yan_yemek": "Ekmek",
+        "salata": "Soğan Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "65": {
+      "gun": 65,
+      "tarih": "6 Mart",
+      "menu": {
+        "ana_yemek": "Ciğer Tava",
+        "yan_yemek": "Pilav + Soğan",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "66": {
+      "gun": 66,
+      "tarih": "7 Mart",
+      "menu": {
+        "ana_yemek": "Hamsi Buğulama",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "67": {
+      "gun": 67,
+      "tarih": "8 Mart",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "68": {
+      "gun": 68,
+      "tarih": "9 Mart",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Özel Menü"
+      }
+    },
+    "69": {
+      "gun": 69,
+      "tarih": "10 Mart",
+      "menu": {
+        "ana_yemek": "Kıymalı Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "70": {
+      "gun": 70,
+      "tarih": "11 Mart",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Muhallebi",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "71": {
+      "gun": 71,
+      "tarih": "12 Mart",
+      "menu": {
+        "ana_yemek": "Mercimek Köftesi",
+        "yan_yemek": "Yeşillik + Limon",
+        "salata": "Roka Salata",
+        "tatli": "Güllaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "72": {
+      "gun": 72,
+      "tarih": "13 Mart",
+      "menu": {
+        "ana_yemek": "Paçanga Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "73": {
+      "gun": 73,
+      "tarih": "14 Mart",
+      "menu": {
+        "ana_yemek": "Orman Kebabı",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "74": {
+      "gun": 74,
+      "tarih": "15 Mart",
+      "menu": {
+        "ana_yemek": "Ahtapot Salatası",
+        "yan_yemek": "Ekmek",
+        "salata": "Roka",
+        "tatli": "Dondurma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "75": {
+      "gun": 75,
+      "tarih": "16 Mart",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Yeşillik",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "76": {
+      "gun": 76,
+      "tarih": "17 Mart",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "77": {
+      "gun": 77,
+      "tarih": "18 Mart",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "78": {
+      "gun": 78,
+      "tarih": "19 Mart",
+      "menu": {
+        "ana_yemek": "Fırın Tavuk",
+        "yan_yemek": "Patates + Havuç",
+        "salata": "Yeşillik",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "79": {
+      "gun": 79,
+      "tarih": "20 Mart",
+      "menu": {
+        "ana_yemek": "Levrek Buğulama",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka Salata",
+        "tatli": "Keşkül",
+        "kategori": "Balık"
+      }
+    },
+    "80": {
+      "gun": 80,
+      "tarih": "21 Mart",
+      "menu": {
+        "ana_yemek": "Adana Kebap + Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "81": {
+      "gun": 81,
+      "tarih": "22 Mart",
+      "menu": {
+        "ana_yemek": "Gözleme",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "82": {
+      "gun": 82,
+      "tarih": "23 Mart",
+      "menu": {
+        "ana_yemek": "Mantarlı Tavuk",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Revani",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "83": {
+      "gun": 83,
+      "tarih": "24 Mart",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Kabak",
+        "yan_yemek": "Yoğurt",
+        "salata": "Yeşillik",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "84": {
+      "gun": 84,
+      "tarih": "25 Mart",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "85": {
+      "gun": 85,
+      "tarih": "26 Mart",
+      "menu": {
+        "ana_yemek": "Şiş Kebap",
+        "yan_yemek": "Pilav",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "86": {
+      "gun": 86,
+      "tarih": "27 Mart",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "87": {
+      "gun": 87,
+      "tarih": "28 Mart",
+      "menu": {
+        "ana_yemek": "Sebze Türlü",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Cacık",
+        "tatli": "Muhallebi",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "88": {
+      "gun": 88,
+      "tarih": "29 Mart",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "89": {
+      "gun": 89,
+      "tarih": "30 Mart",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "90": {
+      "gun": 90,
+      "tarih": "31 Mart",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Şekerpare",
+        "kategori": "Özel Menü"
+      }
+    },
+    "91": {
+      "gun": 91,
+      "tarih": "1 Nisan",
+      "menu": {
+        "ana_yemek": "Etli Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Yeşillik",
+        "tatli": "Aşure",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "92": {
+      "gun": 92,
+      "tarih": "2 Nisan",
+      "menu": {
+        "ana_yemek": "Balık Ekmek",
+        "yan_yemek": "Turşu + Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Sokak Lezzeti"
+      }
+    },
+    "93": {
+      "gun": 93,
+      "tarih": "3 Nisan",
+      "menu": {
+        "ana_yemek": "Terbiyeli Köfte",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Güllaç",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "94": {
+      "gun": 94,
+      "tarih": "4 Nisan",
+      "menu": {
+        "ana_yemek": "Peynirli Pide",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "95": {
+      "gun": 95,
+      "tarih": "5 Nisan",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Kereviz",
+        "yan_yemek": "Havuçlu Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Helva",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "96": {
+      "gun": 96,
+      "tarih": "6 Nisan",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "97": {
+      "gun": 97,
+      "tarih": "7 Nisan",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "98": {
+      "gun": 98,
+      "tarih": "8 Nisan",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "99": {
+      "gun": 99,
+      "tarih": "9 Nisan",
+      "menu": {
+        "ana_yemek": "Etli Bezelye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Sütlaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "100": {
+      "gun": 100,
+      "tarih": "10 Nisan",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "101": {
+      "gun": 101,
+      "tarih": "11 Nisan",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "102": {
+      "gun": 102,
+      "tarih": "12 Nisan",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "103": {
+      "gun": 103,
+      "tarih": "13 Nisan",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "104": {
+      "gun": 104,
+      "tarih": "14 Nisan",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "105": {
+      "gun": 105,
+      "tarih": "15 Nisan",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "106": {
+      "gun": 106,
+      "tarih": "16 Nisan",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "107": {
+      "gun": 107,
+      "tarih": "17 Nisan",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Revani",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "108": {
+      "gun": 108,
+      "tarih": "18 Nisan",
+      "menu": {
+        "ana_yemek": "Midye Dolma",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "109": {
+      "gun": 109,
+      "tarih": "19 Nisan",
+      "menu": {
+        "ana_yemek": "Tas Kebabı",
+        "yan_yemek": "Pilav",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "110": {
+      "gun": 110,
+      "tarih": "20 Nisan",
+      "menu": {
+        "ana_yemek": "Kol Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "111": {
+      "gun": 111,
+      "tarih": "21 Nisan",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "112": {
+      "gun": 112,
+      "tarih": "22 Nisan",
+      "menu": {
+        "ana_yemek": "Fırın Tavuk",
+        "yan_yemek": "Patates",
+        "salata": "Yeşillik",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "113": {
+      "gun": 113,
+      "tarih": "23 Nisan",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "114": {
+      "gun": 114,
+      "tarih": "24 Nisan",
+      "menu": {
+        "ana_yemek": "Çılbır",
+        "yan_yemek": "Pide Ekmeği",
+        "salata": "Domates",
+        "tatli": "Poğaça",
+        "kategori": "Kahvaltılık"
+      }
+    },
+    "115": {
+      "gun": 115,
+      "tarih": "25 Nisan",
+      "menu": {
+        "ana_yemek": "Levrek Buğulama",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Balık"
+      }
+    },
+    "116": {
+      "gun": 116,
+      "tarih": "26 Nisan",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "117": {
+      "gun": 117,
+      "tarih": "27 Nisan",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "118": {
+      "gun": 118,
+      "tarih": "28 Nisan",
+      "menu": {
+        "ana_yemek": "Patlıcan Kebap",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "119": {
+      "gun": 119,
+      "tarih": "29 Nisan",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Muhallebi",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "120": {
+      "gun": 120,
+      "tarih": "30 Nisan",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan",
+        "salata": "Soğan Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "121": {
+      "gun": 121,
+      "tarih": "1 Mayıs",
+      "menu": {
+        "ana_yemek": "Menemen",
+        "yan_yemek": "Simit + Çay",
+        "salata": "Domates",
+        "tatli": "Poğaça",
+        "kategori": "Kahvaltılık"
+      }
+    },
+    "122": {
+      "gun": 122,
+      "tarih": "2 Mayıs",
+      "menu": {
+        "ana_yemek": "Hamsi Tava",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "123": {
+      "gun": 123,
+      "tarih": "3 Mayıs",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Güllaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "124": {
+      "gun": 124,
+      "tarih": "4 Mayıs",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "125": {
+      "gun": 125,
+      "tarih": "5 Mayıs",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Helva",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "126": {
+      "gun": 126,
+      "tarih": "6 Mayıs",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "127": {
+      "gun": 127,
+      "tarih": "7 Mayıs",
+      "menu": {
+        "ana_yemek": "Barbunya Pilaki",
+        "yan_yemek": "Ekmek",
+        "salata": "Soğan Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "128": {
+      "gun": 128,
+      "tarih": "8 Mayıs",
+      "menu": {
+        "ana_yemek": "Ciğer Tava",
+        "yan_yemek": "Pilav + Soğan",
+        "salata": "Yeşillik",
+        "tatli": "Kazandibi",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "129": {
+      "gun": 129,
+      "tarih": "9 Mayıs",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Domates",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "130": {
+      "gun": 130,
+      "tarih": "10 Mayıs",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "131": {
+      "gun": 131,
+      "tarih": "11 Mayıs",
+      "menu": {
+        "ana_yemek": "Etli Bamya",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "132": {
+      "gun": 132,
+      "tarih": "12 Mayıs",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "133": {
+      "gun": 133,
+      "tarih": "13 Mayıs",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Özel Menü"
+      }
+    },
+    "134": {
+      "gun": 134,
+      "tarih": "14 Mayıs",
+      "menu": {
+        "ana_yemek": "Kumpir",
+        "yan_yemek": "Meşrubat",
+        "salata": "Turşu",
+        "tatli": "Dondurma",
+        "kategori": "Sokak Lezzeti"
+      }
+    },
+    "135": {
+      "gun": 135,
+      "tarih": "15 Mayıs",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Revani",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "136": {
+      "gun": 136,
+      "tarih": "16 Mayıs",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "137": {
+      "gun": 137,
+      "tarih": "17 Mayıs",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "138": {
+      "gun": 138,
+      "tarih": "18 Mayıs",
+      "menu": {
+        "ana_yemek": "Mercimek Köftesi",
+        "yan_yemek": "Yeşillik + Limon",
+        "salata": "Roka",
+        "tatli": "Güllaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "139": {
+      "gun": 139,
+      "tarih": "19 Mayıs",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "140": {
+      "gun": 140,
+      "tarih": "20 Mayıs",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Kereviz",
+        "yan_yemek": "Havuçlu Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "141": {
+      "gun": 141,
+      "tarih": "21 Mayıs",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "142": {
+      "gun": 142,
+      "tarih": "22 Mayıs",
+      "menu": {
+        "ana_yemek": "Etli Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "143": {
+      "gun": 143,
+      "tarih": "23 Mayıs",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Balık"
+      }
+    },
+    "144": {
+      "gun": 144,
+      "tarih": "24 Mayıs",
+      "menu": {
+        "ana_yemek": "Köfte + Patates Kızartması",
+        "yan_yemek": "Pilav",
+        "salata": "Domates",
+        "tatli": "Helva",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "145": {
+      "gun": 145,
+      "tarih": "25 Mayıs",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "146": {
+      "gun": 146,
+      "tarih": "26 Mayıs",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "147": {
+      "gun": 147,
+      "tarih": "27 Mayıs",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Yeşillik",
+        "tatli": "Muhallebi",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "148": {
+      "gun": 148,
+      "tarih": "28 Mayıs",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Tulumba",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "149": {
+      "gun": 149,
+      "tarih": "29 Mayıs",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "150": {
+      "gun": 150,
+      "tarih": "30 Mayıs",
+      "menu": {
+        "ana_yemek": "Sebze Türlü",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Cacık",
+        "tatli": "Şekerpare",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "151": {
+      "gun": 151,
+      "tarih": "31 Mayıs",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "152": {
+      "gun": 152,
+      "tarih": "1 Haziran",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "153": {
+      "gun": 153,
+      "tarih": "2 Haziran",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Çoban Salata",
+        "tatli": "Lokma",
+        "kategori": "Börek"
+      }
+    },
+    "154": {
+      "gun": 154,
+      "tarih": "3 Haziran",
+      "menu": {
+        "ana_yemek": "Hamsi Buğulama",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "155": {
+      "gun": 155,
+      "tarih": "4 Haziran",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Yeşillik",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "156": {
+      "gun": 156,
+      "tarih": "5 Haziran",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "157": {
+      "gun": 157,
+      "tarih": "6 Haziran",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "158": {
+      "gun": 158,
+      "tarih": "7 Haziran",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Kabak",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "159": {
+      "gun": 159,
+      "tarih": "8 Haziran",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "160": {
+      "gun": 160,
+      "tarih": "9 Haziran",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "161": {
+      "gun": 161,
+      "tarih": "10 Haziran",
+      "menu": {
+        "ana_yemek": "Tas Kebabı",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "162": {
+      "gun": 162,
+      "tarih": "11 Haziran",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Börek"
+      }
+    },
+    "163": {
+      "gun": 163,
+      "tarih": "12 Haziran",
+      "menu": {
+        "ana_yemek": "Barbunya Pilaki",
+        "yan_yemek": "Ekmek",
+        "salata": "Soğan Salata",
+        "tatli": "Güllaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "164": {
+      "gun": 164,
+      "tarih": "13 Haziran",
+      "menu": {
+        "ana_yemek": "Kuzu Pirzola",
+        "yan_yemek": "Patates Püresi",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "165": {
+      "gun": 165,
+      "tarih": "14 Haziran",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "166": {
+      "gun": 166,
+      "tarih": "15 Haziran",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "167": {
+      "gun": 167,
+      "tarih": "16 Haziran",
+      "menu": {
+        "ana_yemek": "Midye Dolma",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "168": {
+      "gun": 168,
+      "tarih": "17 Haziran",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Helva",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "169": {
+      "gun": 169,
+      "tarih": "18 Haziran",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "170": {
+      "gun": 170,
+      "tarih": "19 Haziran",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "171": {
+      "gun": 171,
+      "tarih": "20 Haziran",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Soğan Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "172": {
+      "gun": 172,
+      "tarih": "21 Haziran",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "173": {
+      "gun": 173,
+      "tarih": "22 Haziran",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "174": {
+      "gun": 174,
+      "tarih": "23 Haziran",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "175": {
+      "gun": 175,
+      "tarih": "24 Haziran",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Tulumba",
+        "kategori": "Kebap"
+      }
+    },
+    "176": {
+      "gun": 176,
+      "tarih": "25 Haziran",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "177": {
+      "gun": 177,
+      "tarih": "26 Haziran",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "178": {
+      "gun": 178,
+      "tarih": "27 Haziran",
+      "menu": {
+        "ana_yemek": "Etli Bezelye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "179": {
+      "gun": 179,
+      "tarih": "28 Haziran",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "180": {
+      "gun": 180,
+      "tarih": "29 Haziran",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Güllaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "181": {
+      "gun": 181,
+      "tarih": "30 Haziran",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Özel Menü"
+      }
+    },
+    "182": {
+      "gun": 182,
+      "tarih": "1 Temmuz",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "183": {
+      "gun": 183,
+      "tarih": "2 Temmuz",
+      "menu": {
+        "ana_yemek": "Mercimek Köftesi",
+        "yan_yemek": "Yeşillik + Limon",
+        "salata": "Roka",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "184": {
+      "gun": 184,
+      "tarih": "3 Temmuz",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "185": {
+      "gun": 185,
+      "tarih": "4 Temmuz",
+      "menu": {
+        "ana_yemek": "Kol Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Börek"
+      }
+    },
+    "186": {
+      "gun": 186,
+      "tarih": "5 Temmuz",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Revani",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "187": {
+      "gun": 187,
+      "tarih": "6 Temmuz",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Yeşillik",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "188": {
+      "gun": 188,
+      "tarih": "7 Temmuz",
+      "menu": {
+        "ana_yemek": "Etli Bamya",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "189": {
+      "gun": 189,
+      "tarih": "8 Temmuz",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan + Biber",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "190": {
+      "gun": 190,
+      "tarih": "9 Temmuz",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "191": {
+      "gun": 191,
+      "tarih": "10 Temmuz",
+      "menu": {
+        "ana_yemek": "Barbunya Pilaki",
+        "yan_yemek": "Ekmek",
+        "salata": "Soğan Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "192": {
+      "gun": 192,
+      "tarih": "11 Temmuz",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "193": {
+      "gun": 193,
+      "tarih": "12 Temmuz",
+      "menu": {
+        "ana_yemek": "Balık Ekmek",
+        "yan_yemek": "Turşu + Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Sokak Lezzeti"
+      }
+    },
+    "194": {
+      "gun": 194,
+      "tarih": "13 Temmuz",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "195": {
+      "gun": 195,
+      "tarih": "14 Temmuz",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "196": {
+      "gun": 196,
+      "tarih": "15 Temmuz",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "197": {
+      "gun": 197,
+      "tarih": "16 Temmuz",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "198": {
+      "gun": 198,
+      "tarih": "17 Temmuz",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Güllaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "199": {
+      "gun": 199,
+      "tarih": "18 Temmuz",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "200": {
+      "gun": 200,
+      "tarih": "19 Temmuz",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "201": {
+      "gun": 201,
+      "tarih": "20 Temmuz",
+      "menu": {
+        "ana_yemek": "Levrek Buğulama",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "202": {
+      "gun": 202,
+      "tarih": "21 Temmuz",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "203": {
+      "gun": 203,
+      "tarih": "22 Temmuz",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "204": {
+      "gun": 204,
+      "tarih": "23 Temmuz",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "205": {
+      "gun": 205,
+      "tarih": "24 Temmuz",
+      "menu": {
+        "ana_yemek": "Midye Dolma + Midye Tava",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "206": {
+      "gun": 206,
+      "tarih": "25 Temmuz",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Kabak",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "207": {
+      "gun": 207,
+      "tarih": "26 Temmuz",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "208": {
+      "gun": 208,
+      "tarih": "27 Temmuz",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "209": {
+      "gun": 209,
+      "tarih": "28 Temmuz",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Sütlaç",
+        "kategori": "Balık"
+      }
+    },
+    "210": {
+      "gun": 210,
+      "tarih": "29 Temmuz",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "211": {
+      "gun": 211,
+      "tarih": "30 Temmuz",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "212": {
+      "gun": 212,
+      "tarih": "31 Temmuz",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kazandibi",
+        "kategori": "Özel Menü"
+      }
+    },
+    "213": {
+      "gun": 213,
+      "tarih": "1 Ağustos",
+      "menu": {
+        "ana_yemek": "Etli Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Yeşillik",
+        "tatli": "Güllaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "214": {
+      "gun": 214,
+      "tarih": "2 Ağustos",
+      "menu": {
+        "ana_yemek": "Hamsi Tava",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "215": {
+      "gun": 215,
+      "tarih": "3 Ağustos",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "216": {
+      "gun": 216,
+      "tarih": "4 Ağustos",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "217": {
+      "gun": 217,
+      "tarih": "5 Ağustos",
+      "menu": {
+        "ana_yemek": "Sebze Türlü",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Helva",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "218": {
+      "gun": 218,
+      "tarih": "6 Ağustos",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "219": {
+      "gun": 219,
+      "tarih": "7 Ağustos",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "220": {
+      "gun": 220,
+      "tarih": "8 Ağustos",
+      "menu": {
+        "ana_yemek": "Etli Bezelye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Sütlaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "221": {
+      "gun": 221,
+      "tarih": "9 Ağustos",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "222": {
+      "gun": 222,
+      "tarih": "10 Ağustos",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "223": {
+      "gun": 223,
+      "tarih": "11 Ağustos",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Çoban Salata",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "224": {
+      "gun": 224,
+      "tarih": "12 Ağustos",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Balık"
+      }
+    },
+    "225": {
+      "gun": 225,
+      "tarih": "13 Ağustos",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "226": {
+      "gun": 226,
+      "tarih": "14 Ağustos",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "227": {
+      "gun": 227,
+      "tarih": "15 Ağustos",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "228": {
+      "gun": 228,
+      "tarih": "16 Ağustos",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "229": {
+      "gun": 229,
+      "tarih": "17 Ağustos",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Revani",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "230": {
+      "gun": 230,
+      "tarih": "18 Ağustos",
+      "menu": {
+        "ana_yemek": "Midye Dolma",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "231": {
+      "gun": 231,
+      "tarih": "19 Ağustos",
+      "menu": {
+        "ana_yemek": "Tas Kebabı",
+        "yan_yemek": "Pilav",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "232": {
+      "gun": 232,
+      "tarih": "20 Ağustos",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "233": {
+      "gun": 233,
+      "tarih": "21 Ağustos",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Güllaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "234": {
+      "gun": 234,
+      "tarih": "22 Ağustos",
+      "menu": {
+        "ana_yemek": "Fırın Tavuk",
+        "yan_yemek": "Patates + Havuç",
+        "salata": "Yeşillik",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "235": {
+      "gun": 235,
+      "tarih": "23 Ağustos",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "236": {
+      "gun": 236,
+      "tarih": "24 Ağustos",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "237": {
+      "gun": 237,
+      "tarih": "25 Ağustos",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "238": {
+      "gun": 238,
+      "tarih": "26 Ağustos",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "239": {
+      "gun": 239,
+      "tarih": "27 Ağustos",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "240": {
+      "gun": 240,
+      "tarih": "28 Ağustos",
+      "menu": {
+        "ana_yemek": "Kıymalı Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "241": {
+      "gun": 241,
+      "tarih": "29 Ağustos",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "242": {
+      "gun": 242,
+      "tarih": "30 Ağustos",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Künefe",
+        "kategori": "Özel Menü"
+      }
+    },
+    "243": {
+      "gun": 243,
+      "tarih": "31 Ağustos",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "244": {
+      "gun": 244,
+      "tarih": "1 Eylül",
+      "menu": {
+        "ana_yemek": "Mercimek Köftesi",
+        "yan_yemek": "Yeşillik + Limon",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "245": {
+      "gun": 245,
+      "tarih": "2 Eylül",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "246": {
+      "gun": 246,
+      "tarih": "3 Eylül",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "247": {
+      "gun": 247,
+      "tarih": "4 Eylül",
+      "menu": {
+        "ana_yemek": "Barbunya Pilaki",
+        "yan_yemek": "Ekmek",
+        "salata": "Soğan Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "248": {
+      "gun": 248,
+      "tarih": "5 Eylül",
+      "menu": {
+        "ana_yemek": "Ciğer Tava",
+        "yan_yemek": "Pilav + Soğan",
+        "salata": "Yeşillik",
+        "tatli": "Helva",
+        "kategori": "Et Yemeği"
+      }
+    },
+    "249": {
+      "gun": 249,
+      "tarih": "6 Eylül",
+      "menu": {
+        "ana_yemek": "Levrek Buğulama",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "250": {
+      "gun": 250,
+      "tarih": "7 Eylül",
+      "menu": {
+        "ana_yemek": "Etli Bamya",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Güllaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "251": {
+      "gun": 251,
+      "tarih": "8 Eylül",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "252": {
+      "gun": 252,
+      "tarih": "9 Eylül",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "253": {
+      "gun": 253,
+      "tarih": "10 Eylül",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "254": {
+      "gun": 254,
+      "tarih": "11 Eylül",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Revani",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "255": {
+      "gun": 255,
+      "tarih": "12 Eylül",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Sütlaç",
+        "kategori": "Balık"
+      }
+    },
+    "256": {
+      "gun": 256,
+      "tarih": "13 Eylül",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "257": {
+      "gun": 257,
+      "tarih": "14 Eylül",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "258": {
+      "gun": 258,
+      "tarih": "15 Eylül",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "259": {
+      "gun": 259,
+      "tarih": "16 Eylül",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Helva",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "260": {
+      "gun": 260,
+      "tarih": "17 Eylül",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan + Biber",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "261": {
+      "gun": 261,
+      "tarih": "18 Eylül",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "262": {
+      "gun": 262,
+      "tarih": "19 Eylül",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Muhallebi",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "263": {
+      "gun": 263,
+      "tarih": "20 Eylül",
+      "menu": {
+        "ana_yemek": "Hamsi Tava",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "264": {
+      "gun": 264,
+      "tarih": "21 Eylül",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "265": {
+      "gun": 265,
+      "tarih": "22 Eylül",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Tulumba",
+        "kategori": "Kebap"
+      }
+    },
+    "266": {
+      "gun": 266,
+      "tarih": "23 Eylül",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "267": {
+      "gun": 267,
+      "tarih": "24 Eylül",
+      "menu": {
+        "ana_yemek": "Midye Dolma + Midye Tava",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "268": {
+      "gun": 268,
+      "tarih": "25 Eylül",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "269": {
+      "gun": 269,
+      "tarih": "26 Eylül",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "270": {
+      "gun": 270,
+      "tarih": "27 Eylül",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "271": {
+      "gun": 271,
+      "tarih": "28 Eylül",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "272": {
+      "gun": 272,
+      "tarih": "29 Eylül",
+      "menu": {
+        "ana_yemek": "Etli Bezelye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "273": {
+      "gun": 273,
+      "tarih": "30 Eylül",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "274": {
+      "gun": 274,
+      "tarih": "1 Ekim",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "275": {
+      "gun": 275,
+      "tarih": "2 Ekim",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Güllaç",
+        "kategori": "Balık"
+      }
+    },
+    "276": {
+      "gun": 276,
+      "tarih": "3 Ekim",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "277": {
+      "gun": 277,
+      "tarih": "4 Ekim",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "278": {
+      "gun": 278,
+      "tarih": "5 Ekim",
+      "menu": {
+        "ana_yemek": "Kol Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "279": {
+      "gun": 279,
+      "tarih": "6 Ekim",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Kereviz",
+        "yan_yemek": "Havuçlu Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "280": {
+      "gun": 280,
+      "tarih": "7 Ekim",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "281": {
+      "gun": 281,
+      "tarih": "8 Ekim",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "282": {
+      "gun": 282,
+      "tarih": "9 Ekim",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "283": {
+      "gun": 283,
+      "tarih": "10 Ekim",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "284": {
+      "gun": 284,
+      "tarih": "11 Ekim",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "285": {
+      "gun": 285,
+      "tarih": "12 Ekim",
+      "menu": {
+        "ana_yemek": "Sebze Türlü",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Cacık",
+        "tatli": "Revani",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "286": {
+      "gun": 286,
+      "tarih": "13 Ekim",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "287": {
+      "gun": 287,
+      "tarih": "14 Ekim",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Börek"
+      }
+    },
+    "288": {
+      "gun": 288,
+      "tarih": "15 Ekim",
+      "menu": {
+        "ana_yemek": "Midye Dolma",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "289": {
+      "gun": 289,
+      "tarih": "16 Ekim",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "290": {
+      "gun": 290,
+      "tarih": "17 Ekim",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "291": {
+      "gun": 291,
+      "tarih": "18 Ekim",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "292": {
+      "gun": 292,
+      "tarih": "19 Ekim",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "293": {
+      "gun": 293,
+      "tarih": "20 Ekim",
+      "menu": {
+        "ana_yemek": "Hamsi Buğulama",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "294": {
+      "gun": 294,
+      "tarih": "21 Ekim",
+      "menu": {
+        "ana_yemek": "Etli Bamya",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Yeşillik",
+        "tatli": "Sütlaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "295": {
+      "gun": 295,
+      "tarih": "22 Ekim",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "296": {
+      "gun": 296,
+      "tarih": "23 Ekim",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "297": {
+      "gun": 297,
+      "tarih": "24 Ekim",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "298": {
+      "gun": 298,
+      "tarih": "25 Ekim",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Güllaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "299": {
+      "gun": 299,
+      "tarih": "26 Ekim",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "300": {
+      "gun": 300,
+      "tarih": "27 Ekim",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "301": {
+      "gun": 301,
+      "tarih": "28 Ekim",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "302": {
+      "gun": 302,
+      "tarih": "29 Ekim",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "303": {
+      "gun": 303,
+      "tarih": "30 Ekim",
+      "menu": {
+        "ana_yemek": "Pide Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "304": {
+      "gun": 304,
+      "tarih": "31 Ekim",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Kazandibi",
+        "kategori": "Özel Menü"
+      }
+    },
+    "305": {
+      "gun": 305,
+      "tarih": "1 Kasım",
+      "menu": {
+        "ana_yemek": "Etli Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Yeşillik",
+        "tatli": "Aşure",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "306": {
+      "gun": 306,
+      "tarih": "2 Kasım",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Sütlaç",
+        "kategori": "Balık"
+      }
+    },
+    "307": {
+      "gun": 307,
+      "tarih": "3 Kasım",
+      "menu": {
+        "ana_yemek": "Karnıyarık",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Helva",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "308": {
+      "gun": 308,
+      "tarih": "4 Kasım",
+      "menu": {
+        "ana_yemek": "Tas Kebabı",
+        "yan_yemek": "Pilav",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "309": {
+      "gun": 309,
+      "tarih": "5 Kasım",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "310": {
+      "gun": 310,
+      "tarih": "6 Kasım",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Revani",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "311": {
+      "gun": 311,
+      "tarih": "7 Kasım",
+      "menu": {
+        "ana_yemek": "Mercimek Köftesi",
+        "yan_yemek": "Yeşillik + Limon",
+        "salata": "Roka",
+        "tatli": "Güllaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "312": {
+      "gun": 312,
+      "tarih": "8 Kasım",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan",
+        "salata": "Soğan Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "313": {
+      "gun": 313,
+      "tarih": "9 Kasım",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Künefe",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "314": {
+      "gun": 314,
+      "tarih": "10 Kasım",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "315": {
+      "gun": 315,
+      "tarih": "11 Kasım",
+      "menu": {
+        "ana_yemek": "Barbunya Pilaki",
+        "yan_yemek": "Ekmek",
+        "salata": "Soğan Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "316": {
+      "gun": 316,
+      "tarih": "12 Kasım",
+      "menu": {
+        "ana_yemek": "Hamsi Tava",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "317": {
+      "gun": 317,
+      "tarih": "13 Kasım",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Sütlaç",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "318": {
+      "gun": 318,
+      "tarih": "14 Kasım",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "319": {
+      "gun": 319,
+      "tarih": "15 Kasım",
+      "menu": {
+        "ana_yemek": "Kol Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "320": {
+      "gun": 320,
+      "tarih": "16 Kasım",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "321": {
+      "gun": 321,
+      "tarih": "17 Kasım",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Muhallebi",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "322": {
+      "gun": 322,
+      "tarih": "18 Kasım",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "323": {
+      "gun": 323,
+      "tarih": "19 Kasım",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "324": {
+      "gun": 324,
+      "tarih": "20 Kasım",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Helva",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "325": {
+      "gun": 325,
+      "tarih": "21 Kasım",
+      "menu": {
+        "ana_yemek": "Levrek Buğulama",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Balık"
+      }
+    },
+    "326": {
+      "gun": 326,
+      "tarih": "22 Kasım",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "327": {
+      "gun": 327,
+      "tarih": "23 Kasım",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "328": {
+      "gun": 328,
+      "tarih": "24 Kasım",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Kadayıf",
+        "kategori": "Börek"
+      }
+    },
+    "329": {
+      "gun": 329,
+      "tarih": "25 Kasım",
+      "menu": {
+        "ana_yemek": "Midye Dolma",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "330": {
+      "gun": 330,
+      "tarih": "26 Kasım",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "331": {
+      "gun": 331,
+      "tarih": "27 Kasım",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "332": {
+      "gun": 332,
+      "tarih": "28 Kasım",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "333": {
+      "gun": 333,
+      "tarih": "29 Kasım",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Güllaç",
+        "kategori": "Balık"
+      }
+    },
+    "334": {
+      "gun": 334,
+      "tarih": "30 Kasım",
+      "menu": {
+        "ana_yemek": "Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Özel Menü"
+      }
+    },
+    "335": {
+      "gun": 335,
+      "tarih": "1 Aralık",
+      "menu": {
+        "ana_yemek": "Patlıcan Musakka",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Mevsim Salata",
+        "tatli": "Revani",
+        "kategori": "Fırın Yemeği"
+      }
+    },
+    "336": {
+      "gun": 336,
+      "tarih": "2 Aralık",
+      "menu": {
+        "ana_yemek": "Döner Kebap",
+        "yan_yemek": "Patates + Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Dondurma",
+        "kategori": "Kebap"
+      }
+    },
+    "337": {
+      "gun": 337,
+      "tarih": "3 Aralık",
+      "menu": {
+        "ana_yemek": "Su Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "338": {
+      "gun": 338,
+      "tarih": "4 Aralık",
+      "menu": {
+        "ana_yemek": "Kalamar Tava",
+        "yan_yemek": "Patates Kızartması",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "339": {
+      "gun": 339,
+      "tarih": "5 Aralık",
+      "menu": {
+        "ana_yemek": "Etli Bezelye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "340": {
+      "gun": 340,
+      "tarih": "6 Aralık",
+      "menu": {
+        "ana_yemek": "Adana Kebap",
+        "yan_yemek": "Közlenmiş Patlıcan + Biber",
+        "salata": "Soğan Salata",
+        "tatli": "Katmer",
+        "kategori": "Kebap"
+      }
+    },
+    "341": {
+      "gun": 341,
+      "tarih": "7 Aralık",
+      "menu": {
+        "ana_yemek": "Mantı",
+        "yan_yemek": "Yoğurt + Tereyağ",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "342": {
+      "gun": 342,
+      "tarih": "8 Aralık",
+      "menu": {
+        "ana_yemek": "Zeytinyağlı Yaprak Sarma",
+        "yan_yemek": "Yoğurt",
+        "salata": "Mevsim Salata",
+        "tatli": "Kabak Tatlısı",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "343": {
+      "gun": 343,
+      "tarih": "9 Aralık",
+      "menu": {
+        "ana_yemek": "Hamsi Buğulama",
+        "yan_yemek": "Mısır Ekmeği",
+        "salata": "Lahana Turşusu",
+        "tatli": "Laz Böreği",
+        "kategori": "Balık"
+      }
+    },
+    "344": {
+      "gun": 344,
+      "tarih": "10 Aralık",
+      "menu": {
+        "ana_yemek": "Kuru Fasulye",
+        "yan_yemek": "Pirinç Pilavı",
+        "salata": "Turşu",
+        "tatli": "Helva",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "345": {
+      "gun": 345,
+      "tarih": "11 Aralık",
+      "menu": {
+        "ana_yemek": "İskender Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "346": {
+      "gun": 346,
+      "tarih": "12 Aralık",
+      "menu": {
+        "ana_yemek": "Peynirli Börek",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Şekerpare",
+        "kategori": "Börek"
+      }
+    },
+    "347": {
+      "gun": 347,
+      "tarih": "13 Aralık",
+      "menu": {
+        "ana_yemek": "Levrek Izgara",
+        "yan_yemek": "Zeytinyağlı Enginar",
+        "salata": "Roka",
+        "tatli": "Keşkül",
+        "kategori": "Balık"
+      }
+    },
+    "348": {
+      "gun": 348,
+      "tarih": "14 Aralık",
+      "menu": {
+        "ana_yemek": "Sebze Türlü",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Cacık",
+        "tatli": "Sütlaç",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "349": {
+      "gun": 349,
+      "tarih": "15 Aralık",
+      "menu": {
+        "ana_yemek": "Urfa Kebap",
+        "yan_yemek": "Közlenmiş Domates",
+        "salata": "Soğan Salata",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "350": {
+      "gun": 350,
+      "tarih": "16 Aralık",
+      "menu": {
+        "ana_yemek": "Gözleme Çeşitleri",
+        "yan_yemek": "Ayran",
+        "salata": "Yeşillik",
+        "tatli": "Tulumba",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "351": {
+      "gun": 351,
+      "tarih": "17 Aralık",
+      "menu": {
+        "ana_yemek": "Midye Dolma + Midye Tava",
+        "yan_yemek": "Limon",
+        "salata": "Yeşillik",
+        "tatli": "Lokma",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "352": {
+      "gun": 352,
+      "tarih": "18 Aralık",
+      "menu": {
+        "ana_yemek": "İmam Bayıldı",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Güllaç",
+        "kategori": "Zeytinyağlı"
+      }
+    },
+    "353": {
+      "gun": 353,
+      "tarih": "19 Aralık",
+      "menu": {
+        "ana_yemek": "Etli Nohut",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Turşu",
+        "tatli": "Aşure",
+        "kategori": "Ev Yemeği"
+      }
+    },
+    "354": {
+      "gun": 354,
+      "tarih": "20 Aralık",
+      "menu": {
+        "ana_yemek": "Beyti Kebap",
+        "yan_yemek": "Yoğurt + Domates Sos",
+        "salata": "Çoban Salata",
+        "tatli": "Kadayıf",
+        "kategori": "Kebap"
+      }
+    },
+    "355": {
+      "gun": 355,
+      "tarih": "21 Aralık",
+      "menu": {
+        "ana_yemek": "Sigara Böreği",
+        "yan_yemek": "Cacık",
+        "salata": "Yeşillik",
+        "tatli": "Baklava",
+        "kategori": "Börek"
+      }
+    },
+    "356": {
+      "gun": 356,
+      "tarih": "22 Aralık",
+      "menu": {
+        "ana_yemek": "Çupra Izgara",
+        "yan_yemek": "Zeytinyağlı Taze Fasulye",
+        "salata": "Roka",
+        "tatli": "Muhallebi",
+        "kategori": "Balık"
+      }
+    },
+    "357": {
+      "gun": 357,
+      "tarih": "23 Aralık",
+      "menu": {
+        "ana_yemek": "Ispanak Yemeği",
+        "yan_yemek": "Yoğurt",
+        "salata": "Havuç Tarator",
+        "tatli": "Revani",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "358": {
+      "gun": 358,
+      "tarih": "24 Aralık",
+      "menu": {
+        "ana_yemek": "Ali Nazik Kebap",
+        "yan_yemek": "Bulgur Pilavı",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava",
+        "kategori": "Kebap"
+      }
+    },
+    "359": {
+      "gun": 359,
+      "tarih": "25 Aralık",
+      "menu": {
+        "ana_yemek": "Lahmacun",
+        "yan_yemek": "Ayran + Turşu",
+        "salata": "Yeşillik",
+        "tatli": "Dondurma",
+        "kategori": "Hamur İşi"
+      }
+    },
+    "360": {
+      "gun": 360,
+      "tarih": "26 Aralık",
+      "menu": {
+        "ana_yemek": "Karides Güveç",
+        "yan_yemek": "Pilav",
+        "salata": "Roka",
+        "tatli": "Kazandibi",
+        "kategori": "Deniz Ürünü"
+      }
+    },
+    "361": {
+      "gun": 361,
+      "tarih": "27 Aralık",
+      "menu": {
+        "ana_yemek": "Taze Fasulye",
+        "yan_yemek": "Pilav",
+        "salata": "Cacık",
+        "tatli": "Helva",
+        "kategori": "Sebze Yemeği"
+      }
+    },
+    "362": {
+      "gun": 362,
+      "tarih": "28 Aralık",
+      "menu": {
+        "ana_yemek": "Tas Kebabı",
+        "yan_yemek": "Pilav",
+        "salata": "Közlenmiş Biber",
+        "tatli": "Künefe",
+        "kategori": "Kebap"
+      }
+    },
+    "363": {
+      "gun": 363,
+      "tarih": "29 Aralık",
+      "menu": {
+        "ana_yemek": "Kol Böreği",
+        "yan_yemek": "Ayran",
+        "salata": "Çoban Salata",
+        "tatli": "Tulumba",
+        "kategori": "Börek"
+      }
+    },
+    "364": {
+      "gun": 364,
+      "tarih": "30 Aralık",
+      "menu": {
+        "ana_yemek": "Patlıcan Kebap",
+        "yan_yemek": "Pilav",
+        "salata": "Mevsim Salata",
+        "tatli": "Sütlaç",
+        "kategori": "Kebap"
+      }
+    },
+    "365": {
+      "gun": 365,
+      "tarih": "31 Aralık",
+      "menu": {
+        "ana_yemek": "Hünkar Beğendi + Kuzu Tandır",
+        "yan_yemek": "Pilav",
+        "salata": "Çoban Salata",
+        "tatli": "Baklava + Kadayıf",
+        "kategori": "Özel Menü"
+      }
+    }
+  }
+}
