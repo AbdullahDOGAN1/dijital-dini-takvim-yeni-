@@ -11,6 +11,37 @@ const DIYANET_PASSWORD = (process.env.DIYANET_PASSWORD || "").trim();
 
 const OUTPUT_DIR = path.resolve(__dirname, "../../assets/data/diyanet_cache");
 let resolvedApiBase = null;
+let authCookieHeader = null;
+
+function extractToken(payload) {
+  if (!payload || typeof payload !== "object") return null;
+
+  const directCandidates = [
+    payload.accessToken,
+    payload.token,
+    payload.jwt,
+    payload.jwtToken,
+    payload.bearerToken,
+    payload.access_token,
+    payload.id_token,
+    payload.Authorization,
+    payload.authorization,
+  ];
+
+  for (const candidate of directCandidates) {
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+
+  const nestedObjects = [payload.data, payload.result, payload.response];
+  for (const nested of nestedObjects) {
+    const nestedToken = extractToken(nested);
+    if (nestedToken) return nestedToken;
+  }
+
+  return null;
+}
 
 function formatDate(date) {
   return date.toISOString().split("T")[0];
@@ -55,14 +86,26 @@ async function authenticate() {
           },
         );
 
-        const token = response.data?.accessToken || response.data?.token;
-        if (!token) {
-          throw new Error("Authentication token missing in response");
+        const token = extractToken(response.data);
+        const setCookie = response.headers?.["set-cookie"];
+        const cookieHeader = Array.isArray(setCookie)
+          ? setCookie.map((item) => item.split(";")[0]).join("; ")
+          : null;
+
+        if (!token && !cookieHeader) {
+          const contentType = response.headers?.["content-type"] || "unknown";
+          const bodyPreview = typeof response.data === "string"
+            ? response.data.slice(0, 250)
+            : JSON.stringify(response.data || {}).slice(0, 250);
+          throw new Error(
+            `Authentication token/cookie missing in response contentType=${contentType} bodyPreview=${bodyPreview}`,
+          );
         }
 
         resolvedApiBase = baseUrl;
+        authCookieHeader = cookieHeader;
         console.log(`Authenticated via ${baseUrl}${endpoint}`);
-        return token;
+        return token || null;
       } catch (error) {
         lastError = error;
         const status = error?.response?.status;
@@ -77,13 +120,21 @@ async function authenticate() {
 
 async function fetchWithAuth({token, endpoint, params}) {
   const baseUrl = resolvedApiBase || DIYANET_API_BASE_CANDIDATES[0];
+  const headers = {
+    Accept: "application/json",
+    "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  if (authCookieHeader) {
+    headers.Cookie = authCookieHeader;
+  }
+
   const response = await axios.get(`${baseUrl}${endpoint}`, {
     params,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-      "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
-    },
+    headers,
     timeout: 20000,
   });
   return response.data;
