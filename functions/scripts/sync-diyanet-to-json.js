@@ -18,10 +18,15 @@ function extractToken(payload) {
 
   const directCandidates = [
     payload.accessToken,
+    payload.AccessToken,
     payload.token,
+    payload.Token,
     payload.jwt,
+    payload.Jwt,
     payload.jwtToken,
+    payload.JwtToken,
     payload.bearerToken,
+    payload.BearerToken,
     payload.access_token,
     payload.id_token,
     payload.Authorization,
@@ -41,6 +46,27 @@ function extractToken(payload) {
   }
 
   return null;
+}
+
+function normalizeApiEnvelope(payload) {
+  if (!payload || typeof payload !== "object") {
+    return {success: null, message: null, data: payload};
+  }
+
+  const success =
+    typeof payload.success === "boolean"
+      ? payload.success
+      : typeof payload.Success === "boolean"
+        ? payload.Success
+        : null;
+
+  const message =
+    payload.message ?? payload.Message ?? payload.error ?? payload.Error ?? null;
+
+  const data =
+    payload.data ?? payload.Data ?? payload.result ?? payload.Result ?? payload;
+
+  return {success, message, data};
 }
 
 function formatDate(date) {
@@ -86,11 +112,18 @@ async function authenticate() {
           },
         );
 
-        const token = extractToken(response.data);
+        const envelope = normalizeApiEnvelope(response.data);
+        const token = extractToken(envelope.data) || extractToken(response.data);
         const setCookie = response.headers?.["set-cookie"];
         const cookieHeader = Array.isArray(setCookie)
           ? setCookie.map((item) => item.split(";")[0]).join("; ")
           : null;
+
+        if (envelope.success === false) {
+          throw new Error(
+            `Authentication rejected by API message=${String(envelope.message || "unknown")}`,
+          );
+        }
 
         if (!token && !cookieHeader) {
           const contentType = response.headers?.["content-type"] || "unknown";
@@ -137,7 +170,13 @@ async function fetchWithAuth({token, endpoint, params}) {
     headers,
     timeout: 20000,
   });
-  return response.data;
+  const envelope = normalizeApiEnvelope(response.data);
+  if (envelope.success === false) {
+    throw new Error(
+      `API returned success=false endpoint=${endpoint} message=${String(envelope.message || "unknown")}`,
+    );
+  }
+  return envelope.data;
 }
 
 async function resolveCities(token) {
