@@ -31,14 +31,17 @@ class PlaceholderScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+            colors: [
+              color.withValues(alpha: 0.1),
+              color.withValues(alpha: 0.05),
+            ],
           ),
         ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 80, color: color.withOpacity(0.7)),
+              Icon(icon, size: 80, color: color.withValues(alpha: 0.7)),
               const SizedBox(height: 20),
               Text(
                 title,
@@ -55,7 +58,7 @@ class PlaceholderScreen extends StatelessWidget {
                   description,
                   style: GoogleFonts.ebGaramond(
                     fontSize: 16,
-                    color: color.withOpacity(0.8),
+                    color: color.withValues(alpha: 0.8),
                   ),
                   textAlign: TextAlign.center,
                 ),

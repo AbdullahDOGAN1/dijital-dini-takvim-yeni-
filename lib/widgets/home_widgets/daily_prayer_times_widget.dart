@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -23,31 +25,11 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
       'color': Colors.purple.shade300,
       'icon': Icons.wb_twilight,
     },
-    {
-      'name': 'Güneş',
-      'color': Colors.orange.shade400,
-      'icon': Icons.wb_sunny,
-    },
-    {
-      'name': 'Öğle',
-      'color': Colors.blue.shade400,
-      'icon': Icons.light_mode,
-    },
-    {
-      'name': 'İkindi',
-      'color': Colors.yellow.shade600,
-      'icon': Icons.sunny,
-    },
-    {
-      'name': 'Akşam',
-      'color': Colors.red.shade400,
-      'icon': Icons.nights_stay,
-    },
-    {
-      'name': 'Yatsı',
-      'color': Colors.indigo.shade500,
-      'icon': Icons.dark_mode,
-    },
+    {'name': 'Güneş', 'color': Colors.orange.shade400, 'icon': Icons.wb_sunny},
+    {'name': 'Öğle', 'color': Colors.blue.shade400, 'icon': Icons.light_mode},
+    {'name': 'İkindi', 'color': Colors.yellow.shade600, 'icon': Icons.sunny},
+    {'name': 'Akşam', 'color': Colors.red.shade400, 'icon': Icons.nights_stay},
+    {'name': 'Yatsı', 'color': Colors.indigo.shade500, 'icon': Icons.dark_mode},
   ];
 
   @override
@@ -86,7 +68,7 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
 
   String _getPrayerTime(String prayerName) {
     if (_todaysPrayerTimes == null) return '--:--';
-    
+
     switch (prayerName) {
       case 'İmsak':
         return _todaysPrayerTimes!.imsak;
@@ -107,15 +89,15 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
 
   bool _isPrayerPassed(String prayerName) {
     if (_todaysPrayerTimes == null) return false;
-    
+
     final now = DateTime.now();
     final prayerTime = _getPrayerTime(prayerName);
     final timeParts = prayerTime.split(':');
-    
+
     if (timeParts.length >= 2) {
       final hour = int.tryParse(timeParts[0]) ?? 0;
       final minute = int.tryParse(timeParts[1]) ?? 0;
-      
+
       final prayerDateTime = DateTime(
         now.year,
         now.month,
@@ -123,10 +105,10 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
         hour,
         minute,
       );
-      
+
       return now.isAfter(prayerDateTime);
     }
-    
+
     return false;
   }
 
@@ -147,7 +129,7 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -162,10 +144,7 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Colors.green.shade600,
-                        Colors.green.shade700,
-                      ],
+                      colors: [Colors.green.shade600, Colors.green.shade700],
                     ),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
@@ -174,11 +153,7 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.mosque,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                      Icon(Icons.mosque, color: Colors.white, size: 24),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -196,7 +171,7 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
                               _currentLocation,
                               style: GoogleFonts.ebGaramond(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                               ),
                             ),
                           ],
@@ -208,13 +183,15 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         ),
                     ],
                   ),
                 ),
-                
+
                 // Prayer Times Grid
                 if (_isLoading)
                   const Padding(
@@ -298,14 +275,14 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             decoration: BoxDecoration(
-              color: isPassed 
-                  ? Colors.grey.withOpacity(0.3)
-                  : prayerColor.withOpacity(0.1),
+              color: isPassed
+                  ? Colors.grey.withValues(alpha: 0.3)
+                  : prayerColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isPassed 
-                    ? Colors.grey.withOpacity(0.5)
-                    : prayerColor.withOpacity(0.3),
+                color: isPassed
+                    ? Colors.grey.withValues(alpha: 0.5)
+                    : prayerColor.withValues(alpha: 0.3),
                 width: 1.5,
               ),
             ),
@@ -323,8 +300,8 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
                   style: GoogleFonts.ebGaramond(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isPassed 
-                        ? Colors.grey 
+                    color: isPassed
+                        ? Colors.grey
                         : (isDark ? Colors.white : Colors.black87),
                   ),
                 ),
@@ -340,9 +317,12 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
                 if (isPassed)
                   Container(
                     margin: const EdgeInsets.only(top: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

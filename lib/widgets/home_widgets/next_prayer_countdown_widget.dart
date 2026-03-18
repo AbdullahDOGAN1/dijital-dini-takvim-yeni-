@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +12,8 @@ class NextPrayerCountdownWidget extends StatefulWidget {
   const NextPrayerCountdownWidget({super.key});
 
   @override
-  State<NextPrayerCountdownWidget> createState() => _NextPrayerCountdownWidgetState();
+  State<NextPrayerCountdownWidget> createState() =>
+      _NextPrayerCountdownWidgetState();
 }
 
 class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
@@ -78,11 +81,11 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
     if (_todaysPrayerTimes == null) return;
 
     _timer?.cancel();
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateCountdown();
     });
-    
+
     _updateCountdown();
   }
 
@@ -90,7 +93,7 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
     if (_todaysPrayerTimes == null) return;
 
     final now = DateTime.now();
-    
+
     final prayerTimes = [
       {'name': 'İmsak', 'time': _todaysPrayerTimes!.imsak},
       {'name': 'Güneş', 'time': _todaysPrayerTimes!.gunes},
@@ -109,14 +112,8 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
       if (timeParts.length >= 2) {
         final hour = int.tryParse(timeParts[0]) ?? 0;
         final minute = int.tryParse(timeParts[1]) ?? 0;
-        
-        final prayerTime = DateTime(
-          now.year,
-          now.month,
-          now.day,
-          hour,
-          minute,
-        );
+
+        final prayerTime = DateTime(now.year, now.month, now.day, hour, minute);
 
         if (prayerTime.isAfter(now)) {
           nextPrayerDateTime = prayerTime;
@@ -134,7 +131,7 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
       if (imsakParts.length >= 2) {
         final hour = int.tryParse(imsakParts[0]) ?? 0;
         final minute = int.tryParse(imsakParts[1]) ?? 0;
-        
+
         nextPrayerDateTime = DateTime(
           tomorrow.year,
           tomorrow.month,
@@ -158,7 +155,7 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
     }
 
     final difference = nextPrayerDateTime.difference(now);
-    
+
     if (difference.isNegative) {
       setState(() {
         _timeUntilNextPrayer = '00:00:00';
@@ -179,7 +176,7 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
     final progress = 1.0 - (totalMinutes / maxMinutes).clamp(0.0, 1.0);
 
     setState(() {
-      _timeUntilNextPrayer = 
+      _timeUntilNextPrayer =
           '${hours.toString().padLeft(2, '0')}:'
           '${minutes.toString().padLeft(2, '0')}:'
           '${seconds.toString().padLeft(2, '0')}';
@@ -212,18 +209,18 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  prayerColor.withOpacity(0.1),
-                  prayerColor.withOpacity(0.05),
+                  prayerColor.withValues(alpha: 0.1),
+                  prayerColor.withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: prayerColor.withOpacity(0.3),
+                color: prayerColor.withValues(alpha: 0.3),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: prayerColor.withOpacity(0.2),
+                  color: prayerColor.withValues(alpha: 0.2),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -232,9 +229,7 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
             child: _isLoading
                 ? const Padding(
                     padding: EdgeInsets.all(40),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: Center(child: CircularProgressIndicator()),
                   )
                 : Padding(
                     padding: const EdgeInsets.all(20),
@@ -259,9 +254,9 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 20),
-                        
+
                         // Circular Progress with Timer
                         Row(
                           children: [
@@ -290,12 +285,12 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
                                 ],
                               ),
                               progressColor: prayerColor,
-                              backgroundColor: prayerColor.withOpacity(0.2),
+                              backgroundColor: prayerColor.withValues(alpha: 0.2),
                               circularStrokeCap: CircularStrokeCap.round,
                             ),
-                            
+
                             const SizedBox(width: 20),
-                            
+
                             // Prayer Info
                             Expanded(
                               child: Column(
@@ -316,10 +311,10 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
                                       vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: prayerColor.withOpacity(0.1),
+                                      color: prayerColor.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                        color: prayerColor.withOpacity(0.3),
+                                        color: prayerColor.withValues(alpha: 0.3),
                                       ),
                                     ),
                                     child: Text(
@@ -337,8 +332,8 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
                                     'kaldı',
                                     style: GoogleFonts.ebGaramond(
                                       fontSize: 14,
-                                      color: isDark 
-                                          ? Colors.white70 
+                                      color: isDark
+                                          ? Colors.white70
                                           : Colors.black54,
                                     ),
                                   ),

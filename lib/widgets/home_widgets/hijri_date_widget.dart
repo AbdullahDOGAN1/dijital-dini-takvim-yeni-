@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -29,7 +31,7 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
 
       final today = DateTime.now();
       final hijriDate = await DailyContentService.getCachedHijriDate(today);
-      
+
       setState(() {
         _hijriDate = hijriDate;
         _isLoading = false;
@@ -45,23 +47,37 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
   String _getGregorianDate() {
     final now = DateTime.now();
     const turkishDays = [
-      'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'
+      'Pazartesi',
+      'Salı',
+      'Çarşamba',
+      'Perşembe',
+      'Cuma',
+      'Cumartesi',
+      'Pazar',
     ];
     const turkishMonths = [
-      'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
     ];
-    
+
     final dayName = turkishDays[now.weekday - 1];
     final monthName = turkishMonths[now.month - 1];
-    
+
     return '$dayName, ${now.day} $monthName ${now.year}';
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return AnimationConfiguration.staggeredList(
       position: 2,
       duration: const Duration(milliseconds: 800),
@@ -74,19 +90,16 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.amber.shade50,
-                  Colors.orange.shade50,
-                ],
+                colors: [Colors.amber.shade50, Colors.orange.shade50],
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.amber.withOpacity(0.3),
+                color: Colors.amber.withValues(alpha: 0.3),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.amber.withOpacity(0.2),
+                  color: Colors.amber.withValues(alpha: 0.2),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -122,18 +135,18 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Gregorian Date
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.amber.withOpacity(0.3),
+                        color: Colors.amber.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -160,9 +173,9 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Hijri Date
                   Container(
                     width: double.infinity,
@@ -171,14 +184,11 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Colors.amber.shade100,
-                          Colors.orange.shade100,
-                        ],
+                        colors: [Colors.amber.shade100, Colors.orange.shade100],
                       ),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.amber.withOpacity(0.5),
+                        color: Colors.amber.withValues(alpha: 0.5),
                       ),
                     ),
                     child: Column(
@@ -258,7 +268,7 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
                       ],
                     ),
                   ),
-                  
+
                   // Refresh button
                   if (!_isLoading)
                     Padding(

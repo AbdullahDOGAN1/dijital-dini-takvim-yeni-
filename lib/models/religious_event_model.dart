@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 class ReligiousEvent {
   final String name;
   final String hijriDate;
@@ -25,8 +27,19 @@ class ReligiousEvent {
   // Ay adı (OCAK, ŞUBAT vs.)
   String get month {
     const months = [
-      '', 'OCAK', 'ŞUBAT', 'MART', 'NİSAN', 'MAYIS', 'HAZİRAN',
-      'TEMMUZ', 'AĞUSTOS', 'EYLÜL', 'EKİM', 'KASIM', 'ARALIK'
+      '',
+      'OCAK',
+      'ŞUBAT',
+      'MART',
+      'NİSAN',
+      'MAYIS',
+      'HAZİRAN',
+      'TEMMUZ',
+      'AĞUSTOS',
+      'EYLÜL',
+      'EKİM',
+      'KASIM',
+      'ARALIK',
     ];
     return months[parsedDate.month];
   }
@@ -34,7 +47,7 @@ class ReligiousEvent {
   factory ReligiousEvent.fromJson(Map<String, dynamic> json, String year) {
     final gregorianDateStr = json['miladi_tarih'] as String;
     final parsedDate = _parseGregorianDate(gregorianDateStr, year);
-    
+
     return ReligiousEvent(
       name: json['isim'] as String,
       hijriDate: json['hicri_tarih'] as String,
@@ -55,29 +68,38 @@ class ReligiousEvent {
         final monthStr = parts[1].split('-')[0];
         final month = _getMonthNumber(monthStr);
         final yearInt = int.parse(year);
-        
+
         return DateTime(yearInt, month, day);
       }
     } catch (e) {
       print('Error parsing date: $dateStr - $e');
     }
-    
+
     // Fallback
     return DateTime.now();
   }
 
   static int _getMonthNumber(String monthName) {
     const months = {
-      'OCAK': 1, 'ŞUBAT': 2, 'MART': 3, 'NİSAN': 4,
-      'MAYIS': 5, 'HAZİRAN': 6, 'TEMMUZ': 7, 'AĞUSTOS': 8,
-      'EYLÜL': 9, 'EKİM': 10, 'KASIM': 11, 'ARALIK': 12,
+      'OCAK': 1,
+      'ŞUBAT': 2,
+      'MART': 3,
+      'NİSAN': 4,
+      'MAYIS': 5,
+      'HAZİRAN': 6,
+      'TEMMUZ': 7,
+      'AĞUSTOS': 8,
+      'EYLÜL': 9,
+      'EKİM': 10,
+      'KASIM': 11,
+      'ARALIK': 12,
     };
     return months[monthName] ?? 1;
   }
 
   static String _categorizeEvent(String eventName) {
     final name = eventName.toUpperCase();
-    
+
     if (name.contains('KANDİL')) {
       return 'kandil';
     } else if (name.contains('BAYRAM')) {
@@ -91,7 +113,7 @@ class ReligiousEvent {
     } else if (name.contains('AŞURE')) {
       return 'asure';
     }
-    
+
     return 'diger';
   }
 
@@ -99,8 +121,12 @@ class ReligiousEvent {
   int get daysUntil {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final eventDay = DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
-    
+    final eventDay = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+    );
+
     return eventDay.difference(today).inDays;
   }
 
@@ -108,8 +134,12 @@ class ReligiousEvent {
   bool get isPast {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final eventDay = DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
-    
+    final eventDay = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+    );
+
     return eventDay.isBefore(today);
   }
 
@@ -117,8 +147,12 @@ class ReligiousEvent {
   bool get isToday {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final eventDay = DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
-    
+    final eventDay = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+    );
+
     return eventDay.isAtSameMomentAs(today);
   }
 
@@ -160,14 +194,14 @@ class ReligiousEventDetails {
 
   static List<String> _parseStringList(dynamic data) {
     if (data == null) return [];
-    
+
     if (data is List) {
       return data.map((item) => item.toString()).toList();
     } else if (data is String) {
       // String ise satırlarına böl
       return data.split('\n').where((line) => line.trim().isNotEmpty).toList();
     }
-    
+
     return [];
   }
 
@@ -198,10 +232,10 @@ class ReligiousEventDetails {
 
   // Detay var mı kontrol et
   bool get hasDetails {
-    return description.isNotEmpty || 
-           worshipsAndPrayers.isNotEmpty || 
-           versesAndHadiths.isNotEmpty || 
-           recommendations.isNotEmpty;
+    return description.isNotEmpty ||
+        worshipsAndPrayers.isNotEmpty ||
+        versesAndHadiths.isNotEmpty ||
+        recommendations.isNotEmpty;
   }
 
   @override

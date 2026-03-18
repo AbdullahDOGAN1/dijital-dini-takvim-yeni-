@@ -5,12 +5,11 @@ class AppTheme {
   // Get light theme with custom font
   static ThemeData getLightThemeData([String fontFamily = 'Merriweather']) {
     final textTheme = _getTextTheme(fontFamily);
-    
+
     return ThemeData(
       // Ana renkler
       primaryColor: Colors.brown.shade700,
       scaffoldBackgroundColor: const Color(0xFFF1EAD9), // Warm parchment color
-      
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.brown.shade700,
@@ -38,11 +37,9 @@ class AppTheme {
 
       // Card Teması
       cardTheme: CardThemeData(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
       // Button Themes
@@ -51,9 +48,7 @@ class AppTheme {
           backgroundColor: Colors.brown.shade600,
           foregroundColor: Colors.white,
           textStyle: textTheme.labelLarge,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
 
@@ -74,12 +69,11 @@ class AppTheme {
   // Get dark theme with custom font
   static ThemeData getDarkThemeData([String fontFamily = 'Merriweather']) {
     final textTheme = _getTextTheme(fontFamily, isDark: true);
-    
+
     return ThemeData(
       // Ana renkler
       primaryColor: Colors.brown.shade400,
       scaffoldBackgroundColor: const Color(0xFF1A1A1A), // Dark background
-      
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
         seedColor: Colors.brown.shade400,
@@ -109,9 +103,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: const Color(0xFF2A2A2A),
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
       // Button Themes
@@ -120,9 +112,7 @@ class AppTheme {
           backgroundColor: Colors.brown.shade600,
           foregroundColor: Colors.white,
           textStyle: textTheme.labelLarge,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
 
@@ -166,43 +156,61 @@ class AppTheme {
   // Private helper method to get text theme
   static TextTheme _getTextTheme(String fontFamily, {bool isDark = false}) {
     final color = isDark ? Colors.white : Colors.black87;
-    
+
     switch (fontFamily) {
       case 'Merriweather':
         return GoogleFonts.merriweatherTextTheme().copyWith(
           bodyLarge: GoogleFonts.merriweather(color: color),
           bodyMedium: GoogleFonts.merriweather(color: color),
-          titleLarge: GoogleFonts.merriweather(color: color, fontWeight: FontWeight.w600),
+          titleLarge: GoogleFonts.merriweather(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
         );
       case 'Inter':
         return GoogleFonts.interTextTheme().copyWith(
           bodyLarge: GoogleFonts.inter(color: color),
           bodyMedium: GoogleFonts.inter(color: color),
-          titleLarge: GoogleFonts.inter(color: color, fontWeight: FontWeight.w600),
+          titleLarge: GoogleFonts.inter(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
         );
       case 'Lato':
         return GoogleFonts.latoTextTheme().copyWith(
           bodyLarge: GoogleFonts.lato(color: color),
           bodyMedium: GoogleFonts.lato(color: color),
-          titleLarge: GoogleFonts.lato(color: color, fontWeight: FontWeight.w600),
+          titleLarge: GoogleFonts.lato(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
         );
       case 'Roboto':
         return GoogleFonts.robotoTextTheme().copyWith(
           bodyLarge: GoogleFonts.roboto(color: color),
           bodyMedium: GoogleFonts.roboto(color: color),
-          titleLarge: GoogleFonts.roboto(color: color, fontWeight: FontWeight.w600),
+          titleLarge: GoogleFonts.roboto(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
         );
       case 'Open Sans':
         return GoogleFonts.openSansTextTheme().copyWith(
           bodyLarge: GoogleFonts.openSans(color: color),
           bodyMedium: GoogleFonts.openSans(color: color),
-          titleLarge: GoogleFonts.openSans(color: color, fontWeight: FontWeight.w600),
+          titleLarge: GoogleFonts.openSans(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
         );
       default:
         return GoogleFonts.merriweatherTextTheme().copyWith(
           bodyLarge: GoogleFonts.merriweather(color: color),
           bodyMedium: GoogleFonts.merriweather(color: color),
-          titleLarge: GoogleFonts.merriweather(color: color, fontWeight: FontWeight.w600),
+          titleLarge: GoogleFonts.merriweather(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
         );
     }
   }
@@ -210,7 +218,7 @@ class AppTheme {
   // Available font families
   static const List<String> availableFonts = [
     'Merriweather',
-    'Inter', 
+    'Inter',
     'Lato',
     'Roboto',
     'Open Sans',

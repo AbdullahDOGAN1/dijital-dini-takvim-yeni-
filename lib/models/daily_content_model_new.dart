@@ -42,10 +42,7 @@ class VerseOrHadith {
   final String text;
   final String source;
 
-  VerseOrHadith({
-    required this.text,
-    required this.source,
-  });
+  VerseOrHadith({required this.text, required this.source});
 
   factory VerseOrHadith.fromJson(Map<String, dynamic> json) {
     return VerseOrHadith(
@@ -55,10 +52,7 @@ class VerseOrHadith {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'metin': text,
-      'kaynak': source,
-    };
+    return {'metin': text, 'kaynak': source};
   }
 }
 
@@ -66,10 +60,7 @@ class RisaleQuote {
   final String quote;
   final String source;
 
-  RisaleQuote({
-    required this.quote,
-    required this.source,
-  });
+  RisaleQuote({required this.quote, required this.source});
 
   factory RisaleQuote.fromJson(Map<String, dynamic> json) {
     return RisaleQuote(
@@ -79,9 +70,6 @@ class RisaleQuote {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'vecize': quote,
-      'kaynak': source,
-    };
+    return {'vecize': quote, 'kaynak': source};
   }
 }

@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -25,11 +28,7 @@ class DatabaseHelper {
     String path = join(documentsDirectory.path, 'nur_vakti_favorites.db');
 
     // Open the database
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
   // Create tables
@@ -53,29 +52,37 @@ class DatabaseHelper {
     required String contentSource,
     required String pageDate,
   }) async {
-    print('DEBUG DatabaseHelper: addFavorite called with:');
-    print('  favoriteType: $favoriteType');
-    print('  contentText: $contentText');
-    print('  contentSource: $contentSource');
-    print('  pageDate: $pageDate');
-    
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: addFavorite called with:');
+      print('  favoriteType: $favoriteType');
+      print('  contentText: $contentText');
+      print('  contentSource: $contentSource');
+      print('  pageDate: $pageDate');
+    }
+
     final db = await database;
-    print('DEBUG DatabaseHelper: Database connection established');
-    
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: Database connection established');
+    }
+
     // Check if this exact content already exists
     final existing = await db.query(
       'favorites',
       where: 'favorite_type = ? AND content_text = ? AND page_date = ?',
       whereArgs: [favoriteType, contentText, pageDate],
     );
-    
-    print('DEBUG DatabaseHelper: Existing records found: ${existing.length}');
-    
+
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: Existing records found: ${existing.length}');
+    }
+
     if (existing.isNotEmpty) {
-      print('DEBUG DatabaseHelper: Content already exists, throwing exception');
+      if (kDebugMode) {
+        print('DEBUG DatabaseHelper: Content already exists, throwing exception');
+      }
       throw Exception('Bu içerik zaten favorilerde mevcut');
     }
-    
+
     final result = await db.insert('favorites', {
       'favorite_type': favoriteType,
       'content_text': contentText,
@@ -83,49 +90,60 @@ class DatabaseHelper {
       'date_added': DateTime.now().toIso8601String(),
       'page_date': pageDate,
     });
-    
-    print('DEBUG DatabaseHelper: Insert result: $result');
+
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: Insert result: $result');
+    }
     return result;
   }
 
   // Get all favorites
   Future<List<Map<String, dynamic>>> getAllFavorites() async {
     final db = await database;
-    return await db.query(
-      'favorites',
-      orderBy: 'date_added DESC',
-    );
+    return await db.query('favorites', orderBy: 'date_added DESC');
   }
 
   // Get favorites grouped by type for categorized display
   Future<Map<String, List<Map<String, dynamic>>>> getFavorites() async {
-    print('DEBUG DatabaseHelper: getFavorites() called');
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: getFavorites() called');
+    }
     final db = await database;
-    print('DEBUG DatabaseHelper: Database connection established');
-    
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: Database connection established');
+    }
+
     final List<Map<String, dynamic>> favorites = await db.query(
       'favorites',
       orderBy: 'date_added DESC',
     );
-    
-    print('DEBUG DatabaseHelper: Query returned ${favorites.length} favorites');
-    for (var fav in favorites) {
-      print('DEBUG DatabaseHelper: Favorite: $fav');
+
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: Query returned ${favorites.length} favorites');
+      for (var fav in favorites) {
+        print('DEBUG DatabaseHelper: Favorite: $fav');
+      }
     }
-    
+
     // Group favorites by type
     Map<String, List<Map<String, dynamic>>> grouped = {};
     for (var favorite in favorites) {
       String type = favorite['favorite_type'] as String;
-      print('DEBUG DatabaseHelper: Processing favorite of type: $type');
+      if (kDebugMode) {
+        print('DEBUG DatabaseHelper: Processing favorite of type: $type');
+      }
       if (!grouped.containsKey(type)) {
         grouped[type] = [];
-        print('DEBUG DatabaseHelper: Created new group for type: $type');
+        if (kDebugMode) {
+          print('DEBUG DatabaseHelper: Created new group for type: $type');
+        }
       }
       grouped[type]!.add(favorite);
     }
-    
-    print('DEBUG DatabaseHelper: Final grouped result: $grouped');
+
+    if (kDebugMode) {
+      print('DEBUG DatabaseHelper: Final grouped result: $grouped');
+    }
     return grouped;
   }
 
@@ -144,11 +162,7 @@ class DatabaseHelper {
   // Delete a favorite by id
   Future<int> deleteFavorite(int id) async {
     final db = await database;
-    return await db.delete(
-      'favorites',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('favorites', where: 'id = ?', whereArgs: [id]);
   }
 
   // Clear all favorites

@@ -10,13 +10,11 @@ import 'package:provider/provider.dart';
 class ReligiousDayDetailScreen extends StatefulWidget {
   final ReligiousDay religiousDay;
 
-  const ReligiousDayDetailScreen({
-    super.key,
-    required this.religiousDay,
-  });
+  const ReligiousDayDetailScreen({super.key, required this.religiousDay});
 
   @override
-  State<ReligiousDayDetailScreen> createState() => _ReligiousDayDetailScreenState();
+  State<ReligiousDayDetailScreen> createState() =>
+      _ReligiousDayDetailScreenState();
 }
 
 class _ReligiousDayDetailScreenState extends State<ReligiousDayDetailScreen> {
@@ -33,9 +31,10 @@ class _ReligiousDayDetailScreenState extends State<ReligiousDayDetailScreen> {
     try {
       final favorites = await FavoritesService.getFavorites();
       setState(() {
-        _isFavorite = favorites.any((fav) => 
-          fav.title == widget.religiousDay.name && 
-          fav.content == widget.religiousDay.description
+        _isFavorite = favorites.any(
+          (fav) =>
+              fav.title == widget.religiousDay.name &&
+              fav.content == widget.religiousDay.description,
         );
         _isLoading = false;
       });
@@ -51,14 +50,16 @@ class _ReligiousDayDetailScreenState extends State<ReligiousDayDetailScreen> {
       if (_isFavorite) {
         final favorites = await FavoritesService.getFavorites();
         final favoriteItem = favorites.firstWhere(
-          (fav) => fav.title == widget.religiousDay.name && 
-                   fav.content == widget.religiousDay.description,
+          (fav) =>
+              fav.title == widget.religiousDay.name &&
+              fav.content == widget.religiousDay.description,
         );
         await FavoritesService.removeFromFavorites(favoriteItem.id);
       } else {
         final newFavorite = FavoriteModel(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          date: '${widget.religiousDay.date.day}/${widget.religiousDay.date.month}/${widget.religiousDay.date.year}',
+          date:
+              '${widget.religiousDay.date.day}/${widget.religiousDay.date.month}/${widget.religiousDay.date.year}',
           title: widget.religiousDay.name,
           content: widget.religiousDay.description,
           type: 'religious_day',
@@ -69,25 +70,22 @@ class _ReligiousDayDetailScreenState extends State<ReligiousDayDetailScreen> {
       setState(() {
         _isFavorite = !_isFavorite;
       });
-      
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isFavorite 
-              ? 'Favorilere eklendi' 
-              : 'Favorilerden kaldırıldı',
+            _isFavorite ? 'Favorilere eklendi' : 'Favorilerden kaldırıldı',
             style: GoogleFonts.ebGaramond(),
           ),
           duration: const Duration(seconds: 2),
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Bir hata oluştu: $e',
-            style: GoogleFonts.ebGaramond(),
-          ),
+          content: Text('Bir hata oluştu: $e', style: GoogleFonts.ebGaramond()),
           backgroundColor: Colors.red,
         ),
       );
@@ -97,7 +95,8 @@ class _ReligiousDayDetailScreenState extends State<ReligiousDayDetailScreen> {
   void _shareReligiousDay() {
     String traditions = '';
     if (widget.religiousDay.traditions.isNotEmpty) {
-      traditions = '\n📿 Gelenekler:\n${widget.religiousDay.traditions.join('\n• ')}';
+      traditions =
+          '\n📿 Gelenekler:\n${widget.religiousDay.traditions.join('\n• ')}';
     }
 
     String prayers = '';
@@ -105,7 +104,8 @@ class _ReligiousDayDetailScreenState extends State<ReligiousDayDetailScreen> {
       prayers = '\n🤲 Dualar:\n${widget.religiousDay.prayers.join('\n• ')}';
     }
 
-    final String shareText = '''
+    final String shareText =
+        '''
 ${widget.religiousDay.name}
 ${widget.religiousDay.date.day}/${widget.religiousDay.date.month}/${widget.religiousDay.date.year}
 ${widget.religiousDay.hijriDate}
@@ -116,7 +116,7 @@ ${widget.religiousDay.importance.isNotEmpty ? '\n🌟 Önemi:\n${widget.religiou
 
 Nur Vakti uygulamasından paylaşıldı.
 ''';
-    
+
     Share.share(shareText, subject: widget.religiousDay.name);
   }
 
@@ -136,10 +136,11 @@ Nur Vakti uygulamasından paylaşıldı.
   @override
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
-    final isDarkMode = settingsProvider.themeMode == ThemeMode.dark || 
-                       (settingsProvider.themeMode == ThemeMode.system && 
-                        MediaQuery.of(context).platformBrightness == Brightness.dark);
-    
+    final isDarkMode =
+        settingsProvider.themeMode == ThemeMode.dark ||
+        (settingsProvider.themeMode == ThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.dark);
+
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.grey.shade50,
       appBar: AppBar(
@@ -190,7 +191,7 @@ Nur Vakti uygulamasından paylaşıldı.
                   end: Alignment.bottomCenter,
                   colors: [
                     widget.religiousDay.categoryColor,
-                    widget.religiousDay.categoryColor.withOpacity(0.8),
+                    widget.religiousDay.categoryColor.withValues(alpha: 0.8),
                   ],
                 ),
               ),
@@ -202,11 +203,16 @@ Nur Vakti uygulamasından paylaşıldı.
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white.withOpacity(0.3)),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -243,7 +249,7 @@ Nur Vakti uygulamasından paylaşıldı.
                       children: [
                         Icon(
                           Icons.calendar_today,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           size: 16,
                         ),
                         const SizedBox(width: 8),
@@ -251,7 +257,7 @@ Nur Vakti uygulamasından paylaşıldı.
                           '${widget.religiousDay.date.day}/${widget.religiousDay.date.month}/${widget.religiousDay.date.year}',
                           style: GoogleFonts.ebGaramond(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -260,7 +266,7 @@ Nur Vakti uygulamasından paylaşıldı.
                           '• ${widget.religiousDay.hijriDate}',
                           style: GoogleFonts.ebGaramond(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -270,7 +276,7 @@ Nur Vakti uygulamasından paylaşıldı.
                 ),
               ),
             ),
-            
+
             // Content
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -284,7 +290,7 @@ Nur Vakti uygulamasından paylaşıldı.
                     icon: Icons.info_outline,
                     isDarkMode: isDarkMode,
                   ),
-                  
+
                   // Önemi
                   if (widget.religiousDay.importance.isNotEmpty)
                     _buildSection(
@@ -293,7 +299,7 @@ Nur Vakti uygulamasından paylaşıldı.
                       icon: Icons.star_outline,
                       isDarkMode: isDarkMode,
                     ),
-                  
+
                   // Gelenekler
                   if (widget.religiousDay.traditions.isNotEmpty)
                     _buildListSection(
@@ -302,7 +308,7 @@ Nur Vakti uygulamasından paylaşıldı.
                       icon: Icons.favorite_outline,
                       isDarkMode: isDarkMode,
                     ),
-                  
+
                   // Dualar
                   if (widget.religiousDay.prayers.isNotEmpty)
                     _buildListSection(
@@ -311,25 +317,33 @@ Nur Vakti uygulamasından paylaşıldı.
                       icon: Icons.auto_stories,
                       isDarkMode: isDarkMode,
                     ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Action Buttons
                   Row(
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: _toggleFavorite,
-                          icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
+                          icon: Icon(
+                            _isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                          ),
                           label: Text(
-                            _isFavorite ? 'Favorilerden Kaldır' : 'Favorilere Ekle',
+                            _isFavorite
+                                ? 'Favorilerden Kaldır'
+                                : 'Favorilere Ekle',
                             style: GoogleFonts.ebGaramond(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _isFavorite ? Colors.pink : Colors.pink.shade400,
+                            backgroundColor: _isFavorite
+                                ? Colors.pink
+                                : Colors.pink.shade400,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
@@ -406,7 +420,9 @@ Nur Vakti uygulamasından paylaşıldı.
                 content,
                 style: GoogleFonts.ebGaramond(
                   fontSize: 16,
-                  color: isDarkMode ? Colors.white.withOpacity(0.9) : Colors.black87,
+                  color: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.9)
+                      : Colors.black87,
                   height: 1.5,
                 ),
               ),
@@ -454,32 +470,36 @@ Nur Vakti uygulamasından paylaşıldı.
                 ],
               ),
               const SizedBox(height: 12),
-              ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '• ',
-                      style: GoogleFonts.ebGaramond(
-                        fontSize: 16,
-                        color: widget.religiousDay.categoryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        item,
+              ...items.map(
+                (item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '• ',
                         style: GoogleFonts.ebGaramond(
                           fontSize: 16,
-                          color: isDarkMode ? Colors.white.withOpacity(0.9) : Colors.black87,
-                          height: 1.5,
+                          color: widget.religiousDay.categoryColor,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Text(
+                          item,
+                          style: GoogleFonts.ebGaramond(
+                            fontSize: 16,
+                            color: isDarkMode
+                                ? Colors.white.withValues(alpha: 0.9)
+                                : Colors.black87,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              )),
+              ),
             ],
           ),
         ),

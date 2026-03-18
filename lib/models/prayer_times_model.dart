@@ -28,7 +28,9 @@ class HijriDate {
       month: json['month']?['tr'] ?? json['month']?['en'] ?? '',
       year: json['year'] ?? '',
       designation: json['designation']?['abbreviated'] ?? '',
-      holidays: json['holidays'] != null ? List<String>.from(json['holidays']) : [],
+      holidays: json['holidays'] != null
+          ? List<String>.from(json['holidays'])
+          : [],
     );
   }
 
@@ -94,21 +96,59 @@ class PrayerTimesModel {
     this.gregorianDate,
   });
 
+  /// Factory constructor to create PrayerTimesModel from Diyanet API response
+  /// Diyanet API format: {fajr, sunrise, dhuhr, asr, maghrib, isha, hijriDateShort, gregorianDateShort, ...}
+  factory PrayerTimesModel.fromDiyanetApi(Map<String, dynamic> json) {
+    // Diyanet API uses different field names
+    return PrayerTimesModel(
+      imsak: _parseTime(json['fajr'] ?? json['Fajr'] ?? ''),
+      gunes: _parseTime(json['sunrise'] ?? json['Sunrise'] ?? ''),
+      ogle: _parseTime(json['dhuhr'] ?? json['Dhuhr'] ?? ''),
+      ikindi: _parseTime(json['asr'] ?? json['Asr'] ?? ''),
+      aksam: _parseTime(json['maghrib'] ?? json['Maghrib'] ?? ''),
+      yatsi: _parseTime(json['isha'] ?? json['Isha'] ?? ''),
+      date: json['gregorianDateShort'] ?? json['gregorianDateLong'] ?? DateTime.now().toString().split(' ')[0],
+      hijriDate: json['hijriDateShort'] != null || json['hijriDateLong'] != null
+          ? HijriDate(
+              date: json['hijriDateShort'] ?? json['hijriDateLong'] ?? '',
+              format: 'DD.MM.YYYY',
+              day: json['hijriDateShort']?.split('.')[0] ?? '',
+              weekday: '',
+              month: json['hijriDateLong']?.split(' ')[1] ?? '',
+              year: json['hijriDateShort']?.split('.')[2] ?? '',
+              designation: '',
+              holidays: [],
+            )
+          : null,
+      gregorianDate: json['gregorianDateLong'] != null
+          ? GeorgianDate(
+              date: json['gregorianDateShort'] ?? '',
+              format: 'DD.MM.YYYY',
+              day: json['gregorianDateShort']?.split('.')[0] ?? '',
+              weekday: json['gregorianDateLong']?.split(' ')[2] ?? '',
+              month: json['gregorianDateLong']?.split(' ')[1] ?? '',
+              year: json['gregorianDateShort']?.split('.')[2] ?? '',
+              designation: '',
+            )
+          : null,
+    );
+  }
+
   /// Factory constructor to create PrayerTimesModel from JSON
-  /// Supports the Aladhan API response format
+  /// Supports nested timing/date response structures
   factory PrayerTimesModel.fromJson(Map<String, dynamic> json) {
-    // Handle the nested structure of Aladhan API
+    // Handle nested response structure
     final timings = json['data']?['timings'] ?? json['timings'] ?? json;
     final dateData = json['data']?['date'] ?? json['date'] ?? {};
 
     // Parse Hijri and Gregorian dates if available
     HijriDate? hijriDate;
     GeorgianDate? gregorianDate;
-    
+
     if (dateData['hijri'] != null) {
       hijriDate = HijriDate.fromJson(dateData['hijri']);
     }
-    
+
     if (dateData['gregorian'] != null) {
       gregorianDate = GeorgianDate.fromJson(dateData['gregorian']);
     }
@@ -154,8 +194,18 @@ class PrayerTimesModel {
   /// Helper method to get month name
   static String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     if (month >= 1 && month <= 12) {
       return months[month - 1];

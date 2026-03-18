@@ -1,14 +1,20 @@
+// ignore_for_file: avoid_print
+
 import '../models/prayer_times_model.dart';
-import 'aladhan_api_service.dart';
+import 'diyanet_awqat_salah_service.dart';
+import 'diyanet_city_mapper.dart';
+import 'firebase_data_service.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
-/// Service class for fetching prayer times from external API
-/// Now uses AlAdhan API with Turkish Diyanet calculation method and location services
+/// Service class for fetching prayer times from Diyanet Awqat Salah API
+/// Tüm sistem artık Diyanet API üzerine kurulu
 class PrayerApiService {
-  static final AlAdhanApiService _alAdhanService = AlAdhanApiService();
-  
+  static final DiyanetAwqatSalahService _diyanetService = DiyanetAwqatSalahService();
+  static final FirebaseDataService _firebaseDataService = FirebaseDataService();
+
   // Türkiye'nin büyük şehirleri ve koordinatları
   static const Map<String, Map<String, double>> turkishCities = {
     'Adana': {'lat': 37.0000, 'lng': 35.3213},
@@ -102,9 +108,14 @@ class PrayerApiService {
       try {
         Position? lastPosition = await Geolocator.getLastKnownPosition();
         // Son konum varsa ve yeterince yeni ise (son 15 dakika içinde alınmış) kullan
-        final fifteenMinutesAgo = DateTime.now().subtract(const Duration(minutes: 15));
-        if (lastPosition != null && lastPosition.timestamp.isAfter(fifteenMinutesAgo)) {
-          print('Son bilinen konum kullanılıyor (son 15 dk): ${lastPosition.latitude}, ${lastPosition.longitude}');
+        final fifteenMinutesAgo = DateTime.now().subtract(
+          const Duration(minutes: 15),
+        );
+        if (lastPosition != null &&
+            lastPosition.timestamp.isAfter(fifteenMinutesAgo)) {
+          print(
+            'Son bilinen konum kullanılıyor (son 15 dk): ${lastPosition.latitude}, ${lastPosition.longitude}',
+          );
           return lastPosition;
         }
       } catch (e) {
@@ -123,21 +134,21 @@ class PrayerApiService {
 
       // 3. İzinleri kontrol et
       LocationPermission permission = await Geolocator.checkPermission();
-      
+
       // 4. İzin verilmemişse, izin iste
       if (permission == LocationPermission.denied) {
         print('Konum izni için dialog gösteriliyor...');
-        
+
         // Sistem iznini göster
         permission = await Geolocator.requestPermission();
-        
+
         // Cevap hala reddedilmişse
         if (permission == LocationPermission.denied) {
           print('Konum izinleri reddedildi');
           return null;
         }
       }
-      
+
       // 5. İzin kalıcı olarak reddedilmişse, direkt olarak uygulamaya dön
       if (permission == LocationPermission.deniedForever) {
         print('Konum izinleri kalıcı olarak reddedildi');
@@ -147,23 +158,27 @@ class PrayerApiService {
       // 6. Artık izin var, konumu almayı dene - düşük doğruluk hızlı sonuç verir
       try {
         final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low, 
+          desiredAccuracy: LocationAccuracy.low,
           timeLimit: const Duration(seconds: 10),
         );
-        print('Güncel konum alındı: ${position.latitude}, ${position.longitude}');
+        print(
+          'Güncel konum alındı: ${position.latitude}, ${position.longitude}',
+        );
         return position;
       } catch (e) {
         // 7. Zaman aşımı veya başka bir hata durumunda son bilinen konumu kullan
         try {
           final lastPosition = await Geolocator.getLastKnownPosition();
           if (lastPosition != null) {
-            print('Güncel konum alınamadı, son bilinen konum kullanılıyor: ${lastPosition.latitude}, ${lastPosition.longitude}');
+            print(
+              'Güncel konum alınamadı, son bilinen konum kullanılıyor: ${lastPosition.latitude}, ${lastPosition.longitude}',
+            );
             return lastPosition;
           }
         } catch (_) {
           // Son konumu alamazsa sessizce devam et
         }
-        
+
         print('Konum alınamadı: $e');
         return null;
       }
@@ -177,9 +192,12 @@ class PrayerApiService {
   static String getCityFromCoordinates(double latitude, double longitude) {
     double minDistance = double.infinity;
     String closestCity = 'Ankara'; // Default
-    
+
     // Türkiye sınırları kontrolü
-    if (latitude < 35.0 || latitude > 43.0 || longitude < 25.0 || longitude > 45.0) {
+    if (latitude < 35.0 ||
+        latitude > 43.0 ||
+        longitude < 25.0 ||
+        longitude > 45.0) {
       print('Coordinates outside Turkey bounds, using Ankara');
       return 'Ankara';
     }
@@ -187,11 +205,14 @@ class PrayerApiService {
     for (final entry in turkishCities.entries) {
       final cityLat = entry.value['lat']!;
       final cityLng = entry.value['lng']!;
-      
+
       final distance = Geolocator.distanceBetween(
-        latitude, longitude, cityLat, cityLng
+        latitude,
+        longitude,
+        cityLat,
+        cityLng,
       );
-      
+
       if (distance < minDistance) {
         minDistance = distance;
         closestCity = entry.key;
@@ -200,11 +221,13 @@ class PrayerApiService {
 
     // Eğer en yakın şehir çok uzaksa (100km+), Ankara kullan
     if (minDistance > 100000) {
-      print('Closest city too far (${minDistance/1000}km), using Ankara');
+      print('Closest city too far (${minDistance / 1000}km), using Ankara');
       return 'Ankara';
     }
 
-    print('Closest city to ($latitude, $longitude): $closestCity (${minDistance/1000}km away)');
+    print(
+      'Closest city to ($latitude, $longitude): $closestCity (${minDistance / 1000}km away)',
+    );
     return closestCity;
   }
 
@@ -212,14 +235,15 @@ class PrayerApiService {
   static Future<Map<String, double>?> getSavedLocation() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
-      
+      final bool usingCurrentLocation =
+          prefs.getBool('using_current_location') ?? true;
+
       if (!usingCurrentLocation) {
         // User has selected a specific city
         final double? lat = prefs.getDouble('selected_latitude');
         final double? lng = prefs.getDouble('selected_longitude');
         final String? city = prefs.getString('selected_city');
-        
+
         if (lat != null && lng != null) {
           print('Using saved city location: $city ($lat, $lng)');
           return {'latitude': lat, 'longitude': lng};
@@ -228,13 +252,13 @@ class PrayerApiService {
         // Try to use current location
         final double? lat = prefs.getDouble('current_latitude');
         final double? lng = prefs.getDouble('current_longitude');
-        
+
         if (lat != null && lng != null) {
           print('Using saved current location: ($lat, $lng)');
           return {'latitude': lat, 'longitude': lng};
         }
       }
-      
+
       return null;
     } catch (e) {
       print('Error getting saved location: $e');
@@ -256,12 +280,13 @@ class PrayerApiService {
       // Koordinat sağlanmadıysa, önce kaydedilmiş ayarlardan al
       if (lat == null || lng == null) {
         final prefs = await SharedPreferences.getInstance();
-        final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
-        
+        final bool usingCurrentLocation =
+            prefs.getBool('using_current_location') ?? true;
+
         if (!usingCurrentLocation) {
           // Kullanıcı belirli bir şehir seçmiş
           selectedCity = prefs.getString('selected_city');
-          
+
           if (selectedCity != null && turkishCities.containsKey(selectedCity)) {
             lat = turkishCities[selectedCity]!['lat'];
             lng = turkishCities[selectedCity]!['lng'];
@@ -270,9 +295,11 @@ class PrayerApiService {
             // Şehir adı eksik veya geçersizse, koordinatları kontrol et
             lat = prefs.getDouble('selected_latitude');
             lng = prefs.getDouble('selected_longitude');
-            
+
             if (lat != null && lng != null) {
-              print('Kaydedilmiş şehir koordinatları kullanılıyor: ($lat, $lng)');
+              print(
+                'Kaydedilmiş şehir koordinatları kullanılıyor: ($lat, $lng)',
+              );
             }
           }
         } else {
@@ -280,11 +307,13 @@ class PrayerApiService {
           // Önce son kaydedilen konumu dene (daha hızlı)
           lat = prefs.getDouble('current_latitude');
           lng = prefs.getDouble('current_longitude');
-          
+
           // 1 saatlik bir zaman aşımı belirle
           final lastLocationUpdate = prefs.getInt('last_location_update') ?? 0;
-          final oneHourAgo = DateTime.now().subtract(const Duration(hours: 1)).millisecondsSinceEpoch;
-          
+          final oneHourAgo = DateTime.now()
+              .subtract(const Duration(hours: 1))
+              .millisecondsSinceEpoch;
+
           // Son konum güncel değilse veya hiç yoksa, yeni konum al
           if (lat == null || lng == null || lastLocationUpdate < oneHourAgo) {
             print('Konum güncelleniyor...');
@@ -292,19 +321,26 @@ class PrayerApiService {
             if (position != null) {
               lat = position.latitude;
               lng = position.longitude;
-              
+
               // Yeni konumu kaydet
               await prefs.setDouble('current_latitude', lat);
               await prefs.setDouble('current_longitude', lng);
-              await prefs.setInt('last_location_update', DateTime.now().millisecondsSinceEpoch);
+              await prefs.setInt(
+                'last_location_update',
+                DateTime.now().millisecondsSinceEpoch,
+              );
               print('Konum güncellendi: ($lat, $lng)');
             } else if (lat == null || lng == null) {
               // Konum alınamadı ve eski konum yoksa, Ankara'yı kullan
               lat = 39.9334;
               lng = 32.8597;
-              print('Konum alınamadı, varsayılan Ankara koordinatları kullanılıyor');
+              print(
+                'Konum alınamadı, varsayılan Ankara koordinatları kullanılıyor',
+              );
             } else {
-              print('Konum güncellenemedi, son bilinen konum kullanılıyor: ($lat, $lng)');
+              print(
+                'Konum güncellenemedi, son bilinen konum kullanılıyor: ($lat, $lng)',
+              );
             }
           } else {
             print('Son kaydedilen konum kullanılıyor: ($lat, $lng)');
@@ -312,20 +348,33 @@ class PrayerApiService {
         }
       }
 
-      // AlAdhan API servisini kullanarak güncel namaz vakitlerini al
-      final prayerTimes = await _alAdhanService.getTodaysPrayerTimes(
-        latitude: lat,
-        longitude: lng,
-      );
+      // Diyanet API kullanarak güncel namaz vakitlerini al
+      final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
+      final cityCode = DiyanetCityMapper.getCityCode(cityName);
+      
+      if (cityCode == null) {
+        if (kDebugMode) {
+          print('⚠️ Şehir kodu bulunamadı: $cityName, varsayılan Ankara kullanılıyor');
+        }
+        final fallbackPrayerTimes = await _getPrayerTimesFromDiyanet(
+          'Ankara',
+          DateTime.now(),
+        );
+        return fallbackPrayerTimes ?? _getDefaultPrayerTimes();
+      }
 
+      final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, DateTime.now());
+      
       if (prayerTimes != null) {
-        // Namaz vakitlerine şehir bilgisini ekle
-        final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
-        print('Namaz vakitleri: $cityName ($lat, $lng)');
+        if (kDebugMode) {
+          print('✅ Namaz vakitleri: $cityName ($lat, $lng)');
+        }
         return prayerTimes;
       } else {
         // API başarısız olursa varsayılan namaz vakitlerini döndür
-        print('API\'dan veri alınamadı, varsayılan namaz vakitleri kullanılıyor');
+        if (kDebugMode) {
+          print('⚠️ API\'dan veri alınamadı, varsayılan namaz vakitleri kullanılıyor');
+        }
         return _getDefaultPrayerTimes();
       }
     } catch (e) {
@@ -334,31 +383,105 @@ class PrayerApiService {
     }
   }
 
-  /// Fetch prayer times for today by city name
+  /// Fetch prayer times for today by city name using Diyanet API
   static Future<PrayerTimesModel> getPrayerTimesForCity(String cityName) async {
     try {
-      if (turkishCities.containsKey(cityName)) {
-        final coordinates = turkishCities[cityName]!;
-        final lat = coordinates['lat']!;
-        final lng = coordinates['lng']!;
-
-        final prayerTimes = await _alAdhanService.getTodaysPrayerTimes(
-          latitude: lat,
-          longitude: lng,
-        );
-
-        if (prayerTimes != null) {
-          print('Prayer times for: $cityName');
-          return prayerTimes;
+      final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, DateTime.now());
+      if (prayerTimes != null) {
+        if (kDebugMode) {
+          print('✅ Prayer times for: $cityName');
         }
-      } else {
-        print('City not found: $cityName');
+        return prayerTimes;
       }
       
+      if (kDebugMode) {
+        print('⚠️ City not found or API failed: $cityName');
+      }
       return _getDefaultPrayerTimes();
     } catch (e) {
-      print('Error fetching prayer times for city: $e');
+      if (kDebugMode) {
+        print('❌ Error fetching prayer times for city: $e');
+      }
       return _getDefaultPrayerTimes();
+    }
+  }
+
+  /// Fetch prayer times for a specific city and date using cache-first strategy
+  static Future<PrayerTimesModel> getPrayerTimesForCityAndDate({
+    required String cityName,
+    required DateTime date,
+  }) async {
+    try {
+      final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, date);
+      if (prayerTimes != null) {
+        if (kDebugMode) {
+          print('✅ Prayer times for: $cityName (${date.toIso8601String().split('T')[0]})');
+        }
+        return prayerTimes;
+      }
+      return _getDefaultPrayerTimes();
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Error fetching prayer times for city/date: $e');
+      }
+      return _getDefaultPrayerTimes();
+    }
+  }
+
+  /// Get prayer times from Diyanet API
+  static Future<PrayerTimesModel?> _getPrayerTimesFromDiyanet(
+    String cityName,
+    DateTime date,
+  ) async {
+    try {
+      final cityCode = DiyanetCityMapper.getCityCode(cityName);
+      if (cityCode == null) {
+        if (kDebugMode) {
+          print('❌ City code not found for: $cityName');
+        }
+        return null;
+      }
+
+      final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+      // 1) Firestore cache first
+      try {
+        final cachedData = await _firebaseDataService.getCachedPrayerTimes(
+          date: dateStr,
+          cityCode: cityCode,
+        );
+
+        if (cachedData != null) {
+          if (kDebugMode) {
+            print('✅ Prayer times loaded from Firestore cache: $cityName ($dateStr)');
+          }
+          return PrayerTimesModel.fromDiyanetApi(cachedData);
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('⚠️ Firestore cache read failed, continuing with Diyanet API: $e');
+        }
+      }
+      
+      // 2) Fallback to Diyanet API
+      final apiData = await _diyanetService.getDailyPrayerTimes(
+        countryCode: DiyanetCityMapper.countryCode,
+        stateCode: DiyanetCityMapper.stateCode,
+        cityCode: cityCode,
+        date: dateStr,
+      );
+
+      if (apiData != null) {
+        // Diyanet API response formatını PrayerTimesModel'e çevir
+        return PrayerTimesModel.fromDiyanetApi(apiData);
+      }
+      
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Error getting prayer times from Diyanet API: $e');
+      }
+      return null;
     }
   }
 
@@ -377,12 +500,13 @@ class PrayerApiService {
       // Koordinat sağlanmadıysa, önce kaydedilmiş ayarlardan al
       if (lat == null || lng == null) {
         final prefs = await SharedPreferences.getInstance();
-        final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
-        
+        final bool usingCurrentLocation =
+            prefs.getBool('using_current_location') ?? true;
+
         if (!usingCurrentLocation) {
           // Kullanıcı belirli bir şehir seçmiş
           selectedCity = prefs.getString('selected_city');
-          
+
           if (selectedCity != null && turkishCities.containsKey(selectedCity)) {
             lat = turkishCities[selectedCity]!['lat'];
             lng = turkishCities[selectedCity]!['lng'];
@@ -395,42 +519,35 @@ class PrayerApiService {
           // Son kaydedilen konumu kullan
           lat = prefs.getDouble('current_latitude');
           lng = prefs.getDouble('current_longitude');
-          
+
           if (lat == null || lng == null) {
             // Fallback to Ankara coordinates
             lat = 39.9334;
             lng = 32.8597;
-            print('Konum bilgisi bulunamadı, varsayılan Ankara koordinatları kullanılıyor: ${date.toString()}');
+            print(
+              'Konum bilgisi bulunamadı, varsayılan Ankara koordinatları kullanılıyor: ${date.toString()}',
+            );
           }
         }
       }
 
-      final prayerTimes = await _alAdhanService.getPrayerTimes(
-        date: date,
-        latitude: lat,
-        longitude: lng,
-      );
+      // Şehir ismini bul
+      final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
+      
+      // Diyanet API'den namaz vakitlerini al
+      final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, date);
 
       if (prayerTimes != null) {
-        // Tarih formatını Türkçe olarak güncelle
-        final turkishDate = '${date.day} ${_getMonthName(date.month)} ${date.year}';
-        print('Namaz vakitleri alındı: $turkishDate');
-        
-        // Modeldeki tarihi Türkçe formatta güncelle
-        return PrayerTimesModel(
-          imsak: prayerTimes.imsak,
-          gunes: prayerTimes.gunes,
-          ogle: prayerTimes.ogle,
-          ikindi: prayerTimes.ikindi,
-          aksam: prayerTimes.aksam,
-          yatsi: prayerTimes.yatsi,
-          date: turkishDate,
-        );
+        if (kDebugMode) {
+          print('✅ Namaz vakitleri alındı: ${date.toString().split(' ')[0]}');
+        }
+        return prayerTimes;
       } else {
         // Varsayılan değerlere Türkçe tarih ekle
         final defaultPrayerTimes = _getDefaultPrayerTimes();
-        final turkishDate = '${date.day} ${_getMonthName(date.month)} ${date.year}';
-        
+        final turkishDate =
+            '${date.day} ${_getMonthName(date.month)} ${date.year}';
+
         return PrayerTimesModel(
           imsak: defaultPrayerTimes.imsak,
           gunes: defaultPrayerTimes.gunes,
@@ -445,8 +562,9 @@ class PrayerApiService {
       print('Namaz vakitlerini alırken hata: $e');
       // Varsayılan değerlere Türkçe tarih ekle
       final defaultPrayerTimes = _getDefaultPrayerTimes();
-      final turkishDate = '${date.day} ${_getMonthName(date.month)} ${date.year}';
-      
+      final turkishDate =
+          '${date.day} ${_getMonthName(date.month)} ${date.year}';
+
       return PrayerTimesModel(
         imsak: defaultPrayerTimes.imsak,
         gunes: defaultPrayerTimes.gunes,
@@ -475,12 +593,13 @@ class PrayerApiService {
       // Koordinat sağlanmadıysa, önce kaydedilmiş ayarlardan al
       if (lat == null || lng == null) {
         final prefs = await SharedPreferences.getInstance();
-        final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
-        
+        final bool usingCurrentLocation =
+            prefs.getBool('using_current_location') ?? true;
+
         if (!usingCurrentLocation) {
           // Kullanıcı belirli bir şehir seçmiş
           selectedCity = prefs.getString('selected_city');
-          
+
           if (selectedCity != null && turkishCities.containsKey(selectedCity)) {
             lat = turkishCities[selectedCity]!['lat'];
             lng = turkishCities[selectedCity]!['lng'];
@@ -493,14 +612,14 @@ class PrayerApiService {
           // Güncel konum kaydını kullan
           lat = prefs.getDouble('current_latitude');
           lng = prefs.getDouble('current_longitude');
-          
+
           // Kayıtlı konum yoksa güncel konumu al
           if (lat == null || lng == null) {
             final position = await getCurrentLocation();
             if (position != null) {
               lat = position.latitude;
               lng = position.longitude;
-              
+
               // Yeni konumu kaydet
               await prefs.setDouble('current_latitude', lat);
               await prefs.setDouble('current_longitude', lng);
@@ -516,74 +635,236 @@ class PrayerApiService {
 
       // Şehir adını belirle
       final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
-      print('Aylık namaz vakitleri: $cityName ($lat, $lng)');
-
-      // API'dan verileri al
-      final monthlyTimes = await _alAdhanService.getMonthlyPrayerTimes(
-        month: month,
-        year: year,
-        latitude: lat,
-        longitude: lng,
-      );
-
-      if (monthlyTimes.isEmpty) {
-        print('Aylık veriler API\'dan alınamadı, varsayılan değerler kullanılıyor');
+      final cityCode = DiyanetCityMapper.getCityCode(cityName);
+      
+      if (cityCode == null) {
+        if (kDebugMode) {
+          print('⚠️ Şehir kodu bulunamadı: $cityName, varsayılan değerler kullanılıyor');
+        }
         return _getDefaultMonthlyPrayerTimes(year, month);
       }
-      
-      return monthlyTimes;
+
+      if (kDebugMode) {
+        print('📅 Aylık namaz vakitleri: $cityName ($lat, $lng)');
+      }
+
+      // Diyanet API'den aylık verileri al (DateRange endpoint - aylık 10 istek limiti var!)
+      try {
+        // 1) Firestore range cache first
+        final cachedRange = await _firebaseDataService.getCachedPrayerTimesRange(
+          cityCode: cityCode,
+          startDate: DateTime(year, month, 1),
+          endDate: DateTime(year, month + 1, 0),
+        );
+
+        if (cachedRange.isNotEmpty) {
+          final Map<String, PrayerTimesModel> monthlyTimes = {};
+          for (final dayData in cachedRange) {
+            final prayerTimes = PrayerTimesModel.fromDiyanetApi(dayData);
+            final dayStr = (dayData['date']?.toString().split('-').last ?? '').replaceFirst(RegExp(r'^0'), '');
+            if (dayStr.isNotEmpty) {
+              monthlyTimes[dayStr] = prayerTimes;
+            }
+          }
+          if (monthlyTimes.isNotEmpty) {
+            if (kDebugMode) {
+              print('✅ Aylık namaz vakitleri Firestore cache’den alındı: ${monthlyTimes.length} gün');
+            }
+            return monthlyTimes;
+          }
+        }
+
+        // 2) Diyanet API DateRange fallback
+        final startDate = DateTime(year, month, 1);
+        final endDate = DateTime(year, month + 1, 0); // Ayın son günü
+        
+        final startDateStr = '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
+        final endDateStr = '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
+
+        final monthlyData = await _diyanetService.getDateRangePrayerTimes(
+          countryCode: DiyanetCityMapper.countryCode,
+          stateCode: DiyanetCityMapper.stateCode,
+          cityCode: cityCode,
+          startDate: startDateStr,
+          endDate: endDateStr,
+        );
+
+        if (monthlyData != null && monthlyData.isNotEmpty) {
+          // Diyanet API response'unu Map<String, PrayerTimesModel>'e çevir
+          final Map<String, PrayerTimesModel> monthlyTimes = {};
+          for (final dayData in monthlyData) {
+            final prayerTimes = PrayerTimesModel.fromDiyanetApi(dayData);
+            // Tarihten gün numarasını çıkar (gregorianDateShort: "29.11.2022" -> "29")
+            final dayStr = dayData['gregorianDateShort']?.split('.')[0] ?? 
+                          DateTime.parse(dayData['gregorianDateLongIso8601'] ?? startDateStr).day.toString();
+            monthlyTimes[dayStr] = prayerTimes;
+          }
+          
+          if (kDebugMode) {
+            print('✅ Aylık namaz vakitleri alındı: ${monthlyTimes.length} gün');
+          }
+          return monthlyTimes;
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('⚠️ Diyanet API DateRange hatası (aylık limit olabilir): $e');
+        }
+      }
+
+      // API başarısız olursa, günlük endpoint ile tek tek çek (daha yavaş ama çalışır)
+      if (kDebugMode) {
+        print('⚠️ DateRange başarısız, günlük endpoint ile çekiliyor...');
+      }
+      return await _getMonthlyPrayerTimesDaily(cityName, year, month);
     } catch (e) {
       print('Aylık namaz vakitlerini alırken hata: $e');
       return _getDefaultMonthlyPrayerTimes(year, month);
     }
   }
 
-  /// Fetch prayer times for entire month by city name
+  /// Get monthly prayer times using daily endpoint (fallback method)
+  /// DateRange endpoint limitine takılmamak için günlük endpoint kullanır
+  static Future<Map<String, PrayerTimesModel>> _getMonthlyPrayerTimesDaily(
+    String cityName,
+    int year,
+    int month,
+  ) async {
+    final Map<String, PrayerTimesModel> monthlyTimes = {};
+    final cityCode = DiyanetCityMapper.getCityCode(cityName);
+    
+    if (cityCode == null) {
+      return _getDefaultMonthlyPrayerTimes(year, month);
+    }
+
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    
+    // İlk 5 günü çek (rate limit için)
+    for (int day = 1; day <= daysInMonth && day <= 5; day++) {
+      try {
+        final date = DateTime(year, month, day);
+        final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        
+        final apiData = await _diyanetService.getDailyPrayerTimes(
+          countryCode: DiyanetCityMapper.countryCode,
+          stateCode: DiyanetCityMapper.stateCode,
+          cityCode: cityCode,
+          date: dateStr,
+        );
+
+        if (apiData != null) {
+          final prayerTimes = PrayerTimesModel.fromDiyanetApi(apiData);
+          monthlyTimes[day.toString()] = prayerTimes;
+        }
+        
+        // Rate limit için kısa bekleme
+        await Future.delayed(const Duration(milliseconds: 200));
+      } catch (e) {
+        if (kDebugMode) {
+          print('⚠️ Gün $day için veri alınamadı: $e');
+        }
+      }
+    }
+
+    // Kalan günler için varsayılan değerler kullan
+    for (int day = 6; day <= daysInMonth; day++) {
+      monthlyTimes[day.toString()] = _getDefaultPrayerTimes();
+    }
+
+    return monthlyTimes;
+  }
+
+  /// Fetch prayer times for entire month by city name using Diyanet API
   static Future<Map<String, PrayerTimesModel>> getPrayerTimesForMonthByCity({
     required int year,
     required int month,
     required String cityName,
   }) async {
     try {
-      if (turkishCities.containsKey(cityName)) {
-        final coordinates = turkishCities[cityName]!;
-        final lat = coordinates['lat']!;
-        final lng = coordinates['lng']!;
+      if (kDebugMode) {
+        print('📅 Monthly prayer times for: $cityName');
+      }
 
-        print('Monthly prayer times for: $cityName');
-
-        return await _alAdhanService.getMonthlyPrayerTimes(
-          month: month,
-          year: year,
-          latitude: lat,
-          longitude: lng,
-        );
-      } else {
-        print('City not found: $cityName');
+      final cityCode = DiyanetCityMapper.getCityCode(cityName);
+      if (cityCode == null) {
         return _getDefaultMonthlyPrayerTimes(year, month);
       }
+
+      // DateRange endpoint kullan (aylık 10 istek limiti var!)
+      final startDate = DateTime(year, month, 1);
+      final endDate = DateTime(year, month + 1, 0);
+      
+      final startDateStr = '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
+      final endDateStr = '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
+
+      final monthlyData = await _diyanetService.getDateRangePrayerTimes(
+        countryCode: DiyanetCityMapper.countryCode,
+        stateCode: DiyanetCityMapper.stateCode,
+        cityCode: cityCode,
+        startDate: startDateStr,
+        endDate: endDateStr,
+      );
+
+      if (monthlyData != null && monthlyData.isNotEmpty) {
+        final Map<String, PrayerTimesModel> monthlyTimes = {};
+        for (final dayData in monthlyData) {
+          final prayerTimes = PrayerTimesModel.fromDiyanetApi(dayData);
+          final dayStr = dayData['gregorianDateShort']?.split('.')[0] ?? 
+                        DateTime.parse(dayData['gregorianDateLongIso8601'] ?? startDateStr).day.toString();
+          monthlyTimes[dayStr] = prayerTimes;
+        }
+        return monthlyTimes;
+      }
+
+      // Fallback: günlük endpoint ile çek
+      return await _getMonthlyPrayerTimesDaily(cityName, year, month);
     } catch (e) {
-      print('Error fetching monthly prayer times for city: $e');
+      if (kDebugMode) {
+        print('❌ Error fetching monthly prayer times: $e');
+      }
       return _getDefaultMonthlyPrayerTimes(year, month);
     }
   }
 
-  /// Get Hijri date for a specific Gregorian date
+
+  /// Get Hijri date for a specific Gregorian date using Diyanet API
   static Future<HijriDate?> getHijriDate(DateTime gregorianDate) async {
     try {
-      return await _alAdhanService.getHijriDate(gregorianDate: gregorianDate);
+      final dateStr = '${gregorianDate.year}-${gregorianDate.month.toString().padLeft(2, '0')}-${gregorianDate.day.toString().padLeft(2, '0')}';
+      
+      final hijriData = await _diyanetService.getHijriCalendar(gregorianDate: dateStr);
+      
+      if (hijriData != null) {
+        // Diyanet API response formatını HijriDate'e çevir
+        // API response formatı kontrol edilmeli
+        return HijriDate(
+          date: hijriData['hijriDateShort'] ?? hijriData['hijriDateLong'] ?? '',
+          format: 'DD.MM.YYYY',
+          day: hijriData['hijriDateShort']?.split('.')[0] ?? '',
+          weekday: '',
+          month: hijriData['hijriDateLong']?.split(' ')[1] ?? '',
+          year: hijriData['hijriDateShort']?.split('.')[2] ?? '',
+          designation: '',
+          holidays: [],
+        );
+      }
+      
+      return null;
     } catch (e) {
-      print('Error fetching Hijri date: $e');
+      if (kDebugMode) {
+        print('❌ Error fetching Hijri date: $e');
+      }
       return null;
     }
   }
 
-  /// Test the API connection
+  /// Test the Diyanet API connection
   static Future<bool> testConnection() async {
     try {
-      return await _alAdhanService.isServiceAvailable();
+      return await _diyanetService.authenticate();
     } catch (e) {
-      print('API connection test failed: $e');
+      if (kDebugMode) {
+        print('❌ API connection test failed: $e');
+      }
       return false;
     }
   }
@@ -610,27 +891,47 @@ class PrayerApiService {
     int month,
   ) {
     print('API kullanılamıyor, varsayılan aylık namaz vakitleri kullanılıyor');
-    
+
     // Aydaki gün sayısını hesapla
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final Map<String, PrayerTimesModel> defaultMonth = {};
 
     // Güncel aya göre namaz vakitleri oluştur (mevsime göre)
     String imsak, gunes, ogle, ikindi, aksam, yatsi;
-    
+
     // Mevsime göre kabaca varsayılan değerler belirle
-    if (month >= 3 && month <= 5) {  // İlkbahar
-      imsak = '04:45'; gunes = '06:15'; ogle = '13:00'; 
-      ikindi = '16:45'; aksam = '19:45'; yatsi = '21:15';
-    } else if (month >= 6 && month <= 8) {  // Yaz
-      imsak = '03:45'; gunes = '05:30'; ogle = '13:15'; 
-      ikindi = '17:15'; aksam = '20:45'; yatsi = '22:30';
-    } else if (month >= 9 && month <= 11) {  // Sonbahar
-      imsak = '05:15'; gunes = '06:45'; ogle = '13:00'; 
-      ikindi = '16:15'; aksam = '18:45'; yatsi = '20:15';
-    } else {  // Kış
-      imsak = '06:15'; gunes = '07:45'; ogle = '12:45'; 
-      ikindi = '15:15'; aksam = '17:30'; yatsi = '19:00';
+    if (month >= 3 && month <= 5) {
+      // İlkbahar
+      imsak = '04:45';
+      gunes = '06:15';
+      ogle = '13:00';
+      ikindi = '16:45';
+      aksam = '19:45';
+      yatsi = '21:15';
+    } else if (month >= 6 && month <= 8) {
+      // Yaz
+      imsak = '03:45';
+      gunes = '05:30';
+      ogle = '13:15';
+      ikindi = '17:15';
+      aksam = '20:45';
+      yatsi = '22:30';
+    } else if (month >= 9 && month <= 11) {
+      // Sonbahar
+      imsak = '05:15';
+      gunes = '06:45';
+      ogle = '13:00';
+      ikindi = '16:15';
+      aksam = '18:45';
+      yatsi = '20:15';
+    } else {
+      // Kış
+      imsak = '06:15';
+      gunes = '07:45';
+      ogle = '12:45';
+      ikindi = '15:15';
+      aksam = '17:30';
+      yatsi = '19:00';
     }
 
     for (int day = 1; day <= daysInMonth; day++) {
@@ -652,8 +953,19 @@ class PrayerApiService {
   /// Helper method to get month name in Turkish
   static String _getMonthName(int month) {
     const months = [
-      '', 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      '',
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
     ];
     return months[month];
   }

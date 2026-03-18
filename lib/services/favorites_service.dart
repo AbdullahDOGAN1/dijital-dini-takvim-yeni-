@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/favorite_model.dart';
@@ -10,7 +12,7 @@ class FavoritesService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final favoritesJson = prefs.getStringList(_favoritesKey) ?? [];
-      
+
       return favoritesJson.map((jsonString) {
         final json = jsonDecode(jsonString);
         return FavoriteModel.fromJson(json);
@@ -25,12 +27,12 @@ class FavoritesService {
   static Future<bool> addToFavorites(FavoriteModel favorite) async {
     try {
       final favorites = await getFavorites();
-      
+
       // Check if already exists
       if (favorites.contains(favorite)) {
         return false; // Already in favorites
       }
-      
+
       favorites.add(favorite);
       return await _saveFavorites(favorites);
     } catch (e) {
@@ -69,7 +71,7 @@ class FavoritesService {
       final favoritesJson = favorites.map((fav) {
         return jsonEncode(fav.toJson());
       }).toList();
-      
+
       return await prefs.setStringList(_favoritesKey, favoritesJson);
     } catch (e) {
       print('Error saving favorites: $e');

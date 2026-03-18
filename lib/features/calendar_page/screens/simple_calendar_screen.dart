@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import '../../../models/daily_content_model.dart';
 import '../../../models/prayer_times_model.dart';
@@ -18,11 +20,11 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
   String? _error;
   int _currentPage = 0;
   late PageController _pageController;
-  
+
   // Hijri tarih için
   HijriDate? _currentHijriDate;
   bool _isLoadingHijri = false;
-  
+
   // Navigation kontrolü için
   bool _isNavigating = false;
   bool _isInitialized = false;
@@ -50,7 +52,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
           _isLoading = false;
           _isInitialized = true;
         });
-        
+
         // İlk Hijri tarih güncellemesi
         if (_content.isNotEmpty) {
           _updateHijriDate(_content[_currentPage].gunNo);
@@ -72,10 +74,10 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
     return (dayOfYear - 1).clamp(0, 364); // 365 gün max
   }
 
-  /// AlAdhan API kullanarak doğru Hijri tarihini getir
+  /// Diyanet API kullanarak doğru Hijri tarihini getir
   Future<void> _updateHijriDate(int dayNumber) async {
     if (_isLoadingHijri) return; // Zaten yükleniyorsa bekle
-    
+
     setState(() {
       _isLoadingHijri = true;
     });
@@ -84,10 +86,12 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       // Gun numarasından Gregorian tarihi hesapla
       final startOfYear = DateTime(2025, 1, 1);
       final currentDate = startOfYear.add(Duration(days: dayNumber - 1));
-      
-      // AlAdhan API'den Hijri tarihi al
-      final hijriDate = await DailyContentService.getCachedHijriDate(currentDate);
-      
+
+      // Diyanet API'den Hijri tarihi al
+      final hijriDate = await DailyContentService.getCachedHijriDate(
+        currentDate,
+      );
+
       if (mounted) {
         setState(() {
           _currentHijriDate = hijriDate;
@@ -109,38 +113,47 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
     if (_currentHijriDate != null) {
       // API'den gelen tarihi Türkçe formatla
       final originalDate = _currentHijriDate!.formattedDate;
-      
+
       // Tarihten gün ve yıl numarasını çıkar
       final regex = RegExp(r'^(\d+)\s+(.+?)\s+(\d+)$');
       final match = regex.firstMatch(originalDate);
-      
+
       if (match != null) {
         final day = match.group(1)!;
         final monthEng = match.group(2)!;
         final year = match.group(3)!;
-        
+
         // İngilizce ay isimlerini Türkçe'ye çevir
         final monthTr = _convertEnglishMonthToTurkish(monthEng);
         return '$day $monthTr $year';
       }
-      
+
       return originalDate;
     }
-    
+
     // Fallback - Türkçe ay isimleri ile doğru hesaplama
     const hijriMonths = [
-      'Muharrem', 'Safer', 'Rebiülevvel', 'Rebiülahir',
-      'Cemayizelevvel', 'Cemayizelahir', 'Recep', 'Şaban',
-      'Ramazan', 'Şevval', 'Zilkade', 'Zilhicce'
+      'Muharrem',
+      'Safer',
+      'Rebiülevvel',
+      'Rebiülahir',
+      'Cemayizelevvel',
+      'Cemayizelahir',
+      'Recep',
+      'Şaban',
+      'Ramazan',
+      'Şevval',
+      'Zilkade',
+      'Zilhicce',
     ];
-    
+
     // 2025 için doğru başlangıç tarihi (1 Ocak 2025 = 21 Cemayizelahir 1446)
     var hijriDay = 21 + (dayNumber - 1);
     var hijriMonth = 5; // Cemayizelahir (0-11 indeksi)
     var hijriYear = 1446;
-    
+
     const monthDays = [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
-    
+
     while (hijriDay > monthDays[hijriMonth]) {
       hijriDay -= monthDays[hijriMonth];
       hijriMonth++;
@@ -149,7 +162,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
         hijriYear++;
       }
     }
-    
+
     while (hijriDay < 1) {
       hijriMonth--;
       if (hijriMonth < 0) {
@@ -158,7 +171,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       }
       hijriDay += monthDays[hijriMonth];
     }
-    
+
     return '$hijriDay ${hijriMonths[hijriMonth]} $hijriYear';
   }
 
@@ -169,12 +182,12 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Muharram': 'Muharrem',
       'Muḥarram': 'Muharrem',
       'Moharram': 'Muharrem',
-      
+
       // Safer - 2. ay
-      'Safar': 'Safer', 
+      'Safar': 'Safer',
       'Ṣafar': 'Safer',
       'Saffar': 'Safer',
-      
+
       // Rebiülevvel - 3. ay
       "Rabi' al-awwal": 'Rebiülevvel',
       'Rabi al-awwal': 'Rebiülevvel',
@@ -183,10 +196,10 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Rabiulewwel': 'Rebiülevvel',
       'Rabi I': 'Rebiülevvel',
       'Rabi 1': 'Rebiülevvel',
-      
+
       // Rebiülahir - 4. ay
       "Rabi' al-thani": 'Rebiülahir',
-      'Rabi al-thani': 'Rebiülahir', 
+      'Rabi al-thani': 'Rebiülahir',
       'Rabīʿ al-thānī': 'Rebiülahir',
       'Rabi-ul-thani': 'Rebiülahir',
       'Rabiulahir': 'Rebiülahir',
@@ -194,7 +207,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Rabi al-akhir': 'Rebiülahir',
       'Rabi II': 'Rebiülahir',
       'Rabi 2': 'Rebiülahir',
-      
+
       // Cemayizelevvel - 5. ay
       'Jumada al-awwal': 'Cemayizelevvel',
       'Jumādā al-awwal': 'Cemayizelevvel',
@@ -202,7 +215,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Jumada I': 'Cemayizelevvel',
       'Jumada 1': 'Cemayizelevvel',
       'Jumada-ul-awwal': 'Cemayizelevvel',
-      
+
       // Cemayizelahir - 6. ay
       'Jumada al-thani': 'Cemayizelahir',
       'Jumādā al-thānī': 'Cemayizelahir',
@@ -210,31 +223,31 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Jumada II': 'Cemayizelahir',
       'Jumada 2': 'Cemayizelahir',
       'Jumada-ul-thani': 'Cemayizelahir',
-      
+
       // Recep - 7. ay
       'Rajab': 'Recep',
       'Rajjab': 'Recep',
       'Rajab al-murajjab': 'Recep',
-      
+
       // Şaban - 8. ay
       "Sha'ban": 'Şaban',
       'Shaban': 'Şaban',
       "Sha'aban": 'Şaban',
       'Shaʿbān': 'Şaban',
       'Sha-ban': 'Şaban',
-      
+
       // Ramazan - 9. ay
       'Ramadan': 'Ramazan',
       'Ramaḍān': 'Ramazan',
       'Ramzan': 'Ramazan',
       'Ramadhan': 'Ramazan',
-      
+
       // Şevval - 10. ay
       'Shawwal': 'Şevval',
       'Shawwāl': 'Şevval',
       'Shawal': 'Şevval',
       'Shauwal': 'Şevval',
-      
+
       // Zilkade - 11. ay
       "Dhu al-Qi'dah": 'Zilkade',
       'Dhu al-Qadah': 'Zilkade',
@@ -243,7 +256,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Zilqade': 'Zilkade',
       'Zul-Qadah': 'Zilkade',
       'Zil-Qadah': 'Zilkade',
-      
+
       // Zilhicce - 12. ay
       'Dhu al-Hijjah': 'Zilhicce',
       'Dhu al-Hijja': 'Zilhicce',
@@ -253,18 +266,22 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Zul-Hijjah': 'Zilhicce',
       'Zil-Hijjah': 'Zilhicce',
     };
-    
+
     // Önce exact match kontrol et
     if (monthMap.containsKey(englishMonth)) {
-      print('🗓️ Month converted: "$englishMonth" → "${monthMap[englishMonth]}"');
+      print(
+        '🗓️ Month converted: "$englishMonth" → "${monthMap[englishMonth]}"',
+      );
       return monthMap[englishMonth]!;
     }
-    
+
     // Case-insensitive kontrol
     final cleanMonth = englishMonth.trim().toLowerCase();
     for (final entry in monthMap.entries) {
       if (entry.key.toLowerCase() == cleanMonth) {
-        print('🗓️ Month converted (case insensitive): "$englishMonth" → "${entry.value}"');
+        print(
+          '🗓️ Month converted (case insensitive): "$englishMonth" → "${entry.value}"',
+        );
         return entry.value;
       }
     }
@@ -280,7 +297,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
         .replaceAll('ṣ', 's')
         .replaceAll('ḥ', 'h')
         .toLowerCase();
-        
+
     for (final entry in monthMap.entries) {
       final normalizedKey = entry.key
           .replaceAll('ʿ', '\'')
@@ -292,26 +309,32 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
           .replaceAll('ṣ', 's')
           .replaceAll('ḥ', 'h')
           .toLowerCase();
-          
+
       if (normalizedKey == normalizedInput) {
-        print('🗓️ Month converted (normalized): "$englishMonth" → "${entry.value}"');
+        print(
+          '🗓️ Month converted (normalized): "$englishMonth" → "${entry.value}"',
+        );
         return entry.value;
       }
     }
-    
+
     // Partial match - contains kontrolü
     for (final entry in monthMap.entries) {
       final key = entry.key.toLowerCase();
       if (key.contains(cleanMonth) || cleanMonth.contains(key)) {
-        print('🗓️ Month converted (partial): "$englishMonth" → "${entry.value}"');
+        print(
+          '🗓️ Month converted (partial): "$englishMonth" → "${entry.value}"',
+        );
         return entry.value;
       }
     }
-    
+
     // Debugging için
     print('🗓️ WARNING - Month not found: "$englishMonth"');
-    print('🗓️   Sample mappings: Muharram→Muharrem, Safar→Safer, Ramadan→Ramazan');
-    
+    print(
+      '🗓️   Sample mappings: Muharram→Muharrem, Safar→Safer, Ramadan→Ramazan',
+    );
+
     return englishMonth; // Bulunamazsa orijinal döndür
   }
 
@@ -338,161 +361,184 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(_error!, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadContent,
+                    child: const Text('Tekrar Dene'),
+                  ),
+                ],
+              ),
+            )
+          : _content.isEmpty
+          ? const Center(child: Text('İçerik bulunamadı'))
+          : Column(
+              children: [
+                // Sayfa göstergesi ve tarih bilgisi
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                    ),
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(_error!, textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadContent,
-                        child: const Text('Tekrar Dene'),
+                      // Ana tarih bilgisi
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            onPressed: _currentPage > 0 ? _previousPage : null,
+                            icon: Icon(
+                              Icons.chevron_left,
+                              color: _currentPage > 0
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  _content.isNotEmpty
+                                      ? _content[_currentPage].tarih
+                                      : '',
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 4),
+                                _isLoadingHijri
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 12,
+                                            height: 12,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Hicri tarih yükleniyor...',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                  color: Colors.grey[600],
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        _getHijriDateForDay(_currentPage + 1),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: Colors.grey[600],
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: _currentPage < _content.length - 1
+                                ? _nextPage
+                                : null,
+                            icon: Icon(
+                              Icons.chevron_right,
+                              color: _currentPage < _content.length - 1
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Sayfa sayısı (daha ince)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).primaryColor.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Gün ${_currentPage + 1}',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
                       ),
                     ],
                   ),
-                )
-              : _content.isEmpty
-                  ? const Center(child: Text('İçerik bulunamadı'))
-                  : Column(
-                      children: [
-                        // Sayfa göstergesi ve tarih bilgisi
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              // Ana tarih bilgisi
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  IconButton(
-                                    onPressed: _currentPage > 0 ? _previousPage : null,
-                                    icon: Icon(
-                                      Icons.chevron_left,
-                                      color: _currentPage > 0 
-                                          ? Theme.of(context).primaryColor
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          _content.isNotEmpty ? _content[_currentPage].tarih : '',
-                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).primaryColor,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        _isLoadingHijri 
-                                          ? Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  width: 12,
-                                                  height: 12,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  'Hicri tarih yükleniyor...',
-                                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                    color: Colors.grey[600],
-                                                    fontStyle: FontStyle.italic,
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : Text(
-                                              _getHijriDateForDay(_currentPage + 1),
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: Colors.grey[600],
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: _currentPage < _content.length - 1 
-                                        ? _nextPage 
-                                        : null,
-                                    icon: Icon(
-                                      Icons.chevron_right,
-                                      color: _currentPage < _content.length - 1
-                                          ? Theme.of(context).primaryColor
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Sayfa sayısı (daha ince)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  'Gün ${_currentPage + 1}',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // İçerik
-                        Expanded(
-                          child: _isInitialized ? PageView.builder(
-                            controller: _pageController,
-                            onPageChanged: (index) {
-                              if (!_isNavigating && mounted) {
-                                setState(() {
-                                  _currentPage = index;
-                                });
-                                // Hijri tarih güncelleme - daha uzun debounce
-                                Future.delayed(const Duration(milliseconds: 300), () {
-                                  if (_currentPage == index && mounted && !_isLoadingHijri) {
+                ),
+
+                // İçerik
+                Expanded(
+                  child: _isInitialized
+                      ? PageView.builder(
+                          controller: _pageController,
+                          onPageChanged: (index) {
+                            if (!_isNavigating && mounted) {
+                              setState(() {
+                                _currentPage = index;
+                              });
+                              // Hijri tarih güncelleme - daha uzun debounce
+                              Future.delayed(
+                                const Duration(milliseconds: 300),
+                                () {
+                                  if (_currentPage == index &&
+                                      mounted &&
+                                      !_isLoadingHijri) {
                                     _updateHijriDate(_content[index].gunNo);
                                   }
-                                });
-                              }
-                            },
-                            itemCount: _content.length,
-                            itemBuilder: (context, index) {
-                              final dayContent = _content[index];
-                              return SingleChildScrollView(
-                                padding: const EdgeInsets.all(16),
-                                child: DailyContentWidget(
-                                  content: dayContent,
-                                  onTap: () => _openDetailScreen(dayContent),
-                                ),
+                                },
                               );
-                            },
-                          ) : const Center(child: CircularProgressIndicator()),
-                        ),
-                      ],
-                    ),
+                            }
+                          },
+                          itemCount: _content.length,
+                          itemBuilder: (context, index) {
+                            final dayContent = _content[index];
+                            return SingleChildScrollView(
+                              padding: const EdgeInsets.all(16),
+                              child: DailyContentWidget(
+                                content: dayContent,
+                                onTap: () => _openDetailScreen(dayContent),
+                              ),
+                            );
+                          },
+                        )
+                      : const Center(child: CircularProgressIndicator()),
+                ),
+              ],
+            ),
       bottomNavigationBar: _content.isNotEmpty
           ? Container(
               padding: const EdgeInsets.all(16),
@@ -520,49 +566,55 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
     if (_currentPage > 0 && !_isNavigating && _isInitialized) {
       _isNavigating = true;
       final targetPage = _currentPage - 1;
-      _pageController.animateToPage(
-        targetPage,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      ).then((_) {
-        if (mounted) {
-          setState(() {
-            _currentPage = targetPage;
-            _isNavigating = false;
-          });
-          // Önceki güne gittikten sonra Hijri tarihi güncelle
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted && !_isLoadingHijri) {
-              _updateHijriDate(_content[targetPage].gunNo);
+      _pageController
+          .animateToPage(
+            targetPage,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          )
+          .then((_) {
+            if (mounted) {
+              setState(() {
+                _currentPage = targetPage;
+                _isNavigating = false;
+              });
+              // Önceki güne gittikten sonra Hijri tarihi güncelle
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (mounted && !_isLoadingHijri) {
+                  _updateHijriDate(_content[targetPage].gunNo);
+                }
+              });
             }
           });
-        }
-      });
     }
   }
 
   void _nextPage() {
-    if (_currentPage < _content.length - 1 && !_isNavigating && _isInitialized) {
+    if (_currentPage < _content.length - 1 &&
+        !_isNavigating &&
+        _isInitialized) {
       _isNavigating = true;
       final targetPage = _currentPage + 1;
-      _pageController.animateToPage(
-        targetPage,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      ).then((_) {
-        if (mounted) {
-          setState(() {
-            _currentPage = targetPage;
-            _isNavigating = false;
-          });
-          // Sonraki güne gittikten sonra Hijri tarihi güncelle
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted && !_isLoadingHijri) {
-              _updateHijriDate(_content[targetPage].gunNo);
+      _pageController
+          .animateToPage(
+            targetPage,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          )
+          .then((_) {
+            if (mounted) {
+              setState(() {
+                _currentPage = targetPage;
+                _isNavigating = false;
+              });
+              // Sonraki güne gittikten sonra Hijri tarihi güncelle
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (mounted && !_isLoadingHijri) {
+                  _updateHijriDate(_content[targetPage].gunNo);
+                }
+              });
             }
           });
-        }
-      });
     }
   }
 
@@ -570,24 +622,26 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
     if (!_isNavigating && _isInitialized) {
       _isNavigating = true;
       final todayIndex = _getTodayIndex().clamp(0, _content.length - 1);
-      _pageController.animateToPage(
-        todayIndex,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      ).then((_) {
-        if (mounted) {
-          setState(() {
-            _currentPage = todayIndex;
-            _isNavigating = false;
-          });
-          // Bugüne gittikten sonra Hijri tarihi güncelle
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted && !_isLoadingHijri) {
-              _updateHijriDate(_content[todayIndex].gunNo);
+      _pageController
+          .animateToPage(
+            todayIndex,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          )
+          .then((_) {
+            if (mounted) {
+              setState(() {
+                _currentPage = todayIndex;
+                _isNavigating = false;
+              });
+              // Bugüne gittikten sonra Hijri tarihi güncelle
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (mounted && !_isLoadingHijri) {
+                  _updateHijriDate(_content[todayIndex].gunNo);
+                }
+              });
             }
           });
-        }
-      });
     }
   }
 

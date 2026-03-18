@@ -3,12 +3,8 @@ import 'package:flutter/material.dart';
 class AppLogo extends StatelessWidget {
   final double size;
   final bool withAnimation;
-  
-  const AppLogo({
-    super.key,
-    this.size = 120,
-    this.withAnimation = false,
-  });
+
+  const AppLogo({super.key, this.size = 120, this.withAnimation = false});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +15,7 @@ class AppLogo extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: Offset(0, 4),
           ),
@@ -40,10 +36,7 @@ class AppLogo extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [
-                    Color(0xFF2d4a3e),
-                    Color(0xFF1a2e23),
-                  ],
+                  colors: [Color(0xFF2d4a3e), Color(0xFF1a2e23)],
                 ),
               ),
               child: Stack(
@@ -59,10 +52,7 @@ class AppLogo extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFFf4d03f),
-                            Color(0xFFd4ac0d),
-                          ],
+                          colors: [Color(0xFFf4d03f), Color(0xFFd4ac0d)],
                         ),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(size * 0.2),
@@ -72,7 +62,7 @@ class AppLogo extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 4,
                             offset: Offset(0, 2),
                           ),
@@ -80,7 +70,7 @@ class AppLogo extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   // Book
                   Container(
                     width: size * 0.47,
@@ -89,15 +79,12 @@ class AppLogo extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFFf7dc6f),
-                          Color(0xFFf1c40f),
-                        ],
+                        colors: [Color(0xFFf7dc6f), Color(0xFFf1c40f)],
                       ),
                       borderRadius: BorderRadius.circular(size * 0.03),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withValues(alpha: 0.3),
                           blurRadius: 6,
                           offset: Offset(0, 3),
                         ),
@@ -117,7 +104,7 @@ class AppLogo extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         // Book pages
                         Positioned(
                           left: size * 0.02,
@@ -126,7 +113,7 @@ class AppLogo extends StatelessWidget {
                             width: size * 0.43,
                             height: size * 0.27,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(size * 0.015),
                             ),
                             child: Padding(
@@ -137,13 +124,19 @@ class AppLogo extends StatelessWidget {
                                   // Text lines
                                   for (int i = 0; i < 6; i++)
                                     Padding(
-                                      padding: EdgeInsets.only(bottom: size * 0.01),
+                                      padding: EdgeInsets.only(
+                                        bottom: size * 0.01,
+                                      ),
                                       child: Container(
                                         height: size * 0.008,
                                         width: size * (0.15 + (i % 3) * 0.02),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFF2c3e50).withOpacity(0.6),
-                                          borderRadius: BorderRadius.circular(1),
+                                          color: Color(
+                                            0xFF2c3e50,
+                                          ).withValues(alpha: 0.6),
+                                          borderRadius: BorderRadius.circular(
+                                            1,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -155,12 +148,14 @@ class AppLogo extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Light rays around the book
                   ...List.generate(8, (index) {
                     final angle = (index * 45.0) * (3.14159 / 180);
                     return Positioned(
-                      top: size * 0.25 + (size * 0.15) * (1 - 0.8) * (1 + 0.3 * (index % 2)),
+                      top:
+                          size * 0.25 +
+                          (size * 0.15) * (1 - 0.8) * (1 + 0.3 * (index % 2)),
                       left: size * 0.5 - size * 0.004,
                       child: Transform.rotate(
                         angle: angle,
@@ -172,8 +167,8 @@ class AppLogo extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Color(0xFFf4d03f).withOpacity(0.8),
-                                Color(0xFFf4d03f).withOpacity(0.0),
+                                Color(0xFFf4d03f).withValues(alpha: 0.8),
+                                Color(0xFFf4d03f).withValues(alpha: 0.0),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(size * 0.004),
@@ -197,10 +192,7 @@ class AppLogo extends StatelessWidget {
         builder: (context, value, child) {
           return Transform.scale(
             scale: value,
-            child: Opacity(
-              opacity: value,
-              child: logo,
-            ),
+            child: Opacity(opacity: value, child: logo),
           );
         },
       );

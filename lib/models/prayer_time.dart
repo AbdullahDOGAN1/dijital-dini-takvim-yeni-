@@ -20,7 +20,7 @@ class PrayerTime {
     final timeParts = time.split(':');
     final hour = int.tryParse(timeParts[0]) ?? 0;
     final minute = int.tryParse(timeParts[1]) ?? 0;
-    
+
     final prayerDateTime = DateTime(
       date.year,
       date.month,

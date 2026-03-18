@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,79 +8,91 @@ import '../models/religious_day_model.dart';
 class DiyanetApiService {
   static const String _baseUrl = 'https://www.diyanet.gov.tr';
   static const String _cacheKey = 'religious_days_cache';
-  static const Duration _cacheDuration = Duration(hours: 24); // Cache for 24 hours
-  
+  static const Duration _cacheDuration = Duration(
+    hours: 24,
+  ); // Cache for 24 hours
+
   /// Diyanet'in API'sinden dini günleri çek
   /// Bu endpoint değişebilir, güncel olduğundan emin olun
-  Future<List<ReligiousDay>> fetchReligiousDaysFromDiyanet({
-    int? year,
-  }) async {
+  Future<List<ReligiousDay>> fetchReligiousDaysFromDiyanet({int? year}) async {
     final targetYear = year ?? DateTime.now().year;
-    
+
     print('📅 Diyanet API: Fetching religious days for $targetYear');
-    
+
     // Check cache first
     final cachedData = await _getCachedData(targetYear);
     if (cachedData != null) {
       print('✅ Diyanet API: Using cached data for $targetYear');
       return cachedData;
     }
-    
+
     // Try multiple possible API endpoints
     List<String> endpoints = [
       '$_baseUrl/api/dini-gunler/$targetYear',
       '$_baseUrl/PrayerTimes/DiniGunler/$targetYear',
       '$_baseUrl/tr-TR/Content/Api/DiniGunler/$targetYear',
     ];
-    
+
     for (String endpoint in endpoints) {
       try {
         print('🌐 Trying Diyanet API endpoint: $endpoint');
-        
+
         final url = Uri.parse(endpoint);
-        final response = await http.get(
-          url,
-          headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'NurVakti-App/1.0',
-            'Cache-Control': 'no-cache',
-          },
-        ).timeout(const Duration(seconds: 10)); // Increased timeout
+        final response = await http
+            .get(
+              url,
+              headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'NurVakti-App/1.0',
+                'Cache-Control': 'no-cache',
+              },
+            )
+            .timeout(const Duration(seconds: 10)); // Increased timeout
 
         print('🌐 Diyanet API Response: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           List<ReligiousDay> result;
-          
+
           if (data is List) {
-            result = data.map((item) => _convertDiyanetDataToReligiousDay(item)).toList();
+            result = data
+                .map((item) => _convertDiyanetDataToReligiousDay(item))
+                .toList();
           } else if (data is Map && data['data'] != null) {
             final List<dynamic> items = data['data'];
-            result = items.map((item) => _convertDiyanetDataToReligiousDay(item)).toList();
+            result = items
+                .map((item) => _convertDiyanetDataToReligiousDay(item))
+                .toList();
           } else if (data is Map && data['religiousDays'] != null) {
             final List<dynamic> items = data['religiousDays'];
-            result = items.map((item) => _convertDiyanetDataToReligiousDay(item)).toList();
+            result = items
+                .map((item) => _convertDiyanetDataToReligiousDay(item))
+                .toList();
           } else {
             print('❌ Unexpected data format from API');
             continue; // Try next endpoint
           }
-          
-          print('✅ Diyanet API: Successfully fetched ${result.length} religious days');
-          
+
+          print(
+            '✅ Diyanet API: Successfully fetched ${result.length} religious days',
+          );
+
           // Cache the result
           await _cacheData(targetYear, result);
-          
+
           return result;
         } else {
-          print('❌ Diyanet API Error: ${response.statusCode} for endpoint: $endpoint');
+          print(
+            '❌ Diyanet API Error: ${response.statusCode} for endpoint: $endpoint',
+          );
         }
       } catch (e) {
         print('❌ Error with endpoint $endpoint: $e');
         continue; // Try next endpoint
       }
     }
-    
+
     print('❌ All API endpoints failed, using fallback data');
     // API başarısız olursa fallback data döndür
     return _getFallbackReligiousDays(targetYear);
@@ -120,14 +134,14 @@ class DiyanetApiService {
         print('Date parsing error: $e');
       }
     }
-    
+
     return DateTime.now(); // Fallback
   }
 
   /// Kategoriyi belirle
   String _determineCategory(String name) {
     final lowerName = name.toLowerCase();
-    
+
     if (lowerName.contains('kandil')) {
       return 'kandil';
     } else if (lowerName.contains('bayram')) {
@@ -219,14 +233,15 @@ class DiyanetApiService {
           date: DateTime(2025, 6, 6),
           hijriDate: '10 Zilhicce 1446',
           category: 'bayram',
-          description: 'Hz. İbrahim\'in kurban kesmeye hazır oluşunun anıldığı bayram.',
+          description:
+              'Hz. İbrahim\'in kurban kesmeye hazır oluşunun anıldığı bayram.',
           importance: 'Hac ibadetinin tamamlandığı ve kurban kesildiği bayram.',
           traditions: ['Kurban kesme', 'Bayram namazı', 'Ziyaretleşme'],
           prayers: ['Bayram namazı', 'Takbir'],
         ),
       ];
     }
-    
+
     return [];
   }
 
@@ -234,16 +249,18 @@ class DiyanetApiService {
   Future<Map<String, dynamic>?> getNextReligiousDay() async {
     final religiousDays = await fetchReligiousDaysFromDiyanet();
     final now = DateTime.now();
-    
+
     // Gelecekteki ilk dini günü bul
-    final upcomingDays = religiousDays.where((day) => day.date.isAfter(now)).toList();
-    
+    final upcomingDays = religiousDays
+        .where((day) => day.date.isAfter(now))
+        .toList();
+
     if (upcomingDays.isNotEmpty) {
       upcomingDays.sort((a, b) => a.date.compareTo(b.date));
       final nextDay = upcomingDays.first;
-      
+
       final difference = nextDay.date.difference(now);
-      
+
       return {
         'religiousDay': nextDay,
         'daysRemaining': difference.inDays,
@@ -251,7 +268,7 @@ class DiyanetApiService {
         'minutesRemaining': difference.inMinutes % 60,
       };
     }
-    
+
     return null;
   }
 
@@ -259,7 +276,7 @@ class DiyanetApiService {
   Future<List<ReligiousDay>> getUpcomingReligiousDays() async {
     final religiousDays = await fetchReligiousDaysFromDiyanet();
     final now = DateTime.now();
-    
+
     return religiousDays.where((day) => day.date.isAfter(now)).toList()
       ..sort((a, b) => a.date.compareTo(b.date));
   }
@@ -269,7 +286,7 @@ class DiyanetApiService {
     final religiousDays = await fetchReligiousDaysFromDiyanet();
     return religiousDays.where((day) => day.category == category).toList();
   }
-  
+
   /// Cache helper methods
   Future<List<ReligiousDay>?> _getCachedData(int year) async {
     try {
@@ -277,7 +294,7 @@ class DiyanetApiService {
       final cacheKey = '${_cacheKey}_$year';
       final cachedJson = prefs.getString(cacheKey);
       final cacheTimestamp = prefs.getInt('${cacheKey}_timestamp');
-      
+
       if (cachedJson != null && cacheTimestamp != null) {
         final cacheAge = DateTime.now().millisecondsSinceEpoch - cacheTimestamp;
         if (cacheAge < _cacheDuration.inMilliseconds) {
@@ -290,16 +307,19 @@ class DiyanetApiService {
     }
     return null;
   }
-  
+
   Future<void> _cacheData(int year, List<ReligiousDay> data) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final cacheKey = '${_cacheKey}_$year';
       final dataJson = json.encode(data.map((item) => item.toJson()).toList());
-      
+
       await prefs.setString(cacheKey, dataJson);
-      await prefs.setInt('${cacheKey}_timestamp', DateTime.now().millisecondsSinceEpoch);
-      
+      await prefs.setInt(
+        '${cacheKey}_timestamp',
+        DateTime.now().millisecondsSinceEpoch,
+      );
+
       print('✅ Cached religious days for year $year');
     } catch (e) {
       print('❌ Error caching data: $e');

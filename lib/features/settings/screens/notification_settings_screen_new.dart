@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,21 +13,24 @@ class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   bool _notificationsEnabled = false;
   int _reminderMinutes = 5;
   String _selectedSound = 'alarm';
   bool _isLoading = true;
   bool _ezanSoundEnabled = false;
   String _selectedEzanSound = 'athan';
-  
+
   // Custom minutes controller
-  final TextEditingController _customMinutesController = TextEditingController();
+  final TextEditingController _customMinutesController =
+      TextEditingController();
   bool _useCustomMinutes = false;
-  
+
   // Dynamic sound lists that include custom sounds
   List<Map<String, String>> _notificationSounds = [];
   List<Map<String, String>> _ezanSounds = [];
@@ -45,11 +50,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Future<void> _loadSettings() async {
     try {
       // Load sound lists (including custom sounds)
-      _notificationSounds = await NotificationServiceFixed.getAllNotificationSounds();
+      _notificationSounds =
+          await NotificationServiceFixed.getAllNotificationSounds();
       _ezanSounds = await NotificationServiceFixed.getAllEzanSounds();
-      
+
       final settings = await NotificationServiceFixed.getCurrentSettings();
-      
+
       setState(() {
         _notificationsEnabled = settings['notifications_enabled'] ?? false;
         _reminderMinutes = settings['reminder_minutes'] ?? 5;
@@ -57,11 +63,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         _ezanSoundEnabled = settings['ezan_sound_enabled'] ?? false;
         _selectedEzanSound = settings['ezan_sound'] ?? 'athan';
         _isLoading = false;
-        
+
         // Check if using custom minutes
-        _useCustomMinutes = !NotificationServiceFixed.reminderTimeOptions
-            .any((option) => option['minutes'] == _reminderMinutes);
-        
+        _useCustomMinutes = !NotificationServiceFixed.reminderTimeOptions.any(
+          (option) => option['minutes'] == _reminderMinutes,
+        );
+
         if (_useCustomMinutes) {
           _customMinutesController.text = _reminderMinutes.toString();
         }
@@ -78,26 +85,34 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     setState(() {
       _notificationsEnabled = enabled;
     });
-    
+
     await NotificationServiceFixed.setNotificationsEnabled(enabled);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
-              Icon(enabled ? Icons.notifications_active : Icons.notifications_off, 
-                   color: Colors.white),
+              Icon(
+                enabled ? Icons.notifications_active : Icons.notifications_off,
+                color: Colors.white,
+              ),
               SizedBox(width: 8),
               Expanded(
-                child: Text(enabled ? 'Bildirimler açıldı ✅' : 'Bildirimler kapatıldı 🔕'),
+                child: Text(
+                  enabled ? 'Bildirimler açıldı ✅' : 'Bildirimler kapatıldı 🔕',
+                ),
               ),
             ],
           ),
-          backgroundColor: enabled ? Colors.green.shade600 : Colors.orange.shade600,
+          backgroundColor: enabled
+              ? Colors.green.shade600
+              : Colors.orange.shade600,
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -107,10 +122,10 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     setState(() {
       _reminderMinutes = minutes;
     });
-    
+
     await NotificationServiceFixed.setReminderMinutes(minutes);
     await NotificationServiceFixed.schedulePrayerNotifications();
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -118,13 +133,19 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             children: [
               Icon(Icons.schedule, color: Colors.white),
               SizedBox(width: 8),
-              Expanded(child: Text('Hatırlatma süresi $minutes dakika olarak ayarlandı')),
+              Expanded(
+                child: Text(
+                  'Hatırlatma süresi $minutes dakika olarak ayarlandı',
+                ),
+              ),
             ],
           ),
           backgroundColor: Colors.blue.shade600,
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -134,12 +155,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     setState(() {
       _selectedSound = sound;
     });
-    
+
     await NotificationServiceFixed.setNotificationSound(sound);
-    
+
     // Play sound immediately for testing
     await NotificationServiceFixed.playNotificationSound(sound);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -155,7 +176,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           backgroundColor: Colors.purple.shade600,
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -165,25 +188,34 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     setState(() {
       _ezanSoundEnabled = enabled;
     });
-    
+
     await NotificationServiceFixed.setEzanSoundEnabled(enabled);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
-              Icon(enabled ? Icons.mosque : Icons.volume_off, color: Colors.white),
+              Icon(
+                enabled ? Icons.mosque : Icons.volume_off,
+                color: Colors.white,
+              ),
               SizedBox(width: 8),
               Expanded(
-                child: Text(enabled ? 'Ezan sesi açıldı 🕌' : 'Ezan sesi kapatıldı'),
+                child: Text(
+                  enabled ? 'Ezan sesi açıldı 🕌' : 'Ezan sesi kapatıldı',
+                ),
               ),
             ],
           ),
-          backgroundColor: enabled ? Colors.green.shade600 : Colors.orange.shade600,
+          backgroundColor: enabled
+              ? Colors.green.shade600
+              : Colors.orange.shade600,
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -193,12 +225,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     setState(() {
       _selectedEzanSound = sound;
     });
-    
+
     await NotificationServiceFixed.setEzanSound(sound);
-    
+
     // Play ezan sound immediately for testing
     await NotificationServiceFixed.playEzanSound(sound);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -206,15 +238,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             children: [
               Icon(Icons.mosque, color: Colors.white),
               SizedBox(width: 8),
-              Expanded(
-                child: Text('Ezan sesi değiştirildi ve çalınıyor! 🕌'),
-              ),
+              Expanded(child: Text('Ezan sesi değiştirildi ve çalınıyor! 🕌')),
             ],
           ),
           backgroundColor: Colors.teal.shade600,
           duration: Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
@@ -223,7 +255,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Future<void> _sendTestNotification() async {
     try {
       await NotificationServiceFixed.sendTestNotification();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -231,15 +263,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 8),
-                Expanded(
-                  child: Text('Test bildirimi gönderildi! 📱'),
-                ),
+                Expanded(child: Text('Test bildirimi gönderildi! 📱')),
               ],
             ),
             backgroundColor: Colors.blue.shade600,
             duration: Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -251,15 +283,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               children: [
                 Icon(Icons.error, color: Colors.white),
                 SizedBox(width: 8),
-                Expanded(
-                  child: Text('Test bildirimi gönderilemedi: $e'),
-                ),
+                Expanded(child: Text('Test bildirimi gönderilemedi: $e')),
               ],
             ),
             backgroundColor: Colors.red.shade600,
             duration: Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
@@ -316,7 +348,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Lütfen 1-120 arasında geçerli bir değer girin'),
+                    content: Text(
+                      'Lütfen 1-120 arasında geçerli bir değer girin',
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -325,7 +359,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: Text('Kaydet'),
           ),
@@ -360,10 +396,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       appBar: AppBar(
         title: Text(
           'Bildirim Ayarları',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -391,7 +424,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
+                    color: Colors.blue.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -402,7 +435,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -428,7 +461,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                         Text(
                           'Namaz vakti hatırlatmaları ve ezan sesleri',
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 14,
                           ),
                         ),
@@ -438,7 +471,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 ],
               ),
             ),
-            
+
             SizedBox(height: 24),
 
             // Notifications Toggle
@@ -460,15 +493,13 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
             if (_notificationsEnabled) ...[
               SizedBox(height: 16),
-              
+
               // Reminder Time Section
               _buildSection(
                 title: 'Hatırlatma Zamanı',
                 icon: Icons.schedule,
                 color: Colors.green,
-                children: [
-                  _buildReminderTimeSelector(),
-                ],
+                children: [_buildReminderTimeSelector()],
               ),
 
               SizedBox(height: 16),
@@ -523,9 +554,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 title: 'Test & Önizleme',
                 icon: Icons.play_arrow,
                 color: Colors.indigo,
-                children: [
-                  _buildTestButton(),
-                ],
+                children: [_buildTestButton()],
               ),
 
               SizedBox(height: 16),
@@ -535,9 +564,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 title: 'Özel Ses Ekleme',
                 icon: Icons.upload_file,
                 color: Colors.pink,
-                children: [
-                  _buildCustomSoundSection(),
-                ],
+                children: [_buildCustomSoundSection()],
               ),
             ],
 
@@ -561,7 +588,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -574,7 +601,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             width: double.infinity,
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -585,7 +612,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, color: color, size: 20),
@@ -621,10 +648,10 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: value ? color.withOpacity(0.1) : Colors.grey.withOpacity(0.05),
+        color: value ? color.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: value ? color.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
+          color: value ? color.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: SwitchListTile(
@@ -637,15 +664,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         ),
         subtitle: Text(
           subtitle,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-          ),
+          style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey.shade600),
         ),
-        secondary: Icon(
-          icon,
-          color: value ? color : Colors.grey.shade400,
-        ),
+        secondary: Icon(icon, color: value ? color : Colors.grey.shade400),
         value: value,
         onChanged: onChanged,
         activeColor: color,
@@ -664,8 +685,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           children: NotificationServiceFixed.reminderTimeOptions.map((option) {
             final minutes = option['minutes'] as int;
             final label = option['label'] as String;
-            final isSelected = _reminderMinutes == minutes && !_useCustomMinutes;
-            
+            final isSelected =
+                _reminderMinutes == minutes && !_useCustomMinutes;
+
             return ChoiceChip(
               label: Text(
                 label,
@@ -691,20 +713,20 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             );
           }).toList(),
         ),
-        
+
         SizedBox(height: 12),
-        
+
         // Custom option
         Container(
           decoration: BoxDecoration(
-            color: _useCustomMinutes 
-                ? Colors.orange.withOpacity(0.1) 
-                : Colors.grey.withOpacity(0.05),
+            color: _useCustomMinutes
+                ? Colors.orange.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: _useCustomMinutes 
-                  ? Colors.orange.withOpacity(0.3) 
-                  : Colors.grey.withOpacity(0.2),
+              color: _useCustomMinutes
+                  ? Colors.orange.withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
             ),
           ),
           child: ListTile(
@@ -713,7 +735,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               color: _useCustomMinutes ? Colors.orange : Colors.grey.shade400,
             ),
             title: Text(
-              _useCustomMinutes 
+              _useCustomMinutes
                   ? 'Özel: $_reminderMinutes dakika önce'
                   : 'Özel dakika girişi',
               style: GoogleFonts.poppins(
@@ -729,7 +751,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               ),
             ),
             onTap: _showCustomMinutesDialog,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         ),
       ],
@@ -747,32 +771,32 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         final key = sound['key']!;
         final name = sound['name']!;
         final isSelected = selectedSound == key;
-        
+
         return Container(
           margin: EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: isSelected 
-                ? (isEzan ? Colors.teal : Colors.purple).withOpacity(0.1)
-                : Colors.grey.withOpacity(0.05),
+            color: isSelected
+                ? (isEzan ? Colors.teal : Colors.purple).withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected 
-                  ? (isEzan ? Colors.teal : Colors.purple).withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.2),
+              color: isSelected
+                  ? (isEzan ? Colors.teal : Colors.purple).withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
             ),
           ),
           child: ListTile(
             leading: Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected 
-                    ? (isEzan ? Colors.teal : Colors.purple).withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.1),
+                color: isSelected
+                    ? (isEzan ? Colors.teal : Colors.purple).withValues(alpha: 0.2)
+                    : Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 isEzan ? Icons.mosque : Icons.music_note,
-                color: isSelected 
+                color: isSelected
                     ? (isEzan ? Colors.teal : Colors.purple)
                     : Colors.grey.shade400,
                 size: 20,
@@ -783,7 +807,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 name,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
-                  color: isSelected 
+                  color: isSelected
                       ? (isEzan ? Colors.teal : Colors.purple)
                       : Colors.grey.shade600,
                 ),
@@ -811,25 +835,30 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                         if (isEzan) {
                           await NotificationServiceFixed.playEzanSound(key);
                         } else {
-                          await NotificationServiceFixed.playNotificationSound(key);
+                          await NotificationServiceFixed.playNotificationSound(
+                            key,
+                          );
                         }
-                        
+
                         // Show playing indicator
+                        if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(
                               children: [
                                 Icon(Icons.volume_up, color: Colors.white),
                                 SizedBox(width: 8),
-                                Expanded(
-                                  child: Text('$name çalınıyor... 🎵'),
-                                ),
+                                Expanded(child: Text('$name çalınıyor... 🎵')),
                               ],
                             ),
-                            backgroundColor: isEzan ? Colors.teal : Colors.purple,
+                            backgroundColor: isEzan
+                                ? Colors.teal
+                                : Colors.purple,
                             duration: Duration(seconds: 2),
                             behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         );
                       },
@@ -855,7 +884,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               ),
             ),
             onTap: () => onSoundChanged(key),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }).toList(),
@@ -874,7 +905,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.indigo.withOpacity(0.3),
+            color: Colors.indigo.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: Offset(0, 4),
           ),
@@ -892,14 +923,10 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.send,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.send, color: Colors.white, size: 24),
                 ),
                 SizedBox(width: 16),
                 Expanded(
@@ -918,7 +945,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                       Text(
                         'Bildirim ayarlarını test et',
                         style: GoogleFonts.poppins(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 14,
                         ),
                       ),
@@ -927,7 +954,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   size: 16,
                 ),
               ],
@@ -946,9 +973,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.pink.withOpacity(0.1),
+            color: Colors.pink.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.pink.withOpacity(0.3)),
+            border: Border.all(color: Colors.pink.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
@@ -979,9 +1006,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             ],
           ),
         ),
-        
+
         SizedBox(height: 16),
-        
+
         // Upload buttons
         Row(
           children: [
@@ -1019,9 +1046,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -1035,7 +1062,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, color: color, size: 24),
@@ -1101,12 +1128,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       );
 
       // Close loading dialog
-      Navigator.of(context).pop();
+      if (!mounted) return;
+      if (Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
         final filePath = file.path;
-        
+
         if (filePath != null) {
           // Validate file size (max 10MB)
           final fileSize = File(filePath).lengthSync();
@@ -1116,10 +1146,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           }
 
           // Copy file to app directory
-          final String fileName = '${isEzan ? 'custom_ezan' : 'custom_notification'}_${DateTime.now().millisecondsSinceEpoch}.${file.extension ?? 'mp3'}';
+          final String fileName =
+              '${isEzan ? 'custom_ezan' : 'custom_notification'}_${DateTime.now().millisecondsSinceEpoch}.${file.extension ?? 'mp3'}';
           final Directory appDir = await getApplicationDocumentsDirectory();
           final String savedPath = '${appDir.path}/sounds/$fileName';
-          
+
           // Create sounds directory if it doesn't exist
           final Directory soundsDir = Directory('${appDir.path}/sounds');
           if (!await soundsDir.exists()) {
@@ -1131,29 +1162,35 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
           // Save to preferences and add to available sounds
           final prefs = await SharedPreferences.getInstance();
-          List<String> customSounds = prefs.getStringList('custom_sounds') ?? [];
-          customSounds.add('$fileName|${file.name}|${isEzan ? 'ezan' : 'notification'}');
+          List<String> customSounds =
+              prefs.getStringList('custom_sounds') ?? [];
+          customSounds.add(
+            '$fileName|${file.name}|${isEzan ? 'ezan' : 'notification'}',
+          );
           await prefs.setStringList('custom_sounds', customSounds);
 
           // Test the sound
-          await NotificationServiceFixed.playNotificationSound(fileName.replaceAll('.mp3', '').replaceAll('.wav', ''));
+          await NotificationServiceFixed.playNotificationSound(
+            fileName.replaceAll('.mp3', '').replaceAll('.wav', ''),
+          );
 
           // Show success message
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
                 children: [
                   Icon(Icons.check_circle, color: Colors.white),
                   SizedBox(width: 8),
-                  Expanded(
-                    child: Text('${file.name} başarıyla eklendi!'),
-                  ),
+                  Expanded(child: Text('${file.name} başarıyla eklendi!')),
                 ],
               ),
               backgroundColor: Colors.green.shade600,
               duration: Duration(seconds: 3),
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           );
 
@@ -1162,30 +1199,32 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         }
       } else {
         // User cancelled
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
                 Icon(Icons.info, color: Colors.white),
                 SizedBox(width: 8),
-                Expanded(
-                  child: Text('Ses dosyası seçilmedi'),
-                ),
+                Expanded(child: Text('Ses dosyası seçilmedi')),
               ],
             ),
             backgroundColor: Colors.grey.shade600,
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
       }
     } catch (e) {
       // Close loading dialog if still open
-      if (Navigator.canPop(context)) {
+      if (mounted && Navigator.canPop(context)) {
         Navigator.of(context).pop();
       }
-      
+
+      if (!mounted) return;
       _showErrorSnackBar('Ses dosyası eklenirken hata oluştu: $e');
     }
   }

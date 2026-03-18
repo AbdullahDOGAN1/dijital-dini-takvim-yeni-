@@ -42,35 +42,22 @@ class AyetHadis {
   final String metin;
   final String kaynak;
 
-  AyetHadis({
-    required this.metin,
-    required this.kaynak,
-  });
+  AyetHadis({required this.metin, required this.kaynak});
 
   factory AyetHadis.fromJson(Map<String, dynamic> json) {
-    return AyetHadis(
-      metin: json['metin'] ?? '',
-      kaynak: json['kaynak'] ?? '',
-    );
+    return AyetHadis(metin: json['metin'] ?? '', kaynak: json['kaynak'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'metin': metin,
-      'kaynak': kaynak,
-    };
+    return {'metin': metin, 'kaynak': kaynak};
   }
 }
-
 
 class RisaleINur {
   final String vecize;
   final String kaynak;
 
-  RisaleINur({
-    required this.vecize,
-    required this.kaynak,
-  });
+  RisaleINur({required this.vecize, required this.kaynak});
 
   factory RisaleINur.fromJson(Map<String, dynamic> json) {
     return RisaleINur(
@@ -80,13 +67,6 @@ class RisaleINur {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'vecize': vecize,
-      'kaynak': kaynak,
-    };
+    return {'vecize': vecize, 'kaynak': kaynak};
   }
 }
-
-
-
-

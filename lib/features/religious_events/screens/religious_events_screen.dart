@@ -15,7 +15,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
   late TabController _tabController;
   bool _isLoading = true;
   String? _error;
-  
+
   List<ReligiousEvent> _currentYearEvents = [];
   List<ReligiousEvent> _upcomingEvents = [];
 
@@ -40,7 +40,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
 
     try {
       await ReligiousEventsService.loadReligiousEvents();
-      
+
       if (mounted) {
         setState(() {
           _currentYearEvents = ReligiousEventsService.getCurrentYearEvents();
@@ -64,10 +64,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
       appBar: AppBar(
         title: const Text(
           'Dini Günler ve Kandiller',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
@@ -95,7 +92,9 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
                       children: [
                         const Icon(Icons.calendar_month),
                         const SizedBox(width: 8),
-                        Text('${DateTime.now().year} Yılı (${_currentYearEvents.length})'),
+                        Text(
+                          '${DateTime.now().year} Yılı (${_currentYearEvents.length})',
+                        ),
                       ],
                     ),
                   ),
@@ -124,36 +123,29 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
               ),
             )
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Hata: $_error',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadReligiousEvents,
-                        child: const Text('Tekrar Dene'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Hata: $_error',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16),
                   ),
-                )
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildCurrentYearTab(),
-                    _buildUpcomingTab(),
-                  ],
-                ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadReligiousEvents,
+                    child: const Text('Tekrar Dene'),
+                  ),
+                ],
+              ),
+            )
+          : TabBarView(
+              controller: _tabController,
+              children: [_buildCurrentYearTab(), _buildUpcomingTab()],
+            ),
     );
   }
 
@@ -163,11 +155,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.event_busy,
-              size: 64,
-              color: Colors.grey,
-            ),
+            Icon(Icons.event_busy, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
               'Bu yıl için dini gün bulunamadı',
@@ -189,7 +177,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
         itemBuilder: (context, index) {
           final category = groupedEvents.keys.elementAt(index);
           final events = groupedEvents[category]!;
-          
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -210,11 +198,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.schedule,
-              size: 64,
-              color: Colors.grey,
-            ),
+            Icon(Icons.schedule, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
               'Yaklaşan dini gün bulunmuyor',
@@ -243,9 +227,11 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
     );
   }
 
-  Map<String, List<ReligiousEvent>> _groupEventsByCategory(List<ReligiousEvent> events) {
+  Map<String, List<ReligiousEvent>> _groupEventsByCategory(
+    List<ReligiousEvent> events,
+  ) {
     final grouped = <String, List<ReligiousEvent>>{};
-    
+
     for (final event in events) {
       final category = event.category ?? 'Özel';
       if (!grouped.containsKey(category)) {
@@ -267,7 +253,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
 
   Widget _buildCategoryHeader(String category, int count) {
     final colors = _getCategoryColors(category);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -294,7 +280,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -314,7 +300,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
   Widget _buildEventCard(ReligiousEvent event, {bool showCountdown = false}) {
     final category = event.category ?? 'Özel';
     final colors = _getCategoryColors(category);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 3,
@@ -327,8 +313,8 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
               colors: [
-                colors['primary']!.withOpacity(0.1),
-                colors['secondary']!.withOpacity(0.05),
+                colors['primary']!.withValues(alpha: 0.1),
+                colors['secondary']!.withValues(alpha: 0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -369,10 +355,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
                       const SizedBox(height: 4),
                       Text(
                         '${event.day} ${event.month} ${event.year}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                       if (showCountdown) ...[
                         const SizedBox(height: 4),
@@ -381,7 +364,9 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
                               ? 'BUGÜN'
                               : '${event.daysUntil} gün sonra',
                           style: TextStyle(
-                            color: event.isToday ? Colors.red : colors['primary'],
+                            color: event.isToday
+                                ? Colors.red
+                                : colors['primary'],
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
@@ -390,10 +375,7 @@ class _ReligiousEventsScreenState extends State<ReligiousEventsScreen>
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: colors['primary'],
-                ),
+                Icon(Icons.chevron_right, color: colors['primary']),
               ],
             ),
           ),

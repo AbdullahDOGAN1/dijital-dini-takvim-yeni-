@@ -11,7 +11,8 @@ class ReligiousDaysScreen extends StatefulWidget {
   State<ReligiousDaysScreen> createState() => _ReligiousDaysScreenState();
 }
 
-class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerProviderStateMixin {
+class _ReligiousDaysScreenState extends State<ReligiousDaysScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -68,7 +69,7 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (snapshot.hasError) {
           return Center(
             child: Column(
@@ -89,7 +90,7 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
 
         final allDays = snapshot.data ?? [];
         allDays.sort((a, b) => a.date.compareTo(b.date));
-        
+
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: allDays.length,
@@ -108,16 +109,14 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Hata: ${snapshot.error}'),
-          );
+          return Center(child: Text('Hata: ${snapshot.error}'));
         }
 
         final days = snapshot.data ?? [];
         days.sort((a, b) => a.date.compareTo(b.date));
-        
+
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: days.length,
@@ -136,31 +135,25 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Hata: ${snapshot.error}'),
-          );
+          return Center(child: Text('Hata: ${snapshot.error}'));
         }
 
         final upcomingDays = snapshot.data ?? [];
-        
+
         if (upcomingDays.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.calendar_today,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.calendar_today, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
                   'Bu yıl için yaklaşan dini gün bulunmuyor',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -183,9 +176,7 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -205,11 +196,16 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: day.categoryColor.withOpacity(0.2),
+                      color: day.categoryColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: day.categoryColor.withOpacity(0.5)),
+                      border: Border.all(
+                        color: day.categoryColor.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: Text(
                       day.categoryDisplayName,
@@ -223,11 +219,16 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                   const SizedBox(width: 12),
                   if (day.isToday)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.2),
+                        color: Colors.red.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red.withOpacity(0.5)),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.5),
+                        ),
                       ),
                       child: const Text(
                         'BUGÜN',
@@ -240,9 +241,9 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                     ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // İsim
               Text(
                 day.name,
@@ -251,9 +252,9 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                   color: day.categoryColor,
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Tarihler
               Row(
                 children: [
@@ -277,9 +278,9 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Açıklama
               Text(
                 day.description,
@@ -287,19 +288,23 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               if (showCountdown && day.isUpcoming) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: day.categoryColor.withOpacity(0.1),
+                    color: day.categoryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.access_time, size: 16, color: day.categoryColor),
+                      Icon(
+                        Icons.access_time,
+                        size: 16,
+                        color: day.categoryColor,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         '${day.daysUntil} gün kaldı',
@@ -312,9 +317,9 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                   ),
                 ),
               ],
-              
+
               const SizedBox(height: 8),
-              
+
               // Detay butonu
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -324,7 +329,8 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ReligiousDayDetailScreen(religiousDay: day),
+                          builder: (context) =>
+                              ReligiousDayDetailScreen(religiousDay: day),
                         ),
                       );
                     },
@@ -345,8 +351,18 @@ class _ReligiousDaysScreenState extends State<ReligiousDaysScreen> with TickerPr
 
   String _getMonthName(int month) {
     const months = [
-      'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
     ];
     return months[month - 1];
   }

@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,22 +15,23 @@ class PrayerTimesListScreen extends StatefulWidget {
   State<PrayerTimesListScreen> createState() => _PrayerTimesListScreenState();
 }
 
-class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with WidgetsBindingObserver {
+class _PrayerTimesListScreenState extends State<PrayerTimesListScreen>
+    with WidgetsBindingObserver {
   bool _isLoading = true;
   List<PrayerTimesModel> _monthlyPrayerTimes = [];
   String _errorMessage = '';
   String _currentLocation = 'Konum alınıyor...';
-  
+
   // Live dashboard variables
   Timer? _timer;
   String _timeUntilNextPrayer = '';
   String _nextPrayerName = '';
   PrayerTimesModel? _todaysPrayerTimes;
-  
+
   // Tarih kontrolü için
   DateTime? _lastLoadedDate;
   bool _isRefreshing = false;
-  
+
   // Sonraki günler için cached liste
   List<PrayerTimesModel> _nextDays = [];
 
@@ -49,28 +53,28 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    
+
     // Uygulama ön plana geçtiğinde tarihi kontrol et
     if (state == AppLifecycleState.resumed) {
       _checkDateAndRefresh();
     }
   }
 
-
-
   /// Tarih değişip değişmediğini kontrol et ve gerekirse yenile
   void _checkDateAndRefresh() {
     // Eğer zaten yenileme yapılıyorsa, tekrar yapma
     if (_isRefreshing) return;
-    
+
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     // Eğer son yükleme farklı bir güne aitse, yenile
     if (_lastLoadedDate == null || !_isSameDay(_lastLoadedDate!, today)) {
-      print('📅 Tarih değişti, namaz vakitleri yenileniyor...');
-      print('📅 Eski tarih: $_lastLoadedDate');
-      print('📅 Yeni tarih: $today');
+      if (kDebugMode) {
+        print('📅 Tarih değişti, namaz vakitleri yenileniyor...');
+        print('📅 Eski tarih: $_lastLoadedDate');
+        print('📅 Yeni tarih: $today');
+      }
       _isRefreshing = true;
       _loadMonthlyPrayerTimes().then((_) {
         _isRefreshing = false;
@@ -80,21 +84,22 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
 
   /// İki tarihin aynı gün olup olmadığını kontrol et
   bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && 
-           date1.month == date2.month && 
-           date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   /// Load current location information
   Future<void> _loadLocationInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final bool usingCurrentLocation = prefs.getBool('using_current_location') ?? true;
-      
+      final bool usingCurrentLocation =
+          prefs.getBool('using_current_location') ?? true;
+
       if (!usingCurrentLocation) {
         final String? city = prefs.getString('selected_city');
         final String? country = prefs.getString('selected_country');
-        
+
         if (city != null) {
           setState(() {
             _currentLocation = country != null ? '$city, $country' : city;
@@ -103,7 +108,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
       } else {
         final double? lat = prefs.getDouble('current_latitude');
         final double? lng = prefs.getDouble('current_longitude');
-        
+
         if (lat != null && lng != null) {
           final cityName = PrayerApiService.getCityFromCoordinates(lat, lng);
           setState(() {
@@ -133,9 +138,13 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
       final now = DateTime.now();
       final year = now.year;
       final month = now.month;
-      
-      // Yükleme tarihini kaydet
+
+      // Yükleme tarihini kaydet (bugünün tarihi)
       _lastLoadedDate = DateTime(now.year, now.month, now.day);
+      
+      if (kDebugMode) {
+        print('📅 Prayer times loaded for: ${_lastLoadedDate.toString().split(' ')[0]}');
+      }
 
       final monthlyDataMap = await PrayerApiService.getPrayerTimesForMonth(
         year: year,
@@ -143,36 +152,74 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
       );
 
       // Debug: API'den gelen veriyi kontrol et
-      print('🕌 API Response - Monthly data keys: ${monthlyDataMap.keys.toList()}');
+      print(
+        '🕌 API Response - Monthly data keys: ${monthlyDataMap.keys.toList()}',
+      );
       print('🕌 API Response - Total entries: ${monthlyDataMap.length}');
       if (monthlyDataMap.isNotEmpty) {
         final firstEntry = monthlyDataMap.values.first;
-        print('🕌 API Response - First entry: ${firstEntry.date} - Fajr: ${firstEntry.imsak}, Sunrise: ${firstEntry.gunes}');
+        print(
+          '🕌 API Response - First entry: ${firstEntry.date} - Fajr: ${firstEntry.imsak}, Sunrise: ${firstEntry.gunes}',
+        );
       }
 
       final prayerTimesList = monthlyDataMap.values.toList();
 
-      final today = now.day.toString();
-      final todayPadded = now.day.toString().padLeft(2, '0');
+      // Bugünün tarihini doğru şekilde bul
+      final today = now.day;
+      final todayStr = today.toString();
+      final todayPadded = today.toString().padLeft(2, '0');
       PrayerTimesModel? todaysPrayer;
-      
-      print('🗓️ Bugün: $today (padded: $todayPadded)');
-      print('🗓️ Available keys: ${monthlyDataMap.keys.toList()}');
-      
-      if (monthlyDataMap.containsKey(today)) {
-        todaysPrayer = monthlyDataMap[today];
-        print('🗓️ Found today with key: $today');
+
+      if (kDebugMode) {
+        print('🗓️ Bugün: $todayStr (padded: $todayPadded)');
+        print('🗓️ Available keys: ${monthlyDataMap.keys.toList()}');
+      }
+
+      // Önce tam eşleşme dene
+      if (monthlyDataMap.containsKey(todayStr)) {
+        todaysPrayer = monthlyDataMap[todayStr];
+        if (kDebugMode) {
+          print('🗓️ Found today with key: $todayStr');
+        }
       } else if (monthlyDataMap.containsKey(todayPadded)) {
         todaysPrayer = monthlyDataMap[todayPadded];
-        print('🗓️ Found today with padded key: $todayPadded');
-      } else if (prayerTimesList.isNotEmpty) {
-        todaysPrayer = prayerTimesList.first;
-        print('🗓️ Using first entry as fallback');
+        if (kDebugMode) {
+          print('🗓️ Found today with padded key: $todayPadded');
+        }
+      } else {
+        // Tarih eşleşmesi ile bul
+        final todayDateStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        for (final prayer in prayerTimesList) {
+          // PrayerTimesModel'deki date ile karşılaştır
+          if (prayer.date.contains(todayDateStr) || 
+              prayer.date.contains('${now.day}') && prayer.date.contains('${now.month}')) {
+            todaysPrayer = prayer;
+            if (kDebugMode) {
+              print('🗓️ Found today by date matching: ${prayer.date}');
+            }
+            break;
+          }
+        }
+        
+        // Hala bulunamadıysa ilk entry'yi kullan
+        if (todaysPrayer == null && prayerTimesList.isNotEmpty) {
+          todaysPrayer = prayerTimesList.first;
+          if (kDebugMode) {
+            print('🗓️ Using first entry as fallback');
+          }
+        }
       }
-      
+
       if (todaysPrayer != null) {
-        print('🗓️ Today\'s prayer times: ${todaysPrayer.date}');
-        print('🗓️ İmsak: ${todaysPrayer.imsak}, Güneş: ${todaysPrayer.gunes}');
+        if (kDebugMode) {
+          print('🗓️ Today\'s prayer times: ${todaysPrayer.date}');
+          print('🗓️ İmsak: ${todaysPrayer.imsak}, Güneş: ${todaysPrayer.gunes}');
+        }
+      } else {
+        if (kDebugMode) {
+          print('⚠️ Today\'s prayer times not found!');
+        }
       }
 
       setState(() {
@@ -187,7 +234,6 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
       if (todaysPrayer != null) {
         _startTimer();
       }
-
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -203,11 +249,11 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
     if (_todaysPrayerTimes == null) return;
 
     _timer?.cancel();
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateCountdown();
     });
-    
+
     _updateCountdown();
   }
 
@@ -216,7 +262,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
     if (_todaysPrayerTimes == null) return;
 
     final now = DateTime.now();
-    
+
     final prayerTimes = [
       {'name': 'İmsak', 'time': _todaysPrayerTimes!.imsak},
       {'name': 'Güneş', 'time': _todaysPrayerTimes!.gunes},
@@ -234,14 +280,8 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
       if (timeParts.length >= 2) {
         final hour = int.tryParse(timeParts[0]) ?? 0;
         final minute = int.tryParse(timeParts[1]) ?? 0;
-        
-        final prayerTime = DateTime(
-          now.year,
-          now.month,
-          now.day,
-          hour,
-          minute,
-        );
+
+        final prayerTime = DateTime(now.year, now.month, now.day, hour, minute);
 
         if (prayerTime.isAfter(now)) {
           nextPrayerDateTime = prayerTime;
@@ -257,7 +297,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
       if (imsakParts.length >= 2) {
         final hour = int.tryParse(imsakParts[0]) ?? 0;
         final minute = int.tryParse(imsakParts[1]) ?? 0;
-        
+
         nextPrayerDateTime = DateTime(
           tomorrow.year,
           tomorrow.month,
@@ -278,7 +318,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
     }
 
     final difference = nextPrayerDateTime.difference(now);
-    
+
     if (difference.isNegative) {
       setState(() {
         _timeUntilNextPrayer = '00:00:00';
@@ -292,7 +332,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
     final seconds = difference.inSeconds % 60;
 
     setState(() {
-      _timeUntilNextPrayer = 
+      _timeUntilNextPrayer =
           '${hours.toString().padLeft(2, '0')}:'
           '${minutes.toString().padLeft(2, '0')}:'
           '${seconds.toString().padLeft(2, '0')}';
@@ -319,7 +359,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
               style: GoogleFonts.ebGaramond(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
               ),
             ),
           ],
@@ -347,94 +387,110 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _errorMessage.isNotEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error_outline, size: 64, color: Colors.red.shade400),
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            _errorMessage,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.ebGaramond(fontSize: 16, color: Colors.red.shade600),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _loadMonthlyPrayerTimes,
-                          child: const Text('Tekrar Dene'),
-                        ),
-                      ],
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red.shade400,
                     ),
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // Bugünün Namaz Vakitleri header
-                        Container(
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.lightBlue.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.access_time, color: Colors.blue.shade700),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Bugünün Namaz Vakitleri',
-                                style: GoogleFonts.ebGaramond(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue.shade700,
-                                ),
-                              ),
-                            ],
-                          ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        _errorMessage,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 16,
+                          color: Colors.red.shade600,
                         ),
-                        
-                        // Büyük mavi countdown kartı
-                        _buildCountdownCard(),
-                        
-                        // Namaz vakitleri kartları
-                        _buildPrayerTimesCards(),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Sonraki Günler Başlığı
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.calendar_today, color: Colors.green.shade700),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Sonraki Günler',
-                                style: GoogleFonts.ebGaramond(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green.shade700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Sonraki günlerin namaz vakitleri
-                        _buildNextDaysCards(),
-                        
-                        const SizedBox(height: 16),
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loadMonthlyPrayerTimes,
+                      child: const Text('Tekrar Dene'),
+                    ),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Bugünün Namaz Vakitleri header
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.lightBlue.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.access_time, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Bugünün Namaz Vakitleri',
+                            style: GoogleFonts.ebGaramond(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Büyük mavi countdown kartı
+                    _buildCountdownCard(),
+
+                    // Namaz vakitleri kartları
+                    _buildPrayerTimesCards(),
+
+                    const SizedBox(height: 24),
+
+                    // Sonraki Günler Başlığı
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            color: Colors.green.shade700,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Sonraki Günler',
+                            style: GoogleFonts.ebGaramond(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Sonraki günlerin namaz vakitleri
+                    _buildNextDaysCards(),
+
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -474,15 +530,15 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            prayerColor.withOpacity(0.6),
+            prayerColor.withValues(alpha: 0.6),
             prayerColor,
-            prayerColor.withOpacity(0.9),
+            prayerColor.withValues(alpha: 0.9),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: prayerColor.withOpacity(0.3),
+            color: prayerColor.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -494,7 +550,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -506,9 +562,9 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Sonraki vakit
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -525,14 +581,14 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Büyük sayaç
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
@@ -545,14 +601,14 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
               ),
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           Text(
             'kaldı',
             style: GoogleFonts.ebGaramond(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
         ],
@@ -612,12 +668,16 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isNext ? (prayer['color'] as Color).withOpacity(0.9) : prayer['color'] as Color,
+              color: isNext
+                  ? (prayer['color'] as Color).withValues(alpha: 0.9)
+                  : prayer['color'] as Color,
               borderRadius: BorderRadius.circular(16),
-              border: isNext ? Border.all(color: Colors.yellow.shade800, width: 3) : null,
+              border: isNext
+                  ? Border.all(color: Colors.yellow.shade800, width: 3)
+                  : null,
               boxShadow: [
                 BoxShadow(
-                  color: (prayer['color'] as Color).withOpacity(0.3),
+                  color: (prayer['color'] as Color).withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -629,7 +689,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -638,9 +698,9 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
                     size: 24,
                   ),
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // Namaz adı
                 Expanded(
                   child: Text(
@@ -652,7 +712,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
                     ),
                   ),
                 ),
-                
+
                 // Sağ taraf - Saat
                 Text(
                   prayer['time'] as String,
@@ -679,19 +739,19 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
 
     final today = DateTime.now();
     final nextDays = <PrayerTimesModel>[];
-    
+
     // Sonraki 6 günü bul
     for (int i = 1; i <= 6; i++) {
       final targetDate = today.add(Duration(days: i));
       final targetDay = targetDate.day;
-      
+
       // Aylık verilerden bu günü bul - hem "4" hem "04" formatını kontrol et
       for (final prayer in _monthlyPrayerTimes) {
         final prayerDateParts = prayer.date.split(' ');
         if (prayerDateParts.isNotEmpty) {
           final dayPart = prayerDateParts[0]; // "04" veya "4"
           final prayerDay = int.tryParse(dayPart) ?? 0;
-          
+
           if (prayerDay == targetDay) {
             nextDays.add(prayer);
             break;
@@ -733,7 +793,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
         final dayName = _getDayName(targetDate);
         final monthName = _getMonthName(targetDate.month);
         final displayText = '$dayName ${targetDate.day} $monthName';
-        
+
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
@@ -741,7 +801,7 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -786,12 +846,42 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildNextDayPrayerRow('İmsak', prayer.imsak, Icons.wb_twilight, Colors.purple.shade400),
-                    _buildNextDayPrayerRow('Güneş', prayer.gunes, Icons.wb_sunny, Colors.orange.shade400),
-                    _buildNextDayPrayerRow('Öğle', prayer.ogle, Icons.light_mode, Colors.blue.shade400),
-                    _buildNextDayPrayerRow('İkindi', prayer.ikindi, Icons.sunny, Colors.yellow.shade600),
-                    _buildNextDayPrayerRow('Akşam', prayer.aksam, Icons.nights_stay, Colors.red.shade400),
-                    _buildNextDayPrayerRow('Yatsı', prayer.yatsi, Icons.dark_mode, Colors.indigo.shade500),
+                    _buildNextDayPrayerRow(
+                      'İmsak',
+                      prayer.imsak,
+                      Icons.wb_twilight,
+                      Colors.purple.shade400,
+                    ),
+                    _buildNextDayPrayerRow(
+                      'Güneş',
+                      prayer.gunes,
+                      Icons.wb_sunny,
+                      Colors.orange.shade400,
+                    ),
+                    _buildNextDayPrayerRow(
+                      'Öğle',
+                      prayer.ogle,
+                      Icons.light_mode,
+                      Colors.blue.shade400,
+                    ),
+                    _buildNextDayPrayerRow(
+                      'İkindi',
+                      prayer.ikindi,
+                      Icons.sunny,
+                      Colors.yellow.shade600,
+                    ),
+                    _buildNextDayPrayerRow(
+                      'Akşam',
+                      prayer.aksam,
+                      Icons.nights_stay,
+                      Colors.red.shade400,
+                    ),
+                    _buildNextDayPrayerRow(
+                      'Yatsı',
+                      prayer.yatsi,
+                      Icons.dark_mode,
+                      Colors.indigo.shade500,
+                    ),
                   ],
                 ),
               ),
@@ -803,12 +893,17 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
   }
 
   /// Sonraki günler için namaz vakti satırı
-  Widget _buildNextDayPrayerRow(String name, String time, IconData icon, Color color) {
+  Widget _buildNextDayPrayerRow(
+    String name,
+    String time,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -841,7 +936,13 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
   /// Gün adını getir
   String _getDayName(DateTime date) {
     const turkishDays = [
-      'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'
+      'Pazartesi',
+      'Salı',
+      'Çarşamba',
+      'Perşembe',
+      'Cuma',
+      'Cumartesi',
+      'Pazar',
     ];
     return turkishDays[date.weekday - 1];
   }
@@ -849,8 +950,18 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen> with Widg
   /// Ay adını getir
   String _getMonthName(int month) {
     const turkishMonths = [
-      'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
     ];
     return turkishMonths[month - 1];
   }

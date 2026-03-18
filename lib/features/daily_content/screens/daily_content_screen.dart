@@ -6,7 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 class DailyContentScreen extends StatefulWidget {
   final int? dayNumber;
-  
+
   const DailyContentScreen({super.key, this.dayNumber});
 
   @override
@@ -70,10 +70,17 @@ class _DailyContentScreenState extends State<DailyContentScreen> {
     );
   }
 
-  Future<void> _toggleFavorite(String category, String content, String source) async {
+  Future<void> _toggleFavorite(
+    String category,
+    String content,
+    String source,
+  ) async {
     try {
-      final isFavorite = await DatabaseHelper.instance.isFavorite(content, category);
-      
+      final isFavorite = await DatabaseHelper.instance.isFavorite(
+        content,
+        category,
+      );
+
       if (isFavorite) {
         await DatabaseHelper.instance.removeFavorite(content, category);
         if (mounted) {
@@ -100,23 +107,21 @@ class _DailyContentScreenState extends State<DailyContentScreen> {
           );
         }
       }
-      
+
       // State'i yenile
       setState(() {});
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hata: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
         );
       }
     }
   }
 
   void _shareDetailContent(String category, String content, String source) {
-    final shareText = '''
+    final shareText =
+        '''
 📖 $category
 ${_content?.tarih ?? ''}
 
@@ -126,15 +131,13 @@ $content
 
 🌙 Nur Vakti Uygulaması
 ''';
-    
-    Share.share(
-      shareText,
-      subject: '$category - ${_content?.tarih ?? ''}',
-    );
+
+    Share.share(shareText, subject: '$category - ${_content?.tarih ?? ''}');
   }
 
   void _shareSimpleContent(String category, String content) {
-    final shareText = '''
+    final shareText =
+        '''
 📖 $category
 ${_content?.tarih ?? ''}
 
@@ -142,43 +145,42 @@ $content
 
 🌙 Nur Vakti Uygulaması
 ''';
-    
-    Share.share(
-      shareText,
-      subject: '$category - ${_content?.tarih ?? ''}',
-    );
+
+    Share.share(shareText, subject: '$category - ${_content?.tarih ?? ''}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.dayNumber != null 
-            ? '${widget.dayNumber}. Gün' 
-            : 'Bugünün İçeriği'),
+        title: Text(
+          widget.dayNumber != null
+              ? '${widget.dayNumber}. Gün'
+              : 'Bugünün İçeriği',
+        ),
         centerTitle: true,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text(_error!, textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadContent,
-                        child: const Text('Tekrar Dene'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(_error!, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadContent,
+                    child: const Text('Tekrar Dene'),
                   ),
-                )
-              : _content == null
-                  ? const Center(child: Text('İçerik bulunamadı'))
-                  : _buildContent(),
+                ],
+              ),
+            )
+          : _content == null
+          ? const Center(child: Text('İçerik bulunamadı'))
+          : _buildContent(),
     );
   }
 
@@ -196,7 +198,10 @@ $content
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
+                  Icon(
+                    Icons.calendar_today,
+                    color: Theme.of(context).primaryColor,
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     _content!.tarih,
@@ -208,7 +213,7 @@ $content
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
 
           // Ayet/Hadis
@@ -301,15 +306,15 @@ $content
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.05),
+                color: color.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: color.withOpacity(0.2)),
+                border: Border.all(color: color.withValues(alpha: 0.2)),
               ),
               child: Text(
                 content,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.5,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(height: 1.5),
               ),
             ),
             const SizedBox(height: 12),
@@ -380,15 +385,15 @@ $content
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.05),
+                color: color.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: color.withOpacity(0.2)),
+                border: Border.all(color: color.withValues(alpha: 0.2)),
               ),
               child: Text(
                 content,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.5,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(height: 1.5),
               ),
             ),
           ],

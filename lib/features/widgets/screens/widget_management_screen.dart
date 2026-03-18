@@ -18,10 +18,7 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
       appBar: AppBar(
         title: Text(
           'Widget Yönetimi',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         backgroundColor: const Color(0xFF1a4d2e),
         foregroundColor: const Color(0xFFffd700),
@@ -49,13 +46,14 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             Expanded(
               child: ListView(
                 children: [
                   _buildWidgetCard(
                     title: 'Risale-i Nur Widget\'ı',
-                    description: 'Günlük Risale-i Nur vecizelerini ana ekranınızda görüntüleyin',
+                    description:
+                        'Günlük Risale-i Nur vecizelerini ana ekranınızda görüntüleyin',
                     icon: Icons.auto_stories,
                     color: Colors.deepPurple.shade600,
                     onTap: () => _showWidgetInstructions(
@@ -65,10 +63,11 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   _buildWidgetCard(
                     title: 'Namaz Vakitleri Widget\'ı',
-                    description: 'Bugünün namaz vakitlerini ve sıradaki namazı ana ekranınızda görün',
+                    description:
+                        'Bugünün namaz vakitlerini ve sıradaki namazı ana ekranınızda görün',
                     icon: Icons.access_time,
                     color: Colors.green.shade600,
                     onTap: () => _showWidgetInstructions(
@@ -78,10 +77,11 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   _buildWidgetCard(
                     title: 'Ayet/Hadis Widget\'ı',
-                    description: 'Günlük ayet veya hadisleri ana ekranınızda okuyun',
+                    description:
+                        'Günlük ayet veya hadisleri ana ekranınızda okuyun',
                     icon: Icons.menu_book,
                     color: Colors.brown.shade600,
                     onTap: () => _showWidgetInstructions(
@@ -91,7 +91,7 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  
+
                   _buildUpdateButton(),
                 ],
               ),
@@ -122,7 +122,7 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 32),
@@ -191,7 +191,11 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
     );
   }
 
-  void _showWidgetInstructions(String title, String description, String widgetName) {
+  void _showWidgetInstructions(
+    String title,
+    String description,
+    String widgetName,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -203,10 +207,7 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              description,
-              style: GoogleFonts.ebGaramond(fontSize: 16),
-            ),
+            Text(description, style: GoogleFonts.ebGaramond(fontSize: 16)),
             const SizedBox(height: 16),
             Text(
               'Widget\'ı Ana Ekrana Ekleme:',
@@ -246,7 +247,7 @@ class _WidgetManagementScreenState extends State<WidgetManagementScreen> {
 
     try {
       await WidgetService.updateAllWidgets();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

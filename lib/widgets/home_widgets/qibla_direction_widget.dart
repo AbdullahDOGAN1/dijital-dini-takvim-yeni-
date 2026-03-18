@@ -20,7 +20,7 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
   bool _hasPermissions = false;
   bool _isLoading = true;
   String _statusMessage = 'İzinler kontrol ediliyor...';
-  
+
   late AnimationController _rotationController;
   late Animation<double> _rotationAnimation;
 
@@ -35,14 +35,10 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _rotationAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(
-      parent: _rotationController,
-      curve: Curves.easeInOut,
-    ));
-    
+    _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _rotationController, curve: Curves.easeInOut),
+    );
+
     _initializeQibla();
   }
 
@@ -66,7 +62,7 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
     });
 
     final locationStatus = await Permission.location.status;
-    
+
     if (locationStatus.isDenied) {
       final result = await Permission.location.request();
       if (!result.isGranted) {
@@ -117,7 +113,12 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
     }
   }
 
-  double _calculateBearing(double startLat, double startLng, double endLat, double endLng) {
+  double _calculateBearing(
+    double startLat,
+    double startLng,
+    double endLat,
+    double endLng,
+  ) {
     final startLatRad = startLat * (math.pi / 180);
     final startLngRad = startLng * (math.pi / 180);
     final endLatRad = endLat * (math.pi / 180);
@@ -126,7 +127,8 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
     final dLng = endLngRad - startLngRad;
 
     final y = math.sin(dLng) * math.cos(endLatRad);
-    final x = math.cos(startLatRad) * math.sin(endLatRad) -
+    final x =
+        math.cos(startLatRad) * math.sin(endLatRad) -
         math.sin(startLatRad) * math.cos(endLatRad) * math.cos(dLng);
 
     final bearing = math.atan2(y, x);
@@ -150,8 +152,6 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return AnimationConfiguration.staggeredList(
       position: 3,
       duration: const Duration(milliseconds: 800),
@@ -165,19 +165,16 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.teal.shade50,
-                  Colors.cyan.shade50,
-                ],
+                colors: [Colors.teal.shade50, Colors.cyan.shade50],
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.teal.withOpacity(0.3),
+                color: Colors.teal.withValues(alpha: 0.3),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.teal.withOpacity(0.2),
+                  color: Colors.teal.withValues(alpha: 0.2),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -239,9 +236,9 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
                         ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Compass
                   Expanded(
                     child: _isLoading
@@ -266,113 +263,124 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
                             ),
                           )
                         : !_hasPermissions
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.location_off,
-                                      size: 48,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Konum izni gerekli',
-                                      style: GoogleFonts.ebGaramond(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.location_off,
+                                  size: 48,
+                                  color: Colors.grey,
                                 ),
-                              )
-                            : AnimatedBuilder(
-                                animation: _rotationAnimation,
-                                builder: (context, child) {
-                                  return Center(
-                                    child: Container(
-                                      width: 120,
-                                      height: 120,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white.withOpacity(0.8),
-                                        border: Border.all(
-                                          color: Colors.teal.shade300,
-                                          width: 3,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.teal.withOpacity(0.3),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Compass directions
-                                          Positioned(
-                                            top: 8,
-                                            child: Text(
-                                              'N',
-                                              style: GoogleFonts.ebGaramond(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.teal.shade700,
-                                              ),
-                                            ),
-                                          ),
-                                          
-                                          // Qibla indicator
-                                          Transform.rotate(
-                                            angle: _qiblaAngle * _rotationAnimation.value,
-                                            child: Container(
-                                              width: 4,
-                                              height: 50,
-                                              margin: const EdgeInsets.only(bottom: 10),
-                                              decoration: BoxDecoration(
-                                                color: Colors.green.shade600,
-                                                borderRadius: BorderRadius.circular(2),
-                                              ),
-                                            ),
-                                          ),
-                                          
-                                          // Center point
-                                          Container(
-                                            width: 8,
-                                            height: 8,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.teal.shade700,
-                                            ),
-                                          ),
-                                          
-                                          // Kaaba icon
-                                          Transform.rotate(
-                                            angle: _qiblaAngle * _rotationAnimation.value,
-                                            child: Transform.translate(
-                                              offset: const Offset(0, -35),
-                                              child: Icon(
-                                                Icons.location_on,
-                                                color: Colors.green.shade600,
-                                                size: 20,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Konum izni gerekli',
+                                  style: GoogleFonts.ebGaramond(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : AnimatedBuilder(
+                            animation: _rotationAnimation,
+                            builder: (context, child) {
+                              return Center(
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withValues(alpha: 0.8),
+                                    border: Border.all(
+                                      color: Colors.teal.shade300,
+                                      width: 3,
                                     ),
-                                  );
-                                },
-                              ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.teal.withValues(alpha: 0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Compass directions
+                                      Positioned(
+                                        top: 8,
+                                        child: Text(
+                                          'N',
+                                          style: GoogleFonts.ebGaramond(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.teal.shade700,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Qibla indicator
+                                      Transform.rotate(
+                                        angle:
+                                            _qiblaAngle *
+                                            _rotationAnimation.value,
+                                        child: Container(
+                                          width: 4,
+                                          height: 50,
+                                          margin: const EdgeInsets.only(
+                                            bottom: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.shade600,
+                                            borderRadius: BorderRadius.circular(
+                                              2,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Center point
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.teal.shade700,
+                                        ),
+                                      ),
+
+                                      // Kaaba icon
+                                      Transform.rotate(
+                                        angle:
+                                            _qiblaAngle *
+                                            _rotationAnimation.value,
+                                        child: Transform.translate(
+                                          offset: const Offset(0, -35),
+                                          child: Icon(
+                                            Icons.location_on,
+                                            color: Colors.green.shade600,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                   ),
-                  
+
                   // Direction info
                   if (_qiblaDirection != null && !_isLoading)
                     Container(
                       margin: const EdgeInsets.only(top: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.teal.shade100,
                         borderRadius: BorderRadius.circular(8),

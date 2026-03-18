@@ -1,8 +1,10 @@
+// ignore_for_file: avoid_print
+
 import 'package:just_audio/just_audio.dart';
 
 class AudioService {
   static final AudioPlayer _player = AudioPlayer();
-  
+
   /// Play notification sound using just_audio
   static Future<void> playSound(String soundName) async {
     try {
@@ -15,7 +17,7 @@ class AudioService {
       // Fallback can be added here if needed
     }
   }
-  
+
   /// Stop currently playing sound
   static Future<void> stopSound() async {
     try {
@@ -24,7 +26,7 @@ class AudioService {
       print('Error stopping sound: $e');
     }
   }
-  
+
   /// Dispose audio player
   static Future<void> dispose() async {
     try {

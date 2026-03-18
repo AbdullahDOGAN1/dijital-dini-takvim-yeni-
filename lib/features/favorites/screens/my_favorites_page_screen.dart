@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import '../../../services/database_helper.dart';
 import 'package:share_plus/share_plus.dart';
@@ -35,7 +36,8 @@ class _MyFavoritesPageScreenState extends State<MyFavoritesPageScreen> {
   }
 
   void _shareFavorite(Map<String, dynamic> favorite) {
-    final shareText = '''
+    final shareText =
+        '''
 📖 ${favorite['favorite_type'] ?? 'İçerik'}
 ${favorite['page_date'] ?? ''}
 
@@ -91,41 +93,43 @@ Kaynak: ${favorite['content_source'] ?? ''}
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.purple.withOpacity(0.1), Colors.purple.withOpacity(0.05)],
+            colors: [
+              Colors.purple.withValues(alpha: 0.1),
+              Colors.purple.withValues(alpha: 0.05),
+            ],
           ),
         ),
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _groupedFavorites.isEmpty
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: 80,
-                          color: Colors.purple,
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'Henüz favori eklenmemiş',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.purple,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.favorite_border, size: 80, color: Colors.purple),
+                    SizedBox(height: 20),
+                    Text(
+                      'Henüz favori eklenmemiş',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.purple,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )
-                : ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    children: _groupedFavorites.entries
-                        .map((entry) => Card(
-                              margin: const EdgeInsets.all(8),
-                              child: ExpansionTile(
-                                title: Text(entry.key),
-                                children: entry.value.map((fav) => ListTile(
+                  ],
+                ),
+              )
+            : ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                children: _groupedFavorites.entries
+                    .map(
+                      (entry) => Card(
+                        margin: const EdgeInsets.all(8),
+                        child: ExpansionTile(
+                          title: Text(entry.key),
+                          children: entry.value
+                              .map(
+                                (fav) => ListTile(
                                   title: Text(fav['content_text'] ?? ''),
                                   subtitle: Text(fav['page_date'] ?? ''),
                                   trailing: Row(
@@ -137,17 +141,25 @@ Kaynak: ${favorite['content_source'] ?? ''}
                                         tooltip: 'Paylaş',
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-                                        onPressed: () => _deleteFavorite(fav['id']),
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          size: 20,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () =>
+                                            _deleteFavorite(fav['id']),
                                         tooltip: 'Sil',
                                       ),
                                     ],
                                   ),
-                                )).toList(),
-                              ),
-                            ))
-                        .toList(),
-                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
       ),
     );
   }

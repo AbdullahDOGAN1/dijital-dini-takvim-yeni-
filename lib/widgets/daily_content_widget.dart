@@ -6,18 +6,13 @@ class DailyContentWidget extends StatefulWidget {
   final DailyContentModel content;
   final VoidCallback? onTap;
 
-  const DailyContentWidget({
-    super.key,
-    required this.content,
-    this.onTap,
-  });
+  const DailyContentWidget({super.key, required this.content, this.onTap});
 
   @override
   State<DailyContentWidget> createState() => _DailyContentWidgetState();
 }
 
 class _DailyContentWidgetState extends State<DailyContentWidget> {
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -39,7 +34,7 @@ class _DailyContentWidgetState extends State<DailyContentWidget> {
                 Icons.menu_book,
                 Colors.green,
               ),
-              
+
               const SizedBox(height: 12),
 
               // Risale-i Nur özeği
@@ -70,7 +65,10 @@ class _DailyContentWidgetState extends State<DailyContentWidget> {
                   ),
                   // Paylaş butonu
                   IconButton(
-                    onPressed: () => _shareContent('Tarihte Bugün', widget.content.tariheBugun),
+                    onPressed: () => _shareContent(
+                      'Tarihte Bugün',
+                      widget.content.tariheBugun,
+                    ),
                     icon: const Icon(Icons.share, size: 16),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -99,7 +97,10 @@ class _DailyContentWidgetState extends State<DailyContentWidget> {
                   ),
                   // Paylaş butonu
                   IconButton(
-                    onPressed: () => _shareContent('Akşam Yemeği Önerisi', widget.content.aksamYemegi),
+                    onPressed: () => _shareContent(
+                      'Akşam Yemeği Önerisi',
+                      widget.content.aksamYemegi,
+                    ),
                     icon: const Icon(Icons.share, size: 16),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -195,7 +196,8 @@ class _DailyContentWidgetState extends State<DailyContentWidget> {
   }
 
   void _shareContent(String category, String content) {
-    final shareText = '''
+    final shareText =
+        '''
 📖 $category
 ${widget.content.tarih}
 
@@ -203,11 +205,7 @@ $content
 
 🌙 Nur Vakti Uygulaması
 ''';
-    
-    Share.share(
-      shareText,
-      subject: '$category - ${widget.content.tarih}',
-    );
-  }
 
+    Share.share(shareText, subject: '$category - ${widget.content.tarih}');
+  }
 }

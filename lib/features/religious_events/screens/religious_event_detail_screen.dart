@@ -5,16 +5,15 @@ import '../../../services/religious_events_service_fixed.dart';
 class ReligiousEventDetailScreen extends StatefulWidget {
   final ReligiousEvent event;
 
-  const ReligiousEventDetailScreen({
-    super.key,
-    required this.event,
-  });
+  const ReligiousEventDetailScreen({super.key, required this.event});
 
   @override
-  State<ReligiousEventDetailScreen> createState() => _ReligiousEventDetailScreenState();
+  State<ReligiousEventDetailScreen> createState() =>
+      _ReligiousEventDetailScreenState();
 }
 
-class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen> {
+class _ReligiousEventDetailScreenState
+    extends State<ReligiousEventDetailScreen> {
   ReligiousEventDetails? _eventDetails;
   bool _isLoading = true;
 
@@ -41,8 +40,12 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
   Widget build(BuildContext context) {
     final categoryColors = ReligiousEventsService.getCategoryColors();
     final categoryIcons = ReligiousEventsService.getCategoryIcons();
-    
-    final color = Color(int.parse('0xFF${categoryColors[widget.event.category]?.substring(1) ?? '95A5A6'}'));
+
+    final color = Color(
+      int.parse(
+        '0xFF${categoryColors[widget.event.category]?.substring(1) ?? '95A5A6'}',
+      ),
+    );
     final icon = categoryIcons[widget.event.category] ?? '📖';
 
     return Scaffold(
@@ -74,7 +77,7 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color, color.withOpacity(0.7)],
+          colors: [color, color.withValues(alpha: 0.7)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -88,13 +91,10 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Text(
-                    icon,
-                    style: const TextStyle(fontSize: 48),
-                  ),
+                  child: Text(icon, style: const TextStyle(fontSize: 48)),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -108,15 +108,22 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.calendar_today, color: Colors.white, size: 16),
+                      const Icon(
+                        Icons.calendar_today,
+                        color: Colors.white,
+                        size: 16,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         '${widget.event.gregorianDate} • ${widget.event.dayOfWeek}',
@@ -127,9 +134,12 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -147,13 +157,16 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
                 if (widget.event.daysUntil >= 0) ...[
                   const SizedBox(height: 12),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -168,8 +181,8 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
                           widget.event.isToday
                               ? 'BUGÜN'
                               : widget.event.daysUntil == 1
-                                  ? 'YARIN'
-                                  : '${widget.event.daysUntil} GÜN KALDI',
+                              ? 'YARIN'
+                              : '${widget.event.daysUntil} GÜN KALDI',
                           style: TextStyle(
                             color: color,
                             fontWeight: FontWeight.bold,
@@ -213,7 +226,7 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
             ),
             const SizedBox(height: 16),
           ],
-          
+
           if (_eventDetails!.worshipsAndPrayers.isNotEmpty) ...[
             _buildSectionCard(
               title: 'Yapılan İbadetler ve Dualar',
@@ -223,7 +236,7 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
             ),
             const SizedBox(height: 16),
           ],
-          
+
           if (_eventDetails!.versesAndHadiths.isNotEmpty) ...[
             _buildSectionCard(
               title: 'İlgili Ayet ve Hadisler',
@@ -233,7 +246,7 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
             ),
             const SizedBox(height: 16),
           ],
-          
+
           if (_eventDetails!.recommendations.isNotEmpty) ...[
             _buildSectionCard(
               title: 'Tavsiyeler',
@@ -253,19 +266,12 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
       child: Center(
         child: Column(
           children: [
-            Icon(
-              Icons.info_outline,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.info_outline, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'Bu dini gün için detaylı bilgi\nhenüz mevcut değil',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -294,9 +300,7 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
   }) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -307,7 +311,7 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, color: color, size: 20),
@@ -328,15 +332,12 @@ class _ReligiousEventDetailScreenState extends State<ReligiousEventDetailScreen>
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.05),
+                color: color.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 content,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.5,
-                ),
+                style: const TextStyle(fontSize: 14, height: 1.5),
               ),
             ),
           ],

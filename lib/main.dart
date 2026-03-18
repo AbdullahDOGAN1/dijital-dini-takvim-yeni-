@@ -1,3 +1,6 @@
+// ignore_for_file: avoid_print
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,33 +26,35 @@ import 'package:timezone/data/latest.dart' as tz;
 void main() async {
   // Ensure that plugin services are initialized
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Force portrait orientation only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   // Initialize timezone data
   tz.initializeTimeZones();
-  
+
   // Initialize notification service
   final notificationInitialized = await NotificationServiceFixed.initialize();
-  print('🔔 Notification service initialized: $notificationInitialized');
-  
+  if (kDebugMode) {
+    print('🔔 Notification service initialized: $notificationInitialized');
+  }
+
   // Initialize widget service
   await WidgetService.initialize();
-  
+
   // Create and load settings provider
   final settingsProvider = SettingsProvider();
   await settingsProvider.loadSettings();
-  
+
   runApp(MyApp(settingsProvider: settingsProvider));
 }
 
 class MyApp extends StatelessWidget {
   final SettingsProvider settingsProvider;
-  
+
   const MyApp({super.key, required this.settingsProvider});
 
   @override
@@ -69,7 +74,7 @@ class MyApp extends StatelessWidget {
               '/location_settings': (context) => const LocationSettingsScreen(),
               '/settings': (context) => const SettingsScreen(),
               '/daily_content': (context) => const DailyContentScreen(),
-              '                  builder: (context) => const ReligiousEventsScreen(),': (context) => const ReligiousEventsScreen(),
+              '/religious_events': (context) => const ReligiousEventsScreen(),
             },
           );
         },
@@ -234,14 +239,17 @@ class _MainScreenState extends State<MainScreen> {
                   'Menü',
                   style: GoogleFonts.ebGaramond(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
               ],
             ),
           ),
           ListTile(
-            leading: Icon(Icons.auto_stories, color: Colors.deepPurple.shade600),
+            leading: Icon(
+              Icons.auto_stories,
+              color: Colors.deepPurple.shade600,
+            ),
             title: Text(
               'Bugünün İçeriği',
               style: GoogleFonts.ebGaramond(
@@ -354,9 +362,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
           ),

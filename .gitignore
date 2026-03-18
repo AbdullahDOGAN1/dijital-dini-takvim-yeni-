@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# APK files
+*.apk
+
+# Test files in root (should be in test/)
+test_*.dart
+lib/test_*.dart

@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,24 +27,28 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Load theme mode
       final themeIndex = prefs.getInt(_themeModeKey);
       if (themeIndex != null) {
         _themeMode = ThemeMode.values[themeIndex];
       }
-      
+
       // Load font family
       final savedFont = prefs.getString(_fontFamilyKey);
       if (savedFont != null) {
         _fontFamily = savedFont;
       }
-      
+
       // Load azan sound settings
       _azanSoundEnabled = prefs.getBool(_azanSoundEnabledKey) ?? false;
       _azanSoundName = prefs.getString(_azanSoundNameKey) ?? 'athan';
-      
-      print('DEBUG SettingsProvider: Loaded settings - Theme: $_themeMode, Font: $_fontFamily, Azan: $_azanSoundEnabled');
+
+      if (kDebugMode) {
+        print(
+          'DEBUG SettingsProvider: Loaded settings - Theme: $_themeMode, Font: $_fontFamily, Azan: $_azanSoundEnabled',
+        );
+      }
     } catch (e) {
       print('Error loading settings: $e');
     }
@@ -51,11 +58,13 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setThemeMode(ThemeMode mode) async {
     try {
       _themeMode = mode;
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_themeModeKey, mode.index);
-      
-      print('DEBUG SettingsProvider: Theme mode set to $_themeMode');
+
+      if (kDebugMode) {
+        print('DEBUG SettingsProvider: Theme mode set to $_themeMode');
+      }
       notifyListeners();
     } catch (e) {
       print('Error setting theme mode: $e');
@@ -66,11 +75,13 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setFontFamily(String fontFamily) async {
     try {
       _fontFamily = fontFamily;
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_fontFamilyKey, fontFamily);
-      
-      print('DEBUG SettingsProvider: Font family set to $_fontFamily');
+
+      if (kDebugMode) {
+        print('DEBUG SettingsProvider: Font family set to $_fontFamily');
+      }
       notifyListeners();
     } catch (e) {
       print('Error setting font family: $e');
@@ -91,12 +102,12 @@ class SettingsProvider extends ChangeNotifier {
 
   // Get available font families for dropdown
   List<String> get availableFonts => [
-        'Merriweather',
-        'Inter',
-        'Lato',
-        'Roboto',
-        'Open Sans',
-      ];
+    'Merriweather',
+    'Inter',
+    'Lato',
+    'Roboto',
+    'Open Sans',
+  ];
 
   // Get font display name for UI
   String getFontDisplayName(String font) {
@@ -120,11 +131,15 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setAzanSoundEnabled(bool enabled) async {
     try {
       _azanSoundEnabled = enabled;
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_azanSoundEnabledKey, enabled);
-      
-      print('DEBUG SettingsProvider: Azan sound enabled set to $_azanSoundEnabled');
+
+      if (kDebugMode) {
+        print(
+          'DEBUG SettingsProvider: Azan sound enabled set to $_azanSoundEnabled',
+        );
+      }
       notifyListeners();
     } catch (e) {
       print('Error setting azan sound enabled: $e');
@@ -135,11 +150,13 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setAzanSoundName(String soundName) async {
     try {
       _azanSoundName = soundName;
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_azanSoundNameKey, soundName);
-      
-      print('DEBUG SettingsProvider: Azan sound name set to $_azanSoundName');
+
+      if (kDebugMode) {
+        print('DEBUG SettingsProvider: Azan sound name set to $_azanSoundName');
+      }
       notifyListeners();
     } catch (e) {
       print('Error setting azan sound name: $e');

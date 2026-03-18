@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -90,15 +92,15 @@ class _DhikrScreenState extends State<DhikrScreen>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
-    
+
     _rippleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _rippleController, curve: Curves.easeOut),
     );
-    
+
     // Load saved data
     _loadCustomDhikr();
   }
@@ -115,13 +117,15 @@ class _DhikrScreenState extends State<DhikrScreen>
     try {
       final prefs = await SharedPreferences.getInstance();
       final customDhikrJson = prefs.getString('custom_dhikr') ?? '{}';
-      final customDhikr = Map<String, dynamic>.from(json.decode(customDhikrJson));
-      
+      final customDhikr = Map<String, dynamic>.from(
+        json.decode(customDhikrJson),
+      );
+
       // Özel zikirleri ana listeye ekle
       customDhikr.forEach((key, value) {
         _dhikrOptions[key] = Map<String, dynamic>.from(value);
       });
-      
+
       await _loadDhikrData();
     } catch (e) {
       print('Error loading custom dhikr: $e');
@@ -133,11 +137,11 @@ class _DhikrScreenState extends State<DhikrScreen>
   Future<void> _saveCustomDhikr() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Sadece özel zikirleri filtrele
       final customDhikr = Map<String, dynamic>.from(_dhikrOptions)
         ..removeWhere((key, value) => value['isCustom'] != true);
-      
+
       await prefs.setString('custom_dhikr', json.encode(customDhikr));
     } catch (e) {
       print('Error saving custom dhikr: $e');
@@ -149,13 +153,13 @@ class _DhikrScreenState extends State<DhikrScreen>
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedDhikr = prefs.getString('selected_dhikr') ?? 'Sübhanallah';
-      
+
       setState(() {
         _selectedDhikr = savedDhikr;
       });
-      
+
       final savedCounter = prefs.getInt('dhikr_count_$_selectedDhikr') ?? 0;
-      
+
       if (mounted) {
         setState(() {
           _counter = savedCounter;
@@ -180,19 +184,19 @@ class _DhikrScreenState extends State<DhikrScreen>
   /// Sayacı artır
   void _incrementCounter() {
     HapticFeedback.lightImpact();
-    
+
     _scaleController.forward().then((_) {
       _scaleController.reverse();
     });
-    
+
     _rippleController.forward().then((_) {
       _rippleController.reset();
     });
-    
+
     setState(() {
       _counter++;
     });
-    
+
     _saveCounter();
   }
 
@@ -202,7 +206,9 @@ class _DhikrScreenState extends State<DhikrScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Sayacı Sıfırla'),
-        content: Text('$_selectedDhikr sayacını sıfırlamak istediğinizden emin misiniz?'),
+        content: Text(
+          '$_selectedDhikr sayacını sıfırlamak istediğinizden emin misiniz?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -228,20 +234,20 @@ class _DhikrScreenState extends State<DhikrScreen>
   Future<void> _changeDhikr(String newDhikr) async {
     // Önce mevcut sayacı kaydet
     await _saveCounter();
-    
+
     // Yeni zikri yükle
     setState(() {
       _selectedDhikr = newDhikr;
     });
-    
+
     // Yeni zikrin sayacını yükle
     final prefs = await SharedPreferences.getInstance();
     final newCounter = prefs.getInt('dhikr_count_$newDhikr') ?? 0;
-    
+
     setState(() {
       _counter = newCounter;
     });
-    
+
     await _saveCounter();
   }
 
@@ -255,9 +261,12 @@ class _DhikrScreenState extends State<DhikrScreen>
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text('Özel Zikir Ekle', style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold)),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(
+            'Özel Zikir Ekle',
+            style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -288,13 +297,14 @@ class _DhikrScreenState extends State<DhikrScreen>
                 SizedBox(height: 16),
                 TextField(
                   controller: targetController,
-                  decoration: InputDecoration(
-                    labelText: 'Hedef Sayı',
-                  ),
+                  decoration: InputDecoration(labelText: 'Hedef Sayı'),
                   keyboardType: TextInputType.number,
                 ),
                 SizedBox(height: 16),
-                Text('Renk Seçin:', style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold)),
+                Text(
+                  'Renk Seçin:',
+                  style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+                ),
                 SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -312,11 +322,13 @@ class _DhikrScreenState extends State<DhikrScreen>
                         decoration: BoxDecoration(
                           color: color,
                           shape: BoxShape.circle,
-                          border: isSelected 
+                          border: isSelected
                               ? Border.all(color: Colors.black, width: 3)
                               : null,
                         ),
-                        child: isSelected ? Icon(Icons.check, color: Colors.white) : null,
+                        child: isSelected
+                            ? Icon(Icons.check, color: Colors.white)
+                            : null,
                       ),
                     );
                   }).toList(),
@@ -326,11 +338,11 @@ class _DhikrScreenState extends State<DhikrScreen>
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext),
               child: Text('İptal'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final name = nameController.text.trim();
                 final text = textController.text.trim();
                 final meaning = meaningController.text.trim();
@@ -346,10 +358,11 @@ class _DhikrScreenState extends State<DhikrScreen>
                       'isCustom': true,
                     };
                   });
-                  
-                  _saveCustomDhikr();
-                  Navigator.pop(context);
-                  
+                  await _saveCustomDhikr();
+                  if (!dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Özel zikir eklendi: $name')),
                   );
@@ -367,12 +380,12 @@ class _DhikrScreenState extends State<DhikrScreen>
   void _deleteCustomDhikr(String dhikrName) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text('Zikir Sil'),
         content: Text('$dhikrName zikrini silmek istediğinizden emin misiniz?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text('İptal'),
           ),
           ElevatedButton(
@@ -381,18 +394,20 @@ class _DhikrScreenState extends State<DhikrScreen>
               if (_selectedDhikr == dhikrName) {
                 await _changeDhikr('Sübhanallah');
               }
-              
+
               setState(() {
                 _dhikrOptions.remove(dhikrName);
               });
-              
+
               // Sayacı da temizle
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove('dhikr_count_$dhikrName');
-              
+
               await _saveCustomDhikr();
-              Navigator.pop(context);
-              
+              if (!dialogContext.mounted) return;
+              Navigator.pop(dialogContext);
+
+              if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('$dhikrName silindi')),
               );
@@ -430,7 +445,7 @@ class _DhikrScreenState extends State<DhikrScreen>
               ),
             ),
             SizedBox(height: 20),
-            
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -452,7 +467,7 @@ class _DhikrScreenState extends State<DhikrScreen>
               ],
             ),
             SizedBox(height: 10),
-            
+
             Text(
               'Özel zikir silmek için uzun basın',
               style: GoogleFonts.ebGaramond(
@@ -462,7 +477,7 @@ class _DhikrScreenState extends State<DhikrScreen>
               ),
             ),
             SizedBox(height: 20),
-            
+
             // Zikir listesi
             Flexible(
               child: ListView.builder(
@@ -473,11 +488,13 @@ class _DhikrScreenState extends State<DhikrScreen>
                   final dhikrData = _dhikrOptions[dhikrName]!;
                   final isSelected = _selectedDhikr == dhikrName;
                   final isCustom = dhikrData['isCustom'] == true;
-                  
+
                   return Container(
                     margin: EdgeInsets.symmetric(vertical: 4),
                     child: Card(
-                      color: isSelected ? dhikrData['color'].withOpacity(0.1) : null,
+                      color: isSelected
+                          ? dhikrData['color'].withValues(alpha: 0.1)
+                          : null,
                       child: ListTile(
                         leading: Container(
                           width: 12,
@@ -493,16 +510,14 @@ class _DhikrScreenState extends State<DhikrScreen>
                               child: Text(
                                 dhikrName,
                                 style: GoogleFonts.ebGaramond(
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                             ),
                             if (isCustom)
-                              Icon(
-                                Icons.star,
-                                size: 16,
-                                color: Colors.amber,
-                              ),
+                              Icon(Icons.star, size: 16, color: Colors.amber),
                           ],
                         ),
                         subtitle: Text(
@@ -520,17 +535,19 @@ class _DhikrScreenState extends State<DhikrScreen>
                           Navigator.pop(context);
                           _changeDhikr(dhikrName);
                         },
-                        onLongPress: isCustom ? () {
-                          Navigator.pop(context);
-                          _deleteCustomDhikr(dhikrName);
-                        } : null,
+                        onLongPress: isCustom
+                            ? () {
+                                Navigator.pop(context);
+                                _deleteCustomDhikr(dhikrName);
+                              }
+                            : null,
                       ),
                     ),
                   );
                 },
               ),
             ),
-            
+
             SizedBox(height: 20),
           ],
         ),
@@ -543,10 +560,13 @@ class _DhikrScreenState extends State<DhikrScreen>
     final currentDhikr = _dhikrOptions[_selectedDhikr]!;
     final progress = (_counter / currentDhikr['target']).clamp(0.0, 1.0);
     final isCompleted = _counter >= currentDhikr['target'];
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Zikirmatik', style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Zikirmatik',
+          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: currentDhikr['color'],
         foregroundColor: Colors.white,
         elevation: 0,
@@ -569,7 +589,7 @@ class _DhikrScreenState extends State<DhikrScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              currentDhikr['color'].withOpacity(0.1),
+              currentDhikr['color'].withValues(alpha: 0.1),
               Theme.of(context).scaffoldBackgroundColor,
             ],
           ),
@@ -624,7 +644,7 @@ class _DhikrScreenState extends State<DhikrScreen>
                   ],
                 ),
               ),
-              
+
               // İlerleme çubuğu
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 32),
@@ -655,27 +675,33 @@ class _DhikrScreenState extends State<DhikrScreen>
                     LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.grey.shade300,
-                      valueColor: AlwaysStoppedAnimation<Color>(currentDhikr['color']),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        currentDhikr['color'],
+                      ),
                       minHeight: 8,
                     ),
                     SizedBox(height: 8),
                     Text(
-                      isCompleted 
-                          ? 'Tebrikler! Hedefe ulaştınız 🎉' 
+                      isCompleted
+                          ? 'Tebrikler! Hedefe ulaştınız 🎉'
                           : '${currentDhikr['target'] - _counter} kez daha',
                       style: GoogleFonts.ebGaramond(
                         fontSize: 14,
-                        color: isCompleted ? Colors.green : Colors.grey.shade600,
-                        fontWeight: isCompleted ? FontWeight.bold : FontWeight.normal,
+                        color: isCompleted
+                            ? Colors.green
+                            : Colors.grey.shade600,
+                        fontWeight: isCompleted
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              
+
               Spacer(),
-              
+
               // Ana zikir butonu
               Center(
                 child: AnimatedBuilder(
@@ -695,14 +721,15 @@ class _DhikrScreenState extends State<DhikrScreen>
                                 height: 200 + (_rippleAnimation.value * 50),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: currentDhikr['color'].withOpacity(
+                                  color: currentDhikr['color'].withValues(
+                                    alpha:
                                     0.3 * (1 - _rippleAnimation.value),
                                   ),
                                 ),
                               );
                             },
                           ),
-                          
+
                           // Ana buton
                           GestureDetector(
                             onTap: _incrementCounter,
@@ -714,7 +741,10 @@ class _DhikrScreenState extends State<DhikrScreen>
                                 color: currentDhikr['color'],
                                 boxShadow: [
                                   BoxShadow(
-                                    color: currentDhikr['color'].withOpacity(0.3),
+                                    color: currentDhikr['color'].withValues(
+                                      alpha:
+                                      0.3,
+                                    ),
                                     blurRadius: 20,
                                     offset: Offset(0, 10),
                                   ),
@@ -747,9 +777,9 @@ class _DhikrScreenState extends State<DhikrScreen>
                   },
                 ),
               ),
-              
+
               Spacer(),
-              
+
               // Alt butonlar
               Padding(
                 padding: EdgeInsets.all(32),

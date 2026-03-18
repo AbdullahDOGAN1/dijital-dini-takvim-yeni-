@@ -16,15 +16,14 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
     with TickerProviderStateMixin {
   int _count = 0;
   int _target = 33;
-  final bool _isCompact = true;
-  
+
   late AnimationController _pulseController;
   late AnimationController _progressController;
   late Animation<double> _pulseAnimation;
   late Animation<double> _progressAnimation;
 
   final List<int> _targetOptions = [33, 99, 100, 1000];
-  
+
   // Default dhikr phrases
   final List<String> _dhikrPhrases = [
     'سُبْحَانَ اللهِ',
@@ -34,7 +33,7 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
     'أَسْتَغْفِرُ اللهَ',
     'لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ',
   ];
-  
+
   int _selectedPhraseIndex = 0;
 
   @override
@@ -48,23 +47,15 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
-    _pulseAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.elasticOut,
-    ));
-    
-    _progressAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _progressController,
-      curve: Curves.easeInOut,
-    ));
-    
+
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.elasticOut),
+    );
+
+    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+    );
+
     _loadSavedData();
   }
 
@@ -96,18 +87,18 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
     setState(() {
       _count++;
     });
-    
+
     // Haptic feedback
     HapticFeedback.lightImpact();
-    
+
     // Pulse animation
     _pulseController.forward().then((_) {
       _pulseController.reverse();
     });
-    
+
     _updateProgress();
     _saveData();
-    
+
     // Check if target reached
     if (_count % _target == 0) {
       _showCompletionDialog();
@@ -139,9 +130,7 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
             const SizedBox(width: 8),
             Text(
               'Tebrikler!',
-              style: GoogleFonts.ebGaramond(
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -186,9 +175,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               Text(
                 'Tesbih Ayarları',
                 style: GoogleFonts.ebGaramond(
@@ -196,9 +185,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Target selection
               Text(
                 'Hedef Sayı',
@@ -229,9 +218,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                   );
                 }).toList(),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Phrase selection
               Text(
                 'Zikir Seçimi',
@@ -268,16 +257,14 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                   },
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Tamam',
-                  style: GoogleFonts.ebGaramond(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -289,9 +276,6 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final progress = (_count % _target) / _target;
-
     return AnimationConfiguration.staggeredList(
       position: 5,
       duration: const Duration(milliseconds: 800),
@@ -304,19 +288,16 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.brown.shade50,
-                  Colors.orange.shade50,
-                ],
+                colors: [Colors.brown.shade50, Colors.orange.shade50],
               ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.brown.withOpacity(0.3),
+                color: Colors.brown.withValues(alpha: 0.3),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.brown.withOpacity(0.2),
+                  color: Colors.brown.withValues(alpha: 0.2),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -374,18 +355,18 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Current dhikr phrase
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.brown.withOpacity(0.3),
+                        color: Colors.brown.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(
@@ -398,9 +379,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Counter and progress
                   Row(
                     children: [
@@ -438,9 +419,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                           );
                         },
                       ),
-                      
+
                       const SizedBox(width: 20),
-                      
+
                       // Counter button and total
                       Expanded(
                         child: Column(
@@ -464,9 +445,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                                 ),
                               ),
                             ),
-                            
+
                             const SizedBox(height: 12),
-                            
+
                             // Count button
                             AnimatedBuilder(
                               animation: _pulseAnimation,
@@ -490,7 +471,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.brown.withOpacity(0.4),
+                                            color: Colors.brown.withValues(
+                                              alpha: 0.4,
+                                            ),
                                             blurRadius: 10,
                                             offset: const Offset(0, 3),
                                           ),
@@ -506,9 +489,9 @@ class _TasbihCounterWidgetState extends State<TasbihCounterWidget>
                                 );
                               },
                             ),
-                            
+
                             const SizedBox(height: 12),
-                            
+
                             // Reset button
                             TextButton.icon(
                               onPressed: _reset,
