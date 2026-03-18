@@ -242,17 +242,10 @@ async function resolveCities(token) {
   }
 
   if (citiesV2.length > 0) {
-    const turkeyCities = citiesV2
+    let turkeyCities = citiesV2
       .filter((city) => {
-        const countryId = Number(city?.country?.id ?? city?.Country?.Id ?? 0);
         const countryCode = String(city?.country?.code ?? city?.Country?.Code ?? "").toUpperCase();
-        const countryName = String(city?.country?.name ?? city?.Country?.Name ?? "").toUpperCase();
-
-        if (Number.isFinite(DIYANET_COUNTRY_ID) && DIYANET_COUNTRY_ID > 0 && countryId === DIYANET_COUNTRY_ID) {
-          return true;
-        }
-
-        return countryCode === "TR" || countryName.includes("TUR") || countryName.includes("TÜRK");
+        return countryCode === "TR";
       })
       .map((city) => ({
         cityId: Number(city.id || city.Id || 0),
@@ -262,6 +255,19 @@ async function resolveCities(token) {
         stateCode: String(city.state?.id || city.State?.Id || ""),
       }))
       .filter((city) => city.cityCode && city.cityName && Number.isFinite(city.cityId) && city.cityId > 0);
+
+    if (turkeyCities.length === 0 && Number.isFinite(DIYANET_COUNTRY_ID) && DIYANET_COUNTRY_ID > 0) {
+      turkeyCities = citiesV2
+        .filter((city) => Number(city?.country?.id ?? city?.Country?.Id ?? 0) === DIYANET_COUNTRY_ID)
+        .map((city) => ({
+          cityId: Number(city.id || city.Id || 0),
+          cityCode: String(city.id || city.Id || city.code || city.Code || ""),
+          cityName: city.name || city.Name || "",
+          countryCode: String(city.country?.id || city.Country?.Id || DIYANET_COUNTRY_ID || "2"),
+          stateCode: String(city.state?.id || city.State?.Id || ""),
+        }))
+        .filter((city) => city.cityCode && city.cityName && Number.isFinite(city.cityId) && city.cityId > 0);
+    }
 
     if (turkeyCities.length > 0) {
       console.log(`Resolved ${turkeyCities.length} Turkey cities from /api/v2/Place/Cities`);
@@ -351,18 +357,35 @@ async function buildPrayerWindow({token, cities}) {
 }
 
 async function buildReligiousDays({token, year}) {
-  const days = await fetchWithAuth({
-    token,
-    endpoint: "/api/ReligiousDays",
-    params: {Year: year},
-  });
+  try {
+    const days = await fetchWithAuth({
+      token,
+      endpoint: "/api/ReligiousDays",
+      params: {Year: year},
+    });
 
-  return {
-    generatedAt: new Date().toISOString(),
-    source: "diyanet_awqatsalah",
-    year,
-    days: Array.isArray(days) ? days : [],
-  };
+    return {
+      generatedAt: new Date().toISOString(),
+      source: "diyanet_awqatsalah",
+      year,
+      days: Array.isArray(days) ? days : [],
+      fallbackUsed: false,
+    };
+  } catch (error) {
+    const status = error?.response?.status;
+    if (status === 404) {
+      console.log(`ReligiousDays endpoint not found for year=${year}, writing empty days fallback`);
+      return {
+        generatedAt: new Date().toISOString(),
+        source: "diyanet_awqatsalah",
+        year,
+        days: [],
+        fallbackUsed: true,
+        fallbackReason: "ReligiousDays endpoint unavailable (404)",
+      };
+    }
+    throw error;
+  }
 }
 
 async function writeJson(fileName, content) {
@@ -395,6 +418,10 @@ async function run() {
     prayerStartDate: prayerWindow.startDate,
     prayerEndDate: prayerWindow.endDate,
     religiousYears: [currentYear, nextYear],
+    religiousFallbackYears: [currentYear, nextYear].filter((year) => {
+      const src = year === currentYear ? religiousCurrent : religiousNext;
+      return !!src?.fallbackUsed;
+    }),
   });
 
   console.log("Diyanet JSON cache sync completed successfully");
