@@ -101,15 +101,6 @@ dependencies:
   
   # Home screen widgets for Android and iOS
   home_widget: ^0.6.0
-  
-  # Firebase Core - Required for all Firebase services
-  firebase_core: ^3.8.1
-  
-  # Cloud Firestore - NoSQL database for caching Diyanet API data
-  cloud_firestore: ^5.5.0
-  
-  # Firebase Analytics (optional but recommended)
-  firebase_analytics: ^11.3.4
 
 dev_dependencies:
   flutter_test:

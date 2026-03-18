@@ -23,9 +23,8 @@ Aşağıdaki dosyaların aktif kodda import veya sınıf kullanımı bulunmuyor:
 - `lib/services/daily_content_service.dart` (takvim + günlük içerik)
 - `lib/services/notification_service_fixed.dart` (bildirim ayarları + scheduler)
 - `lib/services/religious_days_service.dart` (religious days ekranı)
-- `lib/services/diyanet_api_service.dart` (`religious_days_service.dart` içinde kullanılıyor)
+- `lib/services/diyanet_json_cache_service.dart` (JSON cache-first akış)
 - `lib/services/religious_events_service_fixed.dart` (religious events ekranları)
-- `lib/services/firebase_data_service.dart` (cache-first akışta kullanılıyor)
 
 ## Kaldırma sırası (öneri)
 

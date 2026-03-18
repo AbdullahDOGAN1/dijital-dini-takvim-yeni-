@@ -1,52 +1,39 @@
-# Diyanet Secrets Setup
+# Diyanet Secrets Setup (No Blaze)
 
-Bu dosya, Diyanet API kimlik bilgilerini güvenli şekilde yapılandırmak için gereken adımları içerir.
+Bu repo artık Firebase deploy gerektirmeyen JSON-cache mimarisiyle çalışır.
 
-## 1) Flutter App (local/dev)
+## 1) GitHub Actions Secrets
 
-Diyanet bilgilerini kod içine yazmayın. Uygulamayı aşağıdaki `dart-define` parametreleriyle çalıştırın:
+Repository > Settings > Secrets and variables > Actions bölümüne ekleyin:
 
-```powershell
-flutter run -d emulator-5554 --dart-define=DIYANET_EMAIL=YOUR_EMAIL --dart-define=DIYANET_PASSWORD=YOUR_PASSWORD
-```
-
-## 2) Firebase Functions Secrets
-
-Cloud Functions ortamına secretları ekleyin:
-
-```powershell
-firebase functions:secrets:set DIYANET_EMAIL
-firebase functions:secrets:set DIYANET_PASSWORD
-firebase functions:secrets:set SYNC_API_TOKEN
-```
-
-Alternatif (runtime config) yöntem:
-
-```powershell
-firebase functions:config:set diyanet.email="YOUR_EMAIL" diyanet.password="YOUR_PASSWORD" sync.token="YOUR_SYNC_TOKEN"
-```
-
-Sonrasında deploy:
-
-```powershell
-cd functions
-npm install
-firebase deploy --only functions
-```
-
-## 3) GitHub Actions Secrets
-
-Repository > Settings > Secrets and variables > Actions bölümünde şu secretları ekleyin:
-
-- `DIYANET_SYNC_URL`: Deploy sonrası `manualDiyanetSync` endpoint URL
-- `DIYANET_SYNC_TOKEN`: `SYNC_API_TOKEN` ile aynı değer
-
-Opsiyonel olarak dokümantasyon amaçlı aşağıdakileri de saklayabilirsiniz (workflow şu an kullanmıyor):
 - `DIYANET_EMAIL`
 - `DIYANET_PASSWORD`
 
+Bu secretlar `Diyanet Monthly JSON Sync (No Blaze)` workflow'unda kullanılır.
+
+## 2) Workflow
+
+İlk doldurma için workflow'u elle çalıştırın:
+
+- Actions -> `Diyanet Monthly JSON Sync (No Blaze)` -> `Run workflow`
+
+Workflow başarılı olduğunda repo içindeki şu dosyalar güncellenir:
+
+- `assets/data/diyanet_cache/prayer_times_window.json`
+- `assets/data/diyanet_cache/religious_days_<year>.json`
+- `assets/data/diyanet_cache/sync_status.json`
+
+## 3) Mobil Uygulama
+
+Mobil uygulama varsayılan olarak bu JSON cache'i okur. Ek secret gerekmez.
+
+Opsiyonel test amaçlı farklı bir cache URL'i için:
+
+```powershell
+flutter run --dart-define=DIYANET_CACHE_BASE_URL=https://raw.githubusercontent.com/<owner>/<repo>/<branch>/assets/data/diyanet_cache
+```
+
 ## 4) Güvenlik Notu
 
-- `DIYANET_EMAIL` ve `DIYANET_PASSWORD` değerlerini repo içinde hiçbir dosyaya yazmayın.
-- `SYNC_API_TOKEN` manuel sync endpoint’ini korumak için gereklidir.
-- Secret rotation yaparken Firebase + GitHub tarafını birlikte güncelleyin.
+- Diyanet kimlik bilgilerini repo içine veya kod dosyalarına yazmayın.
+- Secret rotation sonrası workflow'u tekrar çalıştırıp yeni veriyi üretin.

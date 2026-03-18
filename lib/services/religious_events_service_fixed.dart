@@ -4,14 +4,14 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/religious_event_model.dart';
-import 'diyanet_awqat_salah_service.dart';
+import 'diyanet_json_cache_service.dart';
 
 class ReligiousEventsService {
   static final List<ReligiousEvent> _allEvents = [];
   static final List<ReligiousEventDetails> _eventDetails = [];
   static bool _isLoaded = false;
   static int? _loadedYear; // Hangi yıl için yüklendiğini takip et
-  static final DiyanetAwqatSalahService _diyanetService = DiyanetAwqatSalahService();
+  static final DiyanetJsonCacheService _jsonCacheService = DiyanetJsonCacheService();
 
   /// Yıl değiştiğinde cache'i otomatik temizle
   static void _checkYearChange() {
@@ -25,7 +25,7 @@ class ReligiousEventsService {
   }
 
   /// Tüm dini günleri yükle (dinamik yıl sistemi)
-  /// Önce Diyanet API'den dener, başarısız olursa JSON dosyasından okur
+  /// Önce JSON cache'den dener, başarısız olursa bundle JSON dosyasından okur
   static Future<void> loadReligiousEvents() async {
     // Yıl değişikliğini kontrol et
     _checkYearChange();
@@ -33,21 +33,24 @@ class ReligiousEventsService {
     if (_isLoaded) return;
 
     try {
-      // Önce Diyanet API'den dene
+      // Önce uzaktaki JSON cache'den dene
       final currentYear = DateTime.now().year;
       final nextYear = currentYear + 1;
       
-      bool loadedFromApi = false;
+      bool loadedFromCache = false;
       
       try {
-        // Mevcut yıl ve sonraki yıl için Diyanet API'den çek
-        final currentYearData = await _diyanetService.getReligiousDays(year: currentYear);
-        final nextYearData = await _diyanetService.getReligiousDays(year: nextYear);
+        final currentYearData = await _jsonCacheService.getCachedReligiousDays(
+          year: currentYear,
+        );
+        final nextYearData = await _jsonCacheService.getCachedReligiousDays(
+          year: nextYear,
+        );
         
         if (currentYearData != null && currentYearData.isNotEmpty) {
           _allEvents.clear();
           
-          // Diyanet API response'unu ReligiousEvent'e çevir
+          // JSON cache response'unu ReligiousEvent'e çevir
           for (final eventData in currentYearData) {
             final event = _convertDiyanetApiToReligiousEvent(eventData, currentYear);
             if (event != null) {
@@ -65,12 +68,12 @@ class ReligiousEventsService {
           }
           
           if (_allEvents.isNotEmpty) {
-            loadedFromApi = true;
+            loadedFromCache = true;
             _loadedYear = currentYear;
             _isLoaded = true;
             
             if (kDebugMode) {
-              print('✅ Dini günler Diyanet API\'den yüklendi: ${_allEvents.length} etkinlik');
+              print('✅ Dini günler JSON cache\'den yüklendi: ${_allEvents.length} etkinlik');
             }
             
             // Detayları JSON'dan yükle (API'de detay yok)
@@ -80,12 +83,12 @@ class ReligiousEventsService {
         }
       } catch (e) {
         if (kDebugMode) {
-          print('⚠️ Diyanet API başarısız, JSON dosyasından okunuyor: $e');
+          print('⚠️ JSON cache başarısız, bundle JSON dosyasından okunuyor: $e');
         }
       }
 
-      // Fallback: JSON dosyasından oku
-      if (!loadedFromApi) {
+      // Fallback: bundle JSON dosyasından oku
+      if (!loadedFromCache) {
         // Tarih verilerini yükle
         final datesData = await rootBundle.loadString(
           'assets/data/dinigünlertarih.json',

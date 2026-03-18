@@ -3,7 +3,7 @@
 import '../models/prayer_times_model.dart';
 import 'diyanet_awqat_salah_service.dart';
 import 'diyanet_city_mapper.dart';
-import 'firebase_data_service.dart';
+import 'diyanet_json_cache_service.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +13,11 @@ import 'package:flutter/foundation.dart';
 /// Tüm sistem artık Diyanet API üzerine kurulu
 class PrayerApiService {
   static final DiyanetAwqatSalahService _diyanetService = DiyanetAwqatSalahService();
-  static final FirebaseDataService _firebaseDataService = FirebaseDataService();
+  static final DiyanetJsonCacheService _jsonCacheService = DiyanetJsonCacheService();
+  static const bool _directApiEnabled = bool.fromEnvironment(
+    'ENABLE_DIRECT_DIYANET_API',
+    defaultValue: false,
+  );
 
   // Türkiye'nin büyük şehirleri ve koordinatları
   static const Map<String, Map<String, double>> turkishCities = {
@@ -444,26 +448,30 @@ class PrayerApiService {
 
       final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-      // 1) Firestore cache first
+      // 1) JSON cache first (GitHub + asset fallback)
       try {
-        final cachedData = await _firebaseDataService.getCachedPrayerTimes(
+        final cachedData = await _jsonCacheService.getCachedPrayerTimes(
           date: dateStr,
           cityCode: cityCode,
         );
 
         if (cachedData != null) {
           if (kDebugMode) {
-            print('✅ Prayer times loaded from Firestore cache: $cityName ($dateStr)');
+            print('✅ Prayer times loaded from JSON cache: $cityName ($dateStr)');
           }
           return PrayerTimesModel.fromDiyanetApi(cachedData);
         }
       } catch (e) {
         if (kDebugMode) {
-          print('⚠️ Firestore cache read failed, continuing with Diyanet API: $e');
+          print('⚠️ JSON cache read failed, continuing with Diyanet API: $e');
         }
       }
       
-      // 2) Fallback to Diyanet API
+      if (!_directApiEnabled) {
+        return null;
+      }
+
+      // 2) Optional fallback to direct Diyanet API
       final apiData = await _diyanetService.getDailyPrayerTimes(
         countryCode: DiyanetCityMapper.countryCode,
         stateCode: DiyanetCityMapper.stateCode,
@@ -650,8 +658,8 @@ class PrayerApiService {
 
       // Diyanet API'den aylık verileri al (DateRange endpoint - aylık 10 istek limiti var!)
       try {
-        // 1) Firestore range cache first
-        final cachedRange = await _firebaseDataService.getCachedPrayerTimesRange(
+        // 1) JSON range cache first
+        final cachedRange = await _jsonCacheService.getCachedPrayerTimesRange(
           cityCode: cityCode,
           startDate: DateTime(year, month, 1),
           endDate: DateTime(year, month + 1, 0),
@@ -668,13 +676,17 @@ class PrayerApiService {
           }
           if (monthlyTimes.isNotEmpty) {
             if (kDebugMode) {
-              print('✅ Aylık namaz vakitleri Firestore cache’den alındı: ${monthlyTimes.length} gün');
+              print('✅ Aylık namaz vakitleri JSON cache’den alındı: ${monthlyTimes.length} gün');
             }
             return monthlyTimes;
           }
         }
 
-        // 2) Diyanet API DateRange fallback
+        if (!_directApiEnabled) {
+          return _getDefaultMonthlyPrayerTimes(year, month);
+        }
+
+        // 2) Optional direct Diyanet API DateRange fallback
         final startDate = DateTime(year, month, 1);
         final endDate = DateTime(year, month + 1, 0); // Ayın son günü
         
@@ -711,6 +723,10 @@ class PrayerApiService {
         }
       }
 
+      if (!_directApiEnabled) {
+        return _getDefaultMonthlyPrayerTimes(year, month);
+      }
+
       // API başarısız olursa, günlük endpoint ile tek tek çek (daha yavaş ama çalışır)
       if (kDebugMode) {
         print('⚠️ DateRange başarısız, günlük endpoint ile çekiliyor...');
@@ -733,6 +749,10 @@ class PrayerApiService {
     final cityCode = DiyanetCityMapper.getCityCode(cityName);
     
     if (cityCode == null) {
+      return _getDefaultMonthlyPrayerTimes(year, month);
+    }
+
+    if (!_directApiEnabled) {
       return _getDefaultMonthlyPrayerTimes(year, month);
     }
 
@@ -789,6 +809,10 @@ class PrayerApiService {
         return _getDefaultMonthlyPrayerTimes(year, month);
       }
 
+      if (!_directApiEnabled) {
+        return _getDefaultMonthlyPrayerTimes(year, month);
+      }
+
       // DateRange endpoint kullan (aylık 10 istek limiti var!)
       final startDate = DateTime(year, month, 1);
       final endDate = DateTime(year, month + 1, 0);
@@ -829,6 +853,10 @@ class PrayerApiService {
   /// Get Hijri date for a specific Gregorian date using Diyanet API
   static Future<HijriDate?> getHijriDate(DateTime gregorianDate) async {
     try {
+      if (!_directApiEnabled) {
+        return null;
+      }
+
       final dateStr = '${gregorianDate.year}-${gregorianDate.month.toString().padLeft(2, '0')}-${gregorianDate.day.toString().padLeft(2, '0')}';
       
       final hijriData = await _diyanetService.getHijriCalendar(gregorianDate: dateStr);
@@ -860,6 +888,9 @@ class PrayerApiService {
   /// Test the Diyanet API connection
   static Future<bool> testConnection() async {
     try {
+      if (!_directApiEnabled) {
+        return true;
+      }
       return await _diyanetService.authenticate();
     } catch (e) {
       if (kDebugMode) {

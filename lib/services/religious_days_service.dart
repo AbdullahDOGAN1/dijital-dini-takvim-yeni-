@@ -1,14 +1,15 @@
 // ignore_for_file: avoid_print
 
 import '../models/religious_day_model.dart';
-import 'diyanet_api_service.dart';
+import 'diyanet_json_cache_service.dart';
 
 class ReligiousDaysService {
-  static final DiyanetApiService _diyanetService = DiyanetApiService();
+  static final DiyanetJsonCacheService _jsonCacheService =
+      DiyanetJsonCacheService();
   static List<ReligiousDay>? _cachedReligiousDays;
   static int? _cachedYear;
 
-  /// Dini günleri al - önce Diyanet API'sini dene, başarısız olursa statik veri kullan
+  /// Dini günleri al - önce JSON cache'i dene, boşsa statik veri kullan
   static Future<List<ReligiousDay>> getReligiousDays([int? year]) async {
     final targetYear = year ?? DateTime.now().year;
 
@@ -18,25 +19,113 @@ class ReligiousDaysService {
     }
 
     try {
-      // Diyanet API'sinden güncel veriyi al
-      final apiData = await _diyanetService.fetchReligiousDaysFromDiyanet(
+      final apiData = await _jsonCacheService.getCachedReligiousDays(
         year: targetYear,
       );
 
-      if (apiData.isNotEmpty) {
-        _cachedReligiousDays = apiData;
-        _cachedYear = targetYear;
-        return apiData;
+      if (apiData != null && apiData.isNotEmpty) {
+        final convertedData = apiData
+            .map((item) => _convertDiyanetApiToReligiousDay(item))
+            .whereType<ReligiousDay>()
+            .toList();
+
+        if (convertedData.isNotEmpty) {
+          convertedData.sort((a, b) => a.date.compareTo(b.date));
+          _cachedReligiousDays = convertedData;
+          _cachedYear = targetYear;
+          return convertedData;
+        }
+      }
+
+      // Cache boş dönerse statik fallback
+      if (apiData != null && apiData.isEmpty) {
+        print('JSON cache boş veri döndürdü, fallback kullanılacak');
       }
     } catch (e) {
-      print('Diyanet API\'den veri alınamadı: $e');
+      print('JSON cache\'den dini gün verisi alınamadı: $e');
     }
 
-    // API başarısız olursa statik veriyi kullan
+    // Cache başarısız olursa statik veriyi kullan
     final staticData = getReligiousDays2025();
     _cachedReligiousDays = staticData;
     _cachedYear = targetYear;
     return staticData;
+  }
+
+  static ReligiousDay? _convertDiyanetApiToReligiousDay(
+    Map<String, dynamic> apiData,
+  ) {
+    try {
+      final name = (apiData['name'] ?? apiData['eventName'] ?? '')
+          .toString()
+          .trim();
+      if (name.isEmpty) return null;
+
+      final gregorianDate =
+          (apiData['gregorianDate'] ??
+                  apiData['gregorianDateShort'] ??
+                  apiData['date'] ??
+                  '')
+              .toString();
+
+      final date = _parseApiDate(gregorianDate);
+      if (date == null) return null;
+
+      final hijriDate =
+          (apiData['hijriDate'] ?? apiData['hijriDateShort'] ?? '').toString();
+
+      return ReligiousDay(
+        name: name,
+        date: date,
+        hijriDate: hijriDate,
+        category: _determineCategory(name),
+        description: (apiData['description'] ?? '').toString(),
+        importance: (apiData['importance'] ?? apiData['significance'] ?? '')
+            .toString(),
+        traditions: const [],
+        prayers: const [],
+      );
+    } catch (e) {
+      print('ReligiousDay conversion error: $e');
+      return null;
+    }
+  }
+
+  static DateTime? _parseApiDate(String rawDate) {
+    final value = rawDate.trim();
+    if (value.isEmpty) return null;
+
+    try {
+      if (value.contains('-')) {
+        return DateTime.parse(value);
+      }
+
+      if (value.contains('.')) {
+        final parts = value.split('.');
+        if (parts.length == 3) {
+          final day = int.tryParse(parts[0]);
+          final month = int.tryParse(parts[1]);
+          final year = int.tryParse(parts[2]);
+          if (day != null && month != null && year != null) {
+            return DateTime(year, month, day);
+          }
+        }
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
+  static String _determineCategory(String name) {
+    final lowerName = name.toLowerCase();
+    if (lowerName.contains('kandil')) return 'kandil';
+    if (lowerName.contains('bayram')) return 'bayram';
+    if (lowerName.contains('arefe') || lowerName.contains('gece')) {
+      return 'ozel_gun';
+    }
+    return 'ozel_gun';
   }
 
   /// Cache'i temizle
@@ -318,10 +407,25 @@ class ReligiousDaysService {
     return upcoming.isNotEmpty ? upcoming.first : null;
   }
 
-  /// Diyanet API'sinden gelecek dini günü al
+  /// Yaklaşan dini günü + sayaç verisi üret
   static Future<Map<String, dynamic>?>
   getNextReligiousDayWithCountdown() async {
-    return await _diyanetService.getNextReligiousDay();
+    final nextDay = await getNextReligiousDay();
+    if (nextDay == null) return null;
+
+    final now = DateTime.now();
+    final difference = nextDay.date.difference(now);
+
+    return {
+      'name': nextDay.name,
+      'gregorianDate':
+          '${nextDay.date.year.toString().padLeft(4, '0')}-${nextDay.date.month.toString().padLeft(2, '0')}-${nextDay.date.day.toString().padLeft(2, '0')}',
+      'hijriDate': nextDay.hijriDate,
+      'daysRemaining': difference.inDays,
+      'hoursRemaining': difference.inHours,
+      'minutesRemaining': difference.inMinutes,
+      'category': nextDay.category,
+    };
   }
 
   /// Kategori listesi

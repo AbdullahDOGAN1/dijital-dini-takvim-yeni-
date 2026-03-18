@@ -1,5 +1,9 @@
 # Firebase Cloud Functions - Dijital Dini Takvim
 
+> ⚠️ Not: Bu doküman eski (legacy) Firebase-Functions mimarisini anlatır.
+> Aktif üretim akışı artık `Diyanet Monthly JSON Sync (No Blaze)` workflow'udur.
+> Güncel kurulum için kök dizindeki `NO_BLAZE_SETUP.md` dosyasını kullanın.
+
 Bu dizin, Diyanet Awqat Salah API'den veri çekip Firebase Firestore'a kaydeden Cloud Functions kodlarını içerir.
 
 ## 📋 Genel Bakış

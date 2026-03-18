@@ -3,6 +3,7 @@
   "description": "Firebase Cloud Functions for Dijital Dini Takvim - Daily Diyanet API Sync",
   "version": "1.0.0",
   "scripts": {
+    "sync:json": "node scripts/sync-diyanet-to-json.js",
     "lint": "eslint .",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",

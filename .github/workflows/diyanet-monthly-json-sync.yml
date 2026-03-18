@@ -1,0 +1,44 @@
+name: Diyanet Monthly JSON Sync (No Blaze)
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-json-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Run Diyanet JSON sync
+        env:
+          DIYANET_EMAIL: ${{ secrets.DIYANET_EMAIL }}
+          DIYANET_PASSWORD: ${{ secrets.DIYANET_PASSWORD }}
+        run: node scripts/sync-diyanet-to-json.js
+        working-directory: functions
+
+      - name: Commit updated cache files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/diyanet_cache
+          if git diff --staged --quiet; then
+            echo "No cache changes"
+            exit 0
+          fi
+          git commit -m "chore: monthly diyanet json cache sync"
+          git push
