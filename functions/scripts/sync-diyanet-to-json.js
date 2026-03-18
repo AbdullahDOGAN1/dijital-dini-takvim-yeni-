@@ -151,7 +151,28 @@ async function authenticate() {
   throw lastError || new Error("Authentication failed on all endpoint candidates");
 }
 
-async function fetchWithAuth({token, endpoint, params}) {
+function normalizeEndpoint(endpoint) {
+  if (!endpoint || typeof endpoint !== "string") {
+    throw new Error("endpoint must be a non-empty string");
+  }
+
+  return endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+}
+
+function buildEndpointCandidates(endpoint) {
+  const normalized = normalizeEndpoint(endpoint);
+  const candidates = new Set([normalized]);
+
+  if (normalized.toLowerCase().startsWith("/api/")) {
+    candidates.add(normalized.slice(4));
+  } else {
+    candidates.add(`/api${normalized}`);
+  }
+
+  return Array.from(candidates);
+}
+
+async function fetchWithAuth({token, endpoint, params, method = "get", data}) {
   const baseUrl = resolvedApiBase || DIYANET_API_BASE_CANDIDATES[0];
   const headers = {
     Accept: "application/json",
@@ -165,73 +186,104 @@ async function fetchWithAuth({token, endpoint, params}) {
     headers.Cookie = authCookieHeader;
   }
 
-  const response = await axios.get(`${baseUrl}${endpoint}`, {
-    params,
-    headers,
-    timeout: 20000,
-  });
-  const envelope = normalizeApiEnvelope(response.data);
-  if (envelope.success === false) {
-    throw new Error(
-      `API returned success=false endpoint=${endpoint} message=${String(envelope.message || "unknown")}`,
-    );
+  const endpointCandidates = buildEndpointCandidates(endpoint);
+  const normalizedMethod = String(method || "get").toLowerCase();
+
+  let lastError = null;
+
+  for (const candidate of endpointCandidates) {
+    try {
+      const requestConfig = {
+        params,
+        headers,
+        timeout: 20000,
+      };
+
+      let response;
+      if (normalizedMethod === "post") {
+        response = await axios.post(`${baseUrl}${candidate}`, data ?? {}, requestConfig);
+      } else {
+        response = await axios.get(`${baseUrl}${candidate}`, requestConfig);
+      }
+
+      const envelope = normalizeApiEnvelope(response.data);
+      if (envelope.success === false) {
+        throw new Error(
+          `API returned success=false endpoint=${candidate} message=${String(envelope.message || "unknown")}`,
+        );
+      }
+      return envelope.data;
+    } catch (error) {
+      lastError = error;
+      const status = error?.response?.status;
+      if (status === 404) {
+        console.log(`Endpoint 404, trying next candidate (${baseUrl}${candidate})`);
+        continue;
+      }
+      throw error;
+    }
   }
-  return envelope.data;
+
+  throw lastError || new Error(`All endpoint candidates failed for ${endpoint}`);
 }
 
 async function resolveCities(token) {
   const cities = await fetchWithAuth({
     token,
-    endpoint: "/Location/City",
-    params: {
-      CountryCode: "2",
-      StateCode: "2",
-    },
+    endpoint: "/api/Place/Cities",
   });
 
   if (!Array.isArray(cities) || cities.length === 0) {
-    throw new Error("City list is empty from /Location/City");
+    throw new Error("City list is empty from /api/Place/Cities");
   }
 
   return cities
     .map((city) => ({
-      cityCode: String(city.cityCode || city.CityCode || city.id || ""),
+      cityId: Number(city.id || city.Id || city.cityCode || city.CityCode || 0),
+      cityCode: String(city.id || city.Id || city.cityCode || city.CityCode || city.code || city.Code || ""),
       cityName: city.name || city.Name || "",
-      countryCode: "2",
-      stateCode: "2",
+      countryCode: String(city.countryCode || city.CountryCode || city.country?.id || city.Country?.Id || "2"),
+      stateCode: String(city.stateCode || city.StateCode || city.state?.id || city.State?.Id || "2"),
     }))
-    .filter((city) => city.cityCode && city.cityName);
+    .filter((city) => city.cityCode && city.cityName && Number.isFinite(city.cityId) && city.cityId > 0);
 }
 
 async function buildPrayerWindow({token, cities}) {
   const startDate = new Date();
   const dayCount = 40;
+  const endDate = addDays(startDate, dayCount - 1);
   const byCityCode = {};
 
   for (const city of cities) {
-    const cityBucket = {};
-    for (let i = 0; i < dayCount; i++) {
-      const date = addDays(startDate, i);
-      const dateStr = formatDate(date);
+    const dateRangeData = await fetchWithAuth({
+      token,
+      endpoint: "/api/PrayerTime/DateRange",
+      method: "post",
+      data: {
+        CityId: city.cityId,
+        StartDate: formatDate(startDate),
+        EndDate: formatDate(endDate),
+      },
+    });
 
-      const dailyData = await fetchWithAuth({
-        token,
-        endpoint: "/PrayerTime/Daily",
-        params: {
-          CountryCode: city.countryCode,
-          StateCode: city.stateCode,
-          CityCode: city.cityCode,
-          Date: dateStr,
-        },
-      });
+    const cityBucket = {};
+    const rows = Array.isArray(dateRangeData) ? dateRangeData : [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i] || {};
+      const dateFromApi = row.GregorianDateShortIso8601 || row.gregorianDateShortIso8601 || row.GregorianDateLongIso8601 || row.gregorianDateLongIso8601 || row.Date || row.date;
+      const dateStr = typeof dateFromApi === "string" && dateFromApi.length >= 10
+        ? dateFromApi.slice(0, 10)
+        : formatDate(addDays(startDate, i));
 
       cityBucket[dateStr] = {
-        ...dailyData,
+        ...row,
         cityCode: city.cityCode,
         cityName: city.cityName,
         date: dateStr,
       };
     }
+
     byCityCode[city.cityCode] = cityBucket;
     console.log(`Synced prayer window for ${city.cityName} (${city.cityCode})`);
   }
@@ -240,7 +292,7 @@ async function buildPrayerWindow({token, cities}) {
     generatedAt: new Date().toISOString(),
     source: "diyanet_awqatsalah",
     startDate: formatDate(startDate),
-    endDate: formatDate(addDays(startDate, dayCount - 1)),
+    endDate: formatDate(endDate),
     citiesCount: cities.length,
     byCityCode,
   };
@@ -249,7 +301,7 @@ async function buildPrayerWindow({token, cities}) {
 async function buildReligiousDays({token, year}) {
   const days = await fetchWithAuth({
     token,
-    endpoint: "/ReligiousDays",
+    endpoint: "/api/ReligiousDays",
     params: {Year: year},
   });
 
