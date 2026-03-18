@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "sync:json": "node scripts/sync-diyanet-to-json.js",
+    "verify:json-cache": "node scripts/verify-json-cache.js",
     "lint": "eslint .",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
