@@ -2,11 +2,15 @@ const fs = require("fs/promises");
 const path = require("path");
 const axios = require("axios");
 
-const DIYANET_API_BASE = "https://awqatsalah.diyanet.gov.tr/api";
-const DIYANET_EMAIL = process.env.DIYANET_EMAIL;
-const DIYANET_PASSWORD = process.env.DIYANET_PASSWORD;
+const DIYANET_API_BASE_CANDIDATES = [
+  "https://awqatsalah.diyanet.gov.tr/api",
+  "https://awqatsalah.diyanet.gov.tr",
+];
+const DIYANET_EMAIL = (process.env.DIYANET_EMAIL || "").trim();
+const DIYANET_PASSWORD = (process.env.DIYANET_PASSWORD || "").trim();
 
 const OUTPUT_DIR = path.resolve(__dirname, "../../assets/data/diyanet_cache");
+let resolvedApiBase = null;
 
 function formatDate(date) {
   return date.toISOString().split("T")[0];
@@ -23,34 +27,62 @@ async function authenticate() {
     throw new Error("Missing DIYANET_EMAIL or DIYANET_PASSWORD environment variables");
   }
 
-  const response = await axios.post(
-    `${DIYANET_API_BASE}/Auth/Login`,
-    {
-      email: DIYANET_EMAIL,
-      password: DIYANET_PASSWORD,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      timeout: 20000,
-    },
-  );
+  const authEndpointCandidates = [
+    "/Auth/Login",
+    "/auth/login",
+    "/Auth/login",
+    "/auth/Login",
+  ];
 
-  const token = response.data?.accessToken || response.data?.token;
-  if (!token) {
-    throw new Error("Authentication token missing in response");
+  let lastError = null;
+
+  for (const baseUrl of DIYANET_API_BASE_CANDIDATES) {
+    for (const endpoint of authEndpointCandidates) {
+      try {
+        const response = await axios.post(
+          `${baseUrl}${endpoint}`,
+          {
+            email: DIYANET_EMAIL,
+            password: DIYANET_PASSWORD,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+            },
+            timeout: 20000,
+          },
+        );
+
+        const token = response.data?.accessToken || response.data?.token;
+        if (!token) {
+          throw new Error("Authentication token missing in response");
+        }
+
+        resolvedApiBase = baseUrl;
+        console.log(`Authenticated via ${baseUrl}${endpoint}`);
+        return token;
+      } catch (error) {
+        lastError = error;
+        const status = error?.response?.status;
+        const message = error?.message || String(error);
+        console.log(`Auth attempt failed (${baseUrl}${endpoint}) status=${status || "n/a"} msg=${message}`);
+      }
+    }
   }
-  return token;
+
+  throw lastError || new Error("Authentication failed on all endpoint candidates");
 }
 
 async function fetchWithAuth({token, endpoint, params}) {
-  const response = await axios.get(`${DIYANET_API_BASE}${endpoint}`, {
+  const baseUrl = resolvedApiBase || DIYANET_API_BASE_CANDIDATES[0];
+  const response = await axios.get(`${baseUrl}${endpoint}`, {
     params,
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/json",
+      "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
     },
     timeout: 20000,
   });
