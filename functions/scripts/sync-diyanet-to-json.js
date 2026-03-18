@@ -8,6 +8,8 @@ const DIYANET_API_BASE_CANDIDATES = [
 ];
 const DIYANET_EMAIL = (process.env.DIYANET_EMAIL || "").trim();
 const DIYANET_PASSWORD = (process.env.DIYANET_PASSWORD || "").trim();
+const DIYANET_COUNTRY_ID = Number((process.env.DIYANET_COUNTRY_ID || "2").trim());
+const DIYANET_PROGRESS_EVERY = Number((process.env.DIYANET_PROGRESS_EVERY || "50").trim());
 
 const OUTPUT_DIR = path.resolve(__dirname, "../../assets/data/diyanet_cache");
 let resolvedApiBase = null;
@@ -228,6 +230,45 @@ async function fetchWithAuth({token, endpoint, params, method = "get", data}) {
 }
 
 async function resolveCities(token) {
+  let citiesV2 = [];
+  try {
+    const payload = await fetchWithAuth({
+      token,
+      endpoint: "/api/v2/Place/Cities",
+    });
+    citiesV2 = Array.isArray(payload) ? payload : [];
+  } catch (error) {
+    console.log(`Could not load /api/v2/Place/Cities, fallback to v1 list. msg=${error?.message || String(error)}`);
+  }
+
+  if (citiesV2.length > 0) {
+    const turkeyCities = citiesV2
+      .filter((city) => {
+        const countryId = Number(city?.country?.id ?? city?.Country?.Id ?? 0);
+        const countryCode = String(city?.country?.code ?? city?.Country?.Code ?? "").toUpperCase();
+        const countryName = String(city?.country?.name ?? city?.Country?.Name ?? "").toUpperCase();
+
+        if (Number.isFinite(DIYANET_COUNTRY_ID) && DIYANET_COUNTRY_ID > 0 && countryId === DIYANET_COUNTRY_ID) {
+          return true;
+        }
+
+        return countryCode === "TR" || countryName.includes("TUR") || countryName.includes("TÜRK");
+      })
+      .map((city) => ({
+        cityId: Number(city.id || city.Id || 0),
+        cityCode: String(city.id || city.Id || city.code || city.Code || ""),
+        cityName: city.name || city.Name || "",
+        countryCode: String(city.country?.id || city.Country?.Id || DIYANET_COUNTRY_ID || "2"),
+        stateCode: String(city.state?.id || city.State?.Id || ""),
+      }))
+      .filter((city) => city.cityCode && city.cityName && Number.isFinite(city.cityId) && city.cityId > 0);
+
+    if (turkeyCities.length > 0) {
+      console.log(`Resolved ${turkeyCities.length} Turkey cities from /api/v2/Place/Cities`);
+      return turkeyCities;
+    }
+  }
+
   const cities = await fetchWithAuth({
     token,
     endpoint: "/api/Place/Cities",
@@ -237,15 +278,18 @@ async function resolveCities(token) {
     throw new Error("City list is empty from /api/Place/Cities");
   }
 
-  return cities
+  const mapped = cities
     .map((city) => ({
       cityId: Number(city.id || city.Id || city.cityCode || city.CityCode || 0),
       cityCode: String(city.id || city.Id || city.cityCode || city.CityCode || city.code || city.Code || ""),
       cityName: city.name || city.Name || "",
-      countryCode: String(city.countryCode || city.CountryCode || city.country?.id || city.Country?.Id || "2"),
-      stateCode: String(city.stateCode || city.StateCode || city.state?.id || city.State?.Id || "2"),
+      countryCode: String(city.countryCode || city.CountryCode || DIYANET_COUNTRY_ID || "2"),
+      stateCode: String(city.stateCode || city.StateCode || ""),
     }))
     .filter((city) => city.cityCode && city.cityName && Number.isFinite(city.cityId) && city.cityId > 0);
+
+  console.log(`Resolved ${mapped.length} cities from /api/Place/Cities (unfiltered fallback)`);
+  return mapped;
 }
 
 async function buildPrayerWindow({token, cities}) {
@@ -254,6 +298,7 @@ async function buildPrayerWindow({token, cities}) {
   const endDate = addDays(startDate, dayCount - 1);
   const byCityCode = {};
 
+  let processed = 0;
   for (const city of cities) {
     const dateRangeData = await fetchWithAuth({
       token,
@@ -285,7 +330,14 @@ async function buildPrayerWindow({token, cities}) {
     }
 
     byCityCode[city.cityCode] = cityBucket;
-    console.log(`Synced prayer window for ${city.cityName} (${city.cityCode})`);
+    processed += 1;
+    if (
+      processed === 1 ||
+      processed === cities.length ||
+      (Number.isFinite(DIYANET_PROGRESS_EVERY) && DIYANET_PROGRESS_EVERY > 0 && processed % DIYANET_PROGRESS_EVERY === 0)
+    ) {
+      console.log(`Sync progress ${processed}/${cities.length} - last city: ${city.cityName} (${city.cityCode})`);
+    }
   }
 
   return {
