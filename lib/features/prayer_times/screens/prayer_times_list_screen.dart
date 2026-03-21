@@ -745,17 +745,37 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen>
       final targetDate = today.add(Duration(days: i));
       final targetDay = targetDate.day;
 
-      // Aylık verilerden bu günü bul - hem "4" hem "04" formatını kontrol et
+      // Aylık verilerden bu günü bul
       for (final prayer in _monthlyPrayerTimes) {
-        final prayerDateParts = prayer.date.split(' ');
-        if (prayerDateParts.isNotEmpty) {
-          final dayPart = prayerDateParts[0]; // "04" veya "4"
-          final prayerDay = int.tryParse(dayPart) ?? 0;
-
-          if (prayerDay == targetDay) {
-            nextDays.add(prayer);
-            break;
+        int prayerDay = 0;
+        
+        // 1. gregorianDate parse (e.g., 21.03.2026)
+        if (prayer.gregorianDate != null && prayer.gregorianDate!.day.isNotEmpty) {
+          // If the day property is still in format DD.MM.YYYY due to parsing limitations
+          if (prayer.gregorianDate!.day.contains('.')) {
+            prayerDay = int.tryParse(prayer.gregorianDate!.day.split('.')[0]) ?? 0;
+          } else {
+            prayerDay = int.tryParse(prayer.gregorianDate!.day) ?? 0;
           }
+        } 
+        
+        // 2. Fallback to prayer.date (e.g. "21.03.2026" or "21 March")
+        if (prayerDay == 0 && prayer.date.isNotEmpty) {
+          if (prayer.date.contains('.')) {
+             prayerDay = int.tryParse(prayer.date.split('.')[0]) ?? 0;
+          } else if (prayer.date.contains('-')) {
+             prayerDay = int.tryParse(prayer.date.split('-').last) ?? 0;
+          } else {
+             final prayerDateParts = prayer.date.split(' ');
+             if (prayerDateParts.isNotEmpty) {
+                prayerDay = int.tryParse(prayerDateParts[0]) ?? 0;
+             }
+          }
+        }
+
+        if (prayerDay == targetDay) {
+          nextDays.add(prayer);
+          break;
         }
       }
     }
@@ -807,88 +827,107 @@ class _PrayerTimesListScreenState extends State<PrayerTimesListScreen>
               ),
             ],
           ),
-          child: ExpansionTile(
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Center(
-                child: Text(
-                  targetDate.day.toString(),
-                  style: GoogleFonts.ebGaramond(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade700,
-                  ),
-                ),
-              ),
-            ),
-            title: Text(
-              displayText,
-              style: GoogleFonts.ebGaramond(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            subtitle: Text(
-              '${targetDate.day} $monthName ${targetDate.year}',
-              style: GoogleFonts.ebGaramond(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    _buildNextDayPrayerRow(
-                      'İmsak',
-                      prayer.imsak,
-                      Icons.wb_twilight,
-                      Colors.purple.shade400,
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          targetDate.day.toString(),
+                          style: GoogleFonts.ebGaramond(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                      ),
                     ),
-                    _buildNextDayPrayerRow(
-                      'Güneş',
-                      prayer.gunes,
-                      Icons.wb_sunny,
-                      Colors.orange.shade400,
-                    ),
-                    _buildNextDayPrayerRow(
-                      'Öğle',
-                      prayer.ogle,
-                      Icons.light_mode,
-                      Colors.blue.shade400,
-                    ),
-                    _buildNextDayPrayerRow(
-                      'İkindi',
-                      prayer.ikindi,
-                      Icons.sunny,
-                      Colors.yellow.shade600,
-                    ),
-                    _buildNextDayPrayerRow(
-                      'Akşam',
-                      prayer.aksam,
-                      Icons.nights_stay,
-                      Colors.red.shade400,
-                    ),
-                    _buildNextDayPrayerRow(
-                      'Yatsı',
-                      prayer.yatsi,
-                      Icons.dark_mode,
-                      Colors.indigo.shade500,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            displayText,
+                            style: GoogleFonts.ebGaramond(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            '${targetDate.day} $monthName ${targetDate.year}',
+                            style: GoogleFonts.ebGaramond(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildSmallPrayerItem('İmsak', prayer.imsak, Icons.wb_twilight, Colors.purple.shade400),
+                      _buildSmallPrayerItem('Güneş', prayer.gunes, Icons.wb_sunny, Colors.orange.shade400),
+                      _buildSmallPrayerItem('Öğle', prayer.ogle, Icons.light_mode, Colors.blue.shade400),
+                      _buildSmallPrayerItem('İkindi', prayer.ikindi, Icons.sunny, Colors.yellow.shade600),
+                      _buildSmallPrayerItem('Akşam', prayer.aksam, Icons.nights_stay, Colors.red.shade400),
+                      _buildSmallPrayerItem('Yatsı', prayer.yatsi, Icons.dark_mode, Colors.indigo.shade500),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildSmallPrayerItem(String name, String time, IconData icon, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 20, color: color),
+        const SizedBox(height: 4),
+        Text(
+          name,
+          style: GoogleFonts.ebGaramond(
+            fontSize: 12,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          time,
+          style: GoogleFonts.ebGaramond(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 

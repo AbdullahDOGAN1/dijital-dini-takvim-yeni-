@@ -131,6 +131,7 @@ flutter:
   assets:
     - assets/images/
     - assets/data/
+    - assets/data/diyanet_cache/
     - assets/sounds/
 
   # An image asset can refer to one or more resolution-specific "variants", see

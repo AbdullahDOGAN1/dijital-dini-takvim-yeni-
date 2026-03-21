@@ -29,10 +29,21 @@ class DiyanetJsonCacheService {
       final cityBucket = byCityCode[cityCode];
       if (cityBucket is! Map) return null;
 
-      final dayData = cityBucket[date];
+      // Handle both YYYY-MM-DD and DD.MM.YYYY lookups
+      String queryKey = date; 
+      if (date.contains('-')) {
+        final p = date.split('-');
+        if (p.length == 3) {
+          queryKey = '${p[2]}.${p[1]}.${p[0]}';
+        }
+      }
+
+      final dayData = cityBucket[queryKey] ?? cityBucket[date];
       if (dayData is! Map) return null;
 
-      return Map<String, dynamic>.from(dayData as Map);
+      final mutableData = Map<String, dynamic>.from(dayData as Map);
+      mutableData['date'] = date; // enforce YYYY-MM-DD inside for API service
+      return mutableData;
     } catch (e) {
       print('❌ JSON cache: Error getting cached prayer times - $e');
       return null;
@@ -57,11 +68,24 @@ class DiyanetJsonCacheService {
 
       final results = <Map<String, dynamic>>[];
       for (final entry in cityBucket.entries) {
-        final dateKey = entry.key.toString();
-        if (dateKey.compareTo(start) >= 0 && dateKey.compareTo(end) <= 0) {
+        final dateKey = entry.key.toString(); // e.g. "21.03.2026"
+
+        // Normalize dateKey to YYYY-MM-DD
+        String ymdKey = dateKey;
+        if (dateKey.contains('.')) {
+          final p = dateKey.split('.');
+          if (p.length == 3) {
+            ymdKey = '${p[2]}-${p[1]}-${p[0]}';
+          }
+        }
+
+        if (ymdKey.compareTo(start) >= 0 && ymdKey.compareTo(end) <= 0) {
           final value = entry.value;
           if (value is Map) {
-            results.add(Map<String, dynamic>.from(value));
+            final mutableValue = Map<String, dynamic>.from(value);
+            mutableValue['date'] = ymdKey; // Provide expected YYYY-MM-DD for PrayerApiService
+            // DO NOT override gregorianDateShort! PrayerTimesModel needs it as DD.MM.YYYY
+            results.add(mutableValue);
           }
         }
       }
@@ -110,7 +134,7 @@ class DiyanetJsonCacheService {
   Future<Map<String, dynamic>?> _loadRemotePrayerWindow() async {
     try {
       final uri = Uri.parse('$_remoteBaseUrl/prayer_times_window.json');
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final response = await http.get(uri).timeout(const Duration(seconds: 45));
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final decoded = json.decode(response.body);
         if (decoded is Map<String, dynamic>) {
@@ -118,7 +142,8 @@ class DiyanetJsonCacheService {
         }
       }
       return null;
-    } catch (_) {
+    } catch (e) {
+      print('❌ ERROR _loadRemotePrayerWindow failed: $e');
       return null;
     }
   }
@@ -145,12 +170,16 @@ class DiyanetJsonCacheService {
   }
 
   Future<Map<String, dynamic>> _loadLocalPrayerWindow() async {
-    final data = await rootBundle.loadString(
-      'assets/data/diyanet_cache/prayer_times_window.json',
-    );
-    final decoded = json.decode(data);
-    if (decoded is Map<String, dynamic>) {
-      return decoded;
+    try {
+      final data = await rootBundle.loadString(
+        'assets/data/diyanet_cache/prayer_times_window.json',
+      );
+      final decoded = json.decode(data);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+    } catch (e) {
+      print('❌ ERROR _loadLocalPrayerWindow failed: $e');
     }
     return const {'byCityCode': {}};
   }
