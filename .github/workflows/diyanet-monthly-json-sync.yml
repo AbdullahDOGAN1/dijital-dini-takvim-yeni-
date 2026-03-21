@@ -31,6 +31,10 @@ jobs:
         run: node scripts/sync-diyanet-to-json.js
         working-directory: functions
 
+      - name: Verify JSON cache
+        run: node scripts/verify-json-cache.js
+        working-directory: functions
+
       - name: Commit updated cache files
         run: |
           git config user.name "github-actions[bot]"

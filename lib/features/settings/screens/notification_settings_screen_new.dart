@@ -26,6 +26,10 @@ class _NotificationSettingsScreenState
   bool _ezanSoundEnabled = false;
   String _selectedEzanSound = 'athan';
 
+  bool _dailyContentEnabled = true;
+  int _dailyContentHour = 9;
+  int _dailyContentMinute = 0;
+
   // Custom minutes controller
   final TextEditingController _customMinutesController =
       TextEditingController();
@@ -62,6 +66,11 @@ class _NotificationSettingsScreenState
         _selectedSound = settings['notification_sound'] ?? 'alarm';
         _ezanSoundEnabled = settings['ezan_sound_enabled'] ?? false;
         _selectedEzanSound = settings['ezan_sound'] ?? 'athan';
+
+        _dailyContentEnabled = settings['daily_content_enabled'] ?? true;
+        _dailyContentHour = settings['daily_content_hour'] ?? 9;
+        _dailyContentMinute = settings['daily_content_minute'] ?? 0;
+
         _isLoading = false;
 
         // Check if using custom minutes
@@ -148,6 +157,70 @@ class _NotificationSettingsScreenState
           ),
         ),
       );
+    }
+  }
+
+  Future<void> _updateDailyContentEnabled(bool enabled) async {
+    setState(() {
+      _dailyContentEnabled = enabled;
+    });
+
+    await NotificationServiceFixed.setDailyContentEnabled(enabled);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            enabled
+                ? 'Günün içerikleri bildirimleri açıldı'
+                : 'Günün içerikleri bildirimleri kapatıldı',
+          ),
+          backgroundColor: enabled
+              ? Colors.green.shade600
+              : Colors.orange.shade600,
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateDailyContentTime() async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+        hour: _dailyContentHour,
+        minute: _dailyContentMinute,
+      ),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        _dailyContentHour = pickedTime.hour;
+        _dailyContentMinute = pickedTime.minute;
+      });
+
+      await NotificationServiceFixed.setDailyContentTime(
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+
+      if (mounted) {
+        final timeStr =
+            '${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Günlük içerik bildirim saati $timeStr olarak ayarlandı',
+            ),
+            backgroundColor: Colors.blue.shade600,
+          ),
+        );
+      }
     }
   }
 
@@ -435,7 +508,7 @@ class _NotificationSettingsScreenState
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -566,6 +639,63 @@ class _NotificationSettingsScreenState
                 color: Colors.pink,
                 children: [_buildCustomSoundSection()],
               ),
+
+              SizedBox(height: 16),
+
+              // Daily Content Section
+              _buildSection(
+                title: 'Günün İçerikleri',
+                icon: Icons.auto_stories,
+                color: Colors.indigo,
+                children: [
+                  _buildSwitchCard(
+                    title: 'Günün İçerikleri Bildirimi',
+                    subtitle:
+                        'Günün ayeti, hadisi ve vecizesi için her gün bildirim al',
+                    icon: Icons.menu_book,
+                    value: _dailyContentEnabled,
+                    onChanged: _updateDailyContentEnabled,
+                    color: Colors.indigo,
+                  ),
+                  if (_dailyContentEnabled) ...[
+                    SizedBox(height: 12),
+                    ListTile(
+                      leading: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.indigo.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(Icons.access_time, color: Colors.indigo),
+                      ),
+                      title: Text(
+                        'Bildirim Saati',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        'Her gün saat ${_dailyContentHour.toString().padLeft(2, '0')}:${_dailyContentMinute.toString().padLeft(2, '0')}',
+                        style: GoogleFonts.poppins(fontSize: 12),
+                      ),
+                      trailing: TextButton(
+                        onPressed: _updateDailyContentTime,
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.indigo.withValues(alpha: 0.1),
+                          foregroundColor: Colors.indigo,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Değiştir',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
 
             SizedBox(height: 32),
@@ -648,10 +778,14 @@ class _NotificationSettingsScreenState
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: value ? color.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.05),
+        color: value
+            ? color.withValues(alpha: 0.1)
+            : Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: value ? color.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.2),
+          color: value
+              ? color.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: SwitchListTile(
@@ -781,7 +915,9 @@ class _NotificationSettingsScreenState
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? (isEzan ? Colors.teal : Colors.purple).withValues(alpha: 0.3)
+                  ? (isEzan ? Colors.teal : Colors.purple).withValues(
+                      alpha: 0.3,
+                    )
                   : Colors.grey.withValues(alpha: 0.2),
             ),
           ),
@@ -790,7 +926,9 @@ class _NotificationSettingsScreenState
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? (isEzan ? Colors.teal : Colors.purple).withValues(alpha: 0.2)
+                    ? (isEzan ? Colors.teal : Colors.purple).withValues(
+                        alpha: 0.2,
+                      )
                     : Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),

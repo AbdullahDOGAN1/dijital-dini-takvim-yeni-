@@ -12,6 +12,7 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'prayer_api_service.dart';
+import 'daily_content_service.dart';
 
 class NotificationServiceFixed {
   static final FlutterLocalNotificationsPlugin _notifications =
@@ -23,6 +24,7 @@ class NotificationServiceFixed {
   static const String _reminderChannelId = 'prayer_reminders';
   static const String _exactChannelId = 'prayer_exact_times';
   static const String _testChannelId = 'test_notifications';
+  static const String _dailyContentChannelId = 'daily_content';
 
   // Available sounds
   static const List<Map<String, String>> availableSounds = [
@@ -123,6 +125,18 @@ class NotificationServiceFixed {
               'Test Bildirimleri',
               description: 'Test amaçlı gönderilen bildirimler',
               importance: Importance.high,
+              enableVibration: true,
+              playSound: true,
+            ),
+          );
+
+          // Daily Content channel
+          await androidImplementation.createNotificationChannel(
+            AndroidNotificationChannel(
+              _dailyContentChannelId,
+              'Günün İçerikleri',
+              description: 'Günün ayeti, hadisi ve duası bildirimleri',
+              importance: Importance.defaultImportance,
               enableVibration: true,
               playSound: true,
             ),
@@ -230,7 +244,7 @@ class NotificationServiceFixed {
           // Use current GPS location - find closest city
           final lat = prefs.getDouble('current_latitude');
           final lng = prefs.getDouble('current_longitude');
-          
+
           if (lat != null && lng != null) {
             // Find closest city from coordinates
             selectedCity = PrayerApiService.getCityFromCoordinates(lat, lng);
@@ -239,13 +253,12 @@ class NotificationServiceFixed {
 
         // Default to Istanbul if no city found
         selectedCity ??= 'İstanbul';
-        
+
         // Get prayer times via centralized cache-first service
         final prayerTimes = await PrayerApiService.getPrayerTimesForCityAndDate(
           cityName: selectedCity,
           date: targetDate,
         );
-
 
         final targetDay = DateTime(
           targetDate.year,
@@ -371,11 +384,80 @@ class NotificationServiceFixed {
       // Verify scheduled notifications
       await showPendingNotifications();
 
+      // Schedule daily content (Vecize) notification
+      await _scheduleDailyContentNotification();
+
       return totalScheduled > 0;
     } catch (e, stackTrace) {
       print('❌ Error in schedulePrayerNotifications: $e');
       print('❌ Stack trace: $stackTrace');
       return false;
+    }
+  }
+
+  /// Schedule daily content notification (Vecize, Ayet, Hadis)
+  static Future<void> _scheduleDailyContentNotification() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bool dailyContentEnabled =
+          prefs.getBool('daily_content_notifications_enabled') ?? true;
+      final int hour = prefs.getInt('daily_content_notification_hour') ?? 9;
+      final int minute = prefs.getInt('daily_content_notification_minute') ?? 0;
+
+      if (!dailyContentEnabled) {
+        print('ℹ️ Daily content notifications are disabled. Skipping.');
+        return;
+      }
+
+      print(
+        '🔔 Scheduling daily content (Vecize) notifications for $hour:${minute.toString().padLeft(2, '0')}',
+      );
+
+      final today = DateTime.now();
+
+      // Schedule for today and next 2 days to ensure it runs
+      for (int i = 0; i < 3; i++) {
+        final targetDate = today.add(Duration(days: i));
+
+        DateTime scheduledTime = DateTime(
+          targetDate.year,
+          targetDate.month,
+          targetDate.day,
+          hour,
+          minute,
+        );
+
+        if (scheduledTime.isBefore(today)) {
+          // If it's already past the time today, skip today
+          continue;
+        }
+
+        // Get daily content
+        final dailyContent = await DailyContentService.getTodaysContent();
+
+        if (dailyContent == null) {
+          continue;
+        }
+
+        final String vecizeText = dailyContent.risaleINur.vecize.isNotEmpty
+            ? dailyContent.risaleINur.vecize
+            : (dailyContent.ayetHadis.metin.isNotEmpty
+                  ? dailyContent.ayetHadis.metin
+                  : 'Günün içeriklerini görmek için tıklayın.');
+
+        await _scheduleNotification(
+          id: 5000 + i, // Unique IDs for daily content
+          title: 'Günün İçeriği',
+          body: vecizeText,
+          scheduledTime: scheduledTime,
+          payload: 'daily_content|${scheduledTime.toIso8601String()}',
+          channelId: _dailyContentChannelId,
+        );
+        print('✅ Scheduled daily content for ${scheduledTime.toString()}');
+      }
+    } catch (e, stackTrace) {
+      print('❌ Error in _scheduleDailyContentNotification: $e');
+      print('❌ Stack trace: $stackTrace');
     }
   }
 
@@ -708,6 +790,12 @@ class NotificationServiceFixed {
         'ezan_sound':
             prefs.getString('ezan_sound') ??
             'sabah-ezani-saba-abdulkadir-sehitoglu',
+        'daily_content_enabled':
+            prefs.getBool('daily_content_notifications_enabled') ?? true,
+        'daily_content_hour':
+            prefs.getInt('daily_content_notification_hour') ?? 9,
+        'daily_content_minute':
+            prefs.getInt('daily_content_notification_minute') ?? 0,
       };
     } catch (e) {
       print('❌ Error getting current settings: $e');
@@ -749,7 +837,26 @@ class NotificationServiceFixed {
   static Future<void> setEzanSound(String sound) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('ezan_sound', sound);
-    print('🕌 Ezan sound set to: $sound');
+    print('🔊 Ezan sound set to: $sound');
+  }
+
+  static Future<void> setDailyContentEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('daily_content_notifications_enabled', enabled);
+    print('📝 Daily content notifications ${enabled ? 'enabled' : 'disabled'}');
+
+    // Reschedule to apply changes
+    await schedulePrayerNotifications();
+  }
+
+  static Future<void> setDailyContentTime(int hour, int minute) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('daily_content_notification_hour', hour);
+    await prefs.setInt('daily_content_notification_minute', minute);
+    print('📝 Daily content notification time set to: $hour:$minute');
+
+    // Reschedule to apply changes
+    await schedulePrayerNotifications();
   }
 
   /// Sound management
