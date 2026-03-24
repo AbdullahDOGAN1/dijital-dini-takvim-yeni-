@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:hijri/hijri_calendar.dart';
 import '../../../models/daily_content_model.dart';
 import '../../../models/prayer_times_model.dart';
 import '../../../services/daily_content_service.dart';
@@ -80,11 +81,13 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
 
     setState(() {
       _isLoadingHijri = true;
+      _currentHijriDate =
+          null; // Eski tarihi temizle ki fallback hesaplama devreye girsin
     });
 
     try {
-      // Gun numarasından Gregorian tarihi hesapla
-      final startOfYear = DateTime(2025, 1, 1);
+      // Gun numarasindan Gregorian tarihi hesapla
+      final startOfYear = DateTime(DateTime.now().year, 1, 1);
       final currentDate = startOfYear.add(Duration(days: dayNumber - 1));
 
       // Diyanet API'den Hijri tarihi al
@@ -131,14 +134,18 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       return originalDate;
     }
 
-    // Fallback - Türkçe ay isimleri ile doğru hesaplama
+    // Fallback - Dinamik Hicri hesaplama
+    final now = DateTime.now();
+    final currentYearDate = DateTime(now.year, 1, 1).add(Duration(days: dayNumber - 1));
+    final hDate = HijriCalendar.fromDate(currentYearDate);
+    
     const hijriMonths = [
       'Muharrem',
       'Safer',
       'Rebiülevvel',
       'Rebiülahir',
-      'Cemayizelevvel',
-      'Cemayizelahir',
+      'Cemaziyelevvel',
+      'Cemaziyelahir',
       'Recep',
       'Şaban',
       'Ramazan',
@@ -147,32 +154,7 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
       'Zilhicce',
     ];
 
-    // 2025 için doğru başlangıç tarihi (1 Ocak 2025 = 21 Cemayizelahir 1446)
-    var hijriDay = 21 + (dayNumber - 1);
-    var hijriMonth = 5; // Cemayizelahir (0-11 indeksi)
-    var hijriYear = 1446;
-
-    const monthDays = [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
-
-    while (hijriDay > monthDays[hijriMonth]) {
-      hijriDay -= monthDays[hijriMonth];
-      hijriMonth++;
-      if (hijriMonth >= 12) {
-        hijriMonth = 0;
-        hijriYear++;
-      }
-    }
-
-    while (hijriDay < 1) {
-      hijriMonth--;
-      if (hijriMonth < 0) {
-        hijriMonth = 11;
-        hijriYear--;
-      }
-      hijriDay += monthDays[hijriMonth];
-    }
-
-    return '$hijriDay ${hijriMonths[hijriMonth]} $hijriYear';
+    return '${hDate.hDay} ${hijriMonths[hDate.hMonth - 1]} ${hDate.hYear}';
   }
 
   String _convertEnglishMonthToTurkish(String englishMonth) {
@@ -385,10 +367,14 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
@@ -421,43 +407,15 @@ class _SimpleCalendarScreenState extends State<SimpleCalendarScreen> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 4),
-                                _isLoadingHijri
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            width: 12,
-                                            height: 12,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'Hicri tarih yükleniyor...',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.copyWith(
-                                                  color: Colors.grey[600],
-                                                  fontStyle: FontStyle.italic,
-                                                ),
-                                          ),
-                                        ],
-                                      )
-                                    : Text(
-                                        _getHijriDateForDay(_currentPage + 1),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color: Colors.grey[600],
-                                              fontStyle: FontStyle.italic,
-                                            ),
-                                        textAlign: TextAlign.center,
+                                Text(
+                                  _getHijriDateForDay(_currentPage + 1),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: Colors.grey[600],
+                                        fontStyle: FontStyle.italic,
                                       ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ],
                             ),
                           ),

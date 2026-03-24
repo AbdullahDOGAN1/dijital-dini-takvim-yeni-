@@ -11,7 +11,8 @@ class ReligiousEventsService {
   static final List<ReligiousEventDetails> _eventDetails = [];
   static bool _isLoaded = false;
   static int? _loadedYear; // Hangi yıl için yüklendiğini takip et
-  static final DiyanetJsonCacheService _jsonCacheService = DiyanetJsonCacheService();
+  static final DiyanetJsonCacheService _jsonCacheService =
+      DiyanetJsonCacheService();
 
   /// Yıl değiştiğinde cache'i otomatik temizle
   static void _checkYearChange() {
@@ -36,9 +37,9 @@ class ReligiousEventsService {
       // Önce uzaktaki JSON cache'den dene
       final currentYear = DateTime.now().year;
       final nextYear = currentYear + 1;
-      
+
       bool loadedFromCache = false;
-      
+
       try {
         final currentYearData = await _jsonCacheService.getCachedReligiousDays(
           year: currentYear,
@@ -46,36 +47,44 @@ class ReligiousEventsService {
         final nextYearData = await _jsonCacheService.getCachedReligiousDays(
           year: nextYear,
         );
-        
+
         if (currentYearData != null && currentYearData.isNotEmpty) {
           _allEvents.clear();
-          
+
           // JSON cache response'unu ReligiousEvent'e çevir
           for (final eventData in currentYearData) {
-            final event = _convertDiyanetApiToReligiousEvent(eventData, currentYear);
+            final event = _convertDiyanetApiToReligiousEvent(
+              eventData,
+              currentYear,
+            );
             if (event != null) {
               _allEvents.add(event);
             }
           }
-          
+
           if (nextYearData != null && nextYearData.isNotEmpty) {
             for (final eventData in nextYearData) {
-              final event = _convertDiyanetApiToReligiousEvent(eventData, nextYear);
+              final event = _convertDiyanetApiToReligiousEvent(
+                eventData,
+                nextYear,
+              );
               if (event != null) {
                 _allEvents.add(event);
               }
             }
           }
-          
+
           if (_allEvents.isNotEmpty) {
             loadedFromCache = true;
             _loadedYear = currentYear;
             _isLoaded = true;
-            
+
             if (kDebugMode) {
-              print('✅ Dini günler JSON cache\'den yüklendi: ${_allEvents.length} etkinlik');
+              print(
+                '✅ Dini günler JSON cache\'den yüklendi: ${_allEvents.length} etkinlik',
+              );
             }
-            
+
             // Detayları JSON'dan yükle (API'de detay yok)
             await _loadEventDetailsFromJson();
             return;
@@ -83,7 +92,9 @@ class ReligiousEventsService {
         }
       } catch (e) {
         if (kDebugMode) {
-          print('⚠️ JSON cache başarısız, bundle JSON dosyasından okunuyor: $e');
+          print(
+            '⚠️ JSON cache başarısız, bundle JSON dosyasından okunuyor: $e',
+          );
         }
       }
 
@@ -485,8 +496,9 @@ class ReligiousEventsService {
       // API response formatı: {name, hijriDate, gregorianDate, ...}
       final name = apiData['name'] ?? apiData['eventName'] ?? '';
       final hijriDate = apiData['hijriDate'] ?? apiData['hijriDateShort'] ?? '';
-      final gregorianDate = apiData['gregorianDate'] ?? apiData['gregorianDateShort'] ?? '';
-      
+      final gregorianDate =
+          apiData['gregorianDate'] ?? apiData['gregorianDateShort'] ?? '';
+
       if (name.isEmpty) return null;
 
       // Gregorian tarihi parse et
@@ -495,11 +507,19 @@ class ReligiousEventsService {
         if (gregorianDate.contains('-')) {
           // YYYY-MM-DD formatı
           final parts = gregorianDate.split('-');
-          parsedDate = DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+          parsedDate = DateTime(
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+            int.parse(parts[2]),
+          );
         } else if (gregorianDate.contains('.')) {
           // DD.MM.YYYY formatı
           final parts = gregorianDate.split('.');
-          parsedDate = DateTime(int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
+          parsedDate = DateTime(
+            int.parse(parts[2]),
+            int.parse(parts[1]),
+            int.parse(parts[0]),
+          );
         } else {
           parsedDate = DateTime.now();
         }
@@ -526,7 +546,15 @@ class ReligiousEventsService {
 
   /// Haftanın günü ismini getir
   static String _getDayOfWeekName(int weekday) {
-    const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+    const days = [
+      'Pazar',
+      'Pazartesi',
+      'Salı',
+      'Çarşamba',
+      'Perşembe',
+      'Cuma',
+      'Cumartesi',
+    ];
     return days[weekday % 7];
   }
 
@@ -555,15 +583,11 @@ class ReligiousEventsService {
         'assets/data/yeni_veri_detay.json',
       );
       if (kDebugMode) {
-        print(
-          '✅ JSON file loaded successfully, length: ${detailsData.length}',
-        );
+        print('✅ JSON file loaded successfully, length: ${detailsData.length}');
       }
       final detailsList = json.decode(detailsData) as List<dynamic>;
       if (kDebugMode) {
-        print(
-          '✅ JSON parsed successfully, items count: ${detailsList.length}',
-        );
+        print('✅ JSON parsed successfully, items count: ${detailsList.length}');
       }
 
       // Detayları parse et
@@ -577,9 +601,7 @@ class ReligiousEventsService {
         }
       }
       if (kDebugMode) {
-        print(
-          '✅ Event details loaded: ${_eventDetails.length} events',
-        );
+        print('✅ Event details loaded: ${_eventDetails.length} events');
       }
     } catch (e) {
       if (kDebugMode) {

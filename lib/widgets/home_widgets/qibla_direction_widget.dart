@@ -299,7 +299,9 @@ class _QiblaDirectionWidgetState extends State<QiblaDirectionWidget>
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.teal.withValues(alpha: 0.3),
+                                        color: Colors.teal.withValues(
+                                          alpha: 0.3,
+                                        ),
                                         blurRadius: 10,
                                         offset: const Offset(0, 3),
                                       ),

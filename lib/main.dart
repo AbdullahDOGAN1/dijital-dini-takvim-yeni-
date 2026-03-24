@@ -100,7 +100,6 @@ class _MainScreenState extends State<MainScreen> {
     const PrayerTimesListScreen(),
     const MyFavoritesPageScreen(),
   ];
-
   // Bottom navigation icons
   final List<IconData> _icons = [
     Icons.calendar_today,

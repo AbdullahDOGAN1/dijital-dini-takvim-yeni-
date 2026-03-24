@@ -107,7 +107,10 @@ class PrayerTimesModel {
       ikindi: _parseTime(json['asr'] ?? json['Asr'] ?? ''),
       aksam: _parseTime(json['maghrib'] ?? json['Maghrib'] ?? ''),
       yatsi: _parseTime(json['isha'] ?? json['Isha'] ?? ''),
-      date: json['gregorianDateShort'] ?? json['gregorianDateLong'] ?? DateTime.now().toString().split(' ')[0],
+      date:
+          json['gregorianDateShort'] ??
+          json['gregorianDateLong'] ??
+          DateTime.now().toString().split(' ')[0],
       hijriDate: json['hijriDateShort'] != null || json['hijriDateLong'] != null
           ? HijriDate(
               date: json['hijriDateShort'] ?? json['hijriDateLong'] ?? '',

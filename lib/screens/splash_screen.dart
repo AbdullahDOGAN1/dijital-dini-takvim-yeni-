@@ -168,7 +168,9 @@ class _SplashScreenState extends State<SplashScreen>
                                   letterSpacing: 1.2,
                                   shadows: [
                                     Shadow(
-                                      color: Colors.black.withValues(alpha: 0.3),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       offset: Offset(0, 2),
                                       blurRadius: 4,
                                     ),
@@ -184,7 +186,9 @@ class _SplashScreenState extends State<SplashScreen>
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xFFffd700).withValues(alpha: 0.9),
+                                  color: Color(
+                                    0xFFffd700,
+                                  ).withValues(alpha: 0.9),
                                   letterSpacing: 0.5,
                                 ),
                               ),

@@ -78,7 +78,9 @@ class DatabaseHelper {
 
     if (existing.isNotEmpty) {
       if (kDebugMode) {
-        print('DEBUG DatabaseHelper: Content already exists, throwing exception');
+        print(
+          'DEBUG DatabaseHelper: Content already exists, throwing exception',
+        );
       }
       throw Exception('Bu içerik zaten favorilerde mevcut');
     }
@@ -119,7 +121,9 @@ class DatabaseHelper {
     );
 
     if (kDebugMode) {
-      print('DEBUG DatabaseHelper: Query returned ${favorites.length} favorites');
+      print(
+        'DEBUG DatabaseHelper: Query returned ${favorites.length} favorites',
+      );
       for (var fav in favorites) {
         print('DEBUG DatabaseHelper: Favorite: $fav');
       }

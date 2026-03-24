@@ -123,7 +123,13 @@ class _DhikrScreenState extends State<DhikrScreen>
 
       // Özel zikirleri ana listeye ekle
       customDhikr.forEach((key, value) {
-        _dhikrOptions[key] = Map<String, dynamic>.from(value);
+        final parsedValue = Map<String, dynamic>.from(value);
+        if (parsedValue['color'] is int) {
+          parsedValue['color'] = Color(parsedValue['color'] as int);
+        } else {
+          parsedValue['color'] = Colors.blue; // fallback
+        }
+        _dhikrOptions[key] = parsedValue;
       });
 
       await _loadDhikrData();
@@ -142,7 +148,16 @@ class _DhikrScreenState extends State<DhikrScreen>
       final customDhikr = Map<String, dynamic>.from(_dhikrOptions)
         ..removeWhere((key, value) => value['isCustom'] != true);
 
-      await prefs.setString('custom_dhikr', json.encode(customDhikr));
+      // Color nesnesini int'e çevirerek kaydet
+      final encodableDhikr = customDhikr.map((key, value) {
+        final mapValue = Map<String, dynamic>.from(value);
+        if (mapValue['color'] is Color) {
+          mapValue['color'] = (mapValue['color'] as Color).value;
+        }
+        return MapEntry(key, mapValue);
+      });
+
+      await prefs.setString('custom_dhikr', json.encode(encodableDhikr));
     } catch (e) {
       print('Error saving custom dhikr: $e');
     }
@@ -155,7 +170,11 @@ class _DhikrScreenState extends State<DhikrScreen>
       final savedDhikr = prefs.getString('selected_dhikr') ?? 'Sübhanallah';
 
       setState(() {
-        _selectedDhikr = savedDhikr;
+        if (_dhikrOptions.containsKey(savedDhikr)) {
+          _selectedDhikr = savedDhikr;
+        } else {
+          _selectedDhikr = 'Sübhanallah';
+        }
       });
 
       final savedCounter = prefs.getInt('dhikr_count_$_selectedDhikr') ?? 0;
@@ -348,11 +367,11 @@ class _DhikrScreenState extends State<DhikrScreen>
                 final meaning = meaningController.text.trim();
                 final target = int.tryParse(targetController.text) ?? 100;
 
-                if (name.isNotEmpty && meaning.isNotEmpty) {
+                if (name.isNotEmpty) {
                   setState(() {
                     _dhikrOptions[name] = {
                       'text': text.isNotEmpty ? text : name,
-                      'meaning': meaning,
+                      'meaning': meaning.isNotEmpty ? meaning : name,
                       'target': target,
                       'color': selectedColor,
                       'isCustom': true,
@@ -408,9 +427,9 @@ class _DhikrScreenState extends State<DhikrScreen>
               Navigator.pop(dialogContext);
 
               if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$dhikrName silindi')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('$dhikrName silindi')));
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: Text('Sil'),
@@ -561,8 +580,7 @@ class _DhikrScreenState extends State<DhikrScreen>
     final progress = (_counter / currentDhikr['target']).clamp(0.0, 1.0);
     final isCompleted = _counter >= currentDhikr['target'];
 
-    return Scaffold(
-      appBar: AppBar(
+    return Scaffold(      resizeToAvoidBottomInset: false,      appBar: AppBar(
         title: Text(
           'Zikirmatik',
           style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
@@ -716,14 +734,16 @@ class _DhikrScreenState extends State<DhikrScreen>
                           AnimatedBuilder(
                             animation: _rippleAnimation,
                             builder: (context, child) {
-                              return Container(
-                                width: 200 + (_rippleAnimation.value * 50),
-                                height: 200 + (_rippleAnimation.value * 50),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: currentDhikr['color'].withValues(
-                                    alpha:
-                                    0.3 * (1 - _rippleAnimation.value),
+                              return Transform.scale(
+                                scale: 1.0 + (_rippleAnimation.value * 0.25),
+                                child: Container(
+                                  width: 200,
+                                  height: 200,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: currentDhikr['color'].withValues(
+                                      alpha: 0.3 * (1 - _rippleAnimation.value),
+                                    ),
                                   ),
                                 ),
                               );
@@ -742,8 +762,7 @@ class _DhikrScreenState extends State<DhikrScreen>
                                 boxShadow: [
                                   BoxShadow(
                                     color: currentDhikr['color'].withValues(
-                                      alpha:
-                                      0.3,
+                                      alpha: 0.3,
                                     ),
                                     blurRadius: 20,
                                     offset: Offset(0, 10),

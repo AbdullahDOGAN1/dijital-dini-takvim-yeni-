@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/prayer_widget_container"
     android:layout_width="match_parent"
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bugünün Namaz Vakitleri"
-        android:textColor="#1a4d2e"
+        android:textColor="#FFFFFF"
         android:textSize="14sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -23,21 +23,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="4dp">
-        
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="İmsak:"
-            android:textColor="#666666"
+            android:textColor="#B2DFDB"
             android:textSize="11sp" />
-        
+
         <TextView
             android:id="@+id/prayer_imsak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#2d2d2d"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -47,21 +47,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="4dp">
-        
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Güneş:"
-            android:textColor="#666666"
+            android:textColor="#B2DFDB"
             android:textSize="11sp" />
-        
+
         <TextView
             android:id="@+id/prayer_gunes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#2d2d2d"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -71,21 +71,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="4dp">
-        
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Öğle:"
-            android:textColor="#666666"
+            android:textColor="#B2DFDB"
             android:textSize="11sp" />
-        
+
         <TextView
             android:id="@+id/prayer_ogle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#2d2d2d"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -95,21 +95,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="4dp">
-        
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="İkindi:"
-            android:textColor="#666666"
+            android:textColor="#B2DFDB"
             android:textSize="11sp" />
-        
+
         <TextView
             android:id="@+id/prayer_ikindi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#2d2d2d"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -119,21 +119,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="4dp">
-        
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Akşam:"
-            android:textColor="#666666"
+            android:textColor="#B2DFDB"
             android:textSize="11sp" />
-        
+
         <TextView
             android:id="@+id/prayer_aksam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#2d2d2d"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -143,21 +143,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="8dp">
-        
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Yatsı:"
-            android:textColor="#666666"
+            android:textColor="#B2DFDB"
             android:textSize="11sp" />
-        
+
         <TextView
             android:id="@+id/prayer_yatsi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#2d2d2d"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -167,11 +167,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sıradaki: Öğle - 12:30"
-        android:textColor="#1a4d2e"
+        android:textColor="#FFFFFF"
         android:textSize="12sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:background="#f0f8ff"
+        android:background="#33FFFFFF"
         android:padding="4dp"
         android:layout_marginBottom="4dp" />
 
@@ -180,7 +180,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Konum"
-        android:textColor="#666666"
+        android:textColor="#B2DFDB"
         android:textSize="10sp"
         android:gravity="center" />
 

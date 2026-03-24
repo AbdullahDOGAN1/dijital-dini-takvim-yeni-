@@ -226,21 +226,40 @@ class _QiblaScreenState extends State<QiblaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
           'Kıble Pusulası',
-          style: GoogleFonts.ebGaramond(fontWeight: FontWeight.bold),
+          style: GoogleFonts.ebGaramond(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.white,
+          ),
         ),
-        backgroundColor: Colors.teal.shade700,
-        foregroundColor: Colors.white,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           if (!_isLoading)
-            IconButton(onPressed: _refreshLocation, icon: Icon(Icons.refresh)),
+            IconButton(
+              onPressed: _refreshLocation,
+              icon: const Icon(Icons.refresh, color: Colors.white),
+            ),
         ],
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
-        color: Colors.teal.shade50,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.teal.shade900,
+              const Color(0xFF003D33), // Koyu İslami Yeşil
+              Colors.black87,
+            ],
+          ),
+        ),
         child: SafeArea(
           child: _isLoading
               ? _buildLoadingState()
@@ -252,19 +271,18 @@ class _QiblaScreenState extends State<QiblaScreen> {
     );
   }
 
-  /// Yükleme ekranı
   Widget _buildLoadingState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+          const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             _statusMessage,
-            style: GoogleFonts.ebGaramond(fontSize: 18),
+            style: GoogleFonts.ebGaramond(fontSize: 18, color: Colors.white70),
             textAlign: TextAlign.center,
           ),
         ],
@@ -272,47 +290,69 @@ class _QiblaScreenState extends State<QiblaScreen> {
     );
   }
 
-  /// İzin verilmediğinde gösterilecek ekran
   Widget _buildPermissionDeniedState() {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.location_off, size: 80, color: Colors.red.shade400),
-            SizedBox(height: 24),
-            Text(
-              'Konum İzni Gerekiyor',
-              style: GoogleFonts.ebGaramond(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white24, width: 1),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.location_off, size: 80, color: Colors.amber.shade400),
+              const SizedBox(height: 24),
+              Text(
+                'Konum İzni Gerekiyor',
+                style: GoogleFonts.ebGaramond(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 16),
-            Text(
-              _statusMessage,
-              style: GoogleFonts.ebGaramond(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: _refreshLocation,
-              icon: Icon(Icons.refresh),
-              label: Text('Tekrar Dene'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal.shade600,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              const SizedBox(height: 16),
+              Text(
+                _statusMessage,
+                style: GoogleFonts.ebGaramond(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: _refreshLocation,
+                icon: const Icon(Icons.refresh, color: Colors.teal),
+                label: const Text(
+                  'Tekrar Dene',
+                  style: TextStyle(
+                    color: Colors.teal,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Pusula görünümü
   Widget _buildCompassView() {
     return StreamBuilder<CompassEvent>(
       stream: FlutterCompass.events,
@@ -321,13 +361,18 @@ class _QiblaScreenState extends State<QiblaScreen> {
           return Center(
             child: Text(
               'Pusula sensörü çalışmıyor',
-              style: GoogleFonts.ebGaramond(fontSize: 18),
+              style: GoogleFonts.ebGaramond(
+                fontSize: 18,
+                color: Colors.red.shade300,
+              ),
             ),
           );
         }
 
         if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.amber),
+          );
         }
 
         double? heading = snapshot.data!.heading;
@@ -335,14 +380,17 @@ class _QiblaScreenState extends State<QiblaScreen> {
           return Center(
             child: Text(
               'Cihazınızda pusula sensörü bulunamadı',
-              style: GoogleFonts.ebGaramond(fontSize: 18),
+              style: GoogleFonts.ebGaramond(fontSize: 18, color: Colors.amber),
               textAlign: TextAlign.center,
             ),
           );
         }
 
-        // Kıble açısını hesapla
         double relativeQiblaAngle = (_qiblaDirection! - heading) % 360;
+        bool isFacingQibla =
+            relativeQiblaAngle < 5 ||
+            relativeQiblaAngle > 355 ||
+            relativeQiblaAngle < -355;
 
         return Column(
           children: [
@@ -351,38 +399,67 @@ class _QiblaScreenState extends State<QiblaScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Pusula arka planı - gönderilen görsele benzer yeşil çerçeveli tasarım
-                    Container(
-                      width: 280,
-                      height: 280,
+                    // Dış parlamalı gölge
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 320,
+                      height: 320,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
-                        border: Border.all(color: Colors.green, width: 10),
                         boxShadow: [
-                          BoxShadow(color: Colors.black12, blurRadius: 8),
+                          BoxShadow(
+                            color: isFacingQibla
+                                ? Colors.amber.withOpacity(0.6)
+                                : Colors.teal.withOpacity(0.2),
+                            blurRadius: isFacingQibla ? 40 : 20,
+                            spreadRadius: isFacingQibla ? 10 : 5,
+                          ),
                         ],
                       ),
-                      child: CustomPaint(
-                        painter: CompassPainter(),
-                        size: Size(280, 280),
+                    ),
+
+                    // Pusula Arka Planı (Kuzey referanslı)
+                    Transform.rotate(
+                      angle: -heading * pi / 180,
+                      child: Container(
+                        width: 300,
+                        height: 300,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF0A1A17), // Koyu Arka Plan
+                          border: Border.all(
+                            color: Colors.amber.shade700,
+                            width: 4,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              blurRadius: 15,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: CustomPaint(painter: ModernCompassPainter()),
                       ),
                     ),
 
-                    // Kıble oku
+                    // Kıble Oku
                     Transform.rotate(
                       angle: relativeQiblaAngle * pi / 180,
-                      child: _buildQiblaArrow(),
+                      child: _buildMaccahArrow(),
                     ),
 
-                    // Merkez nokta
+                    // Merkez Noktası
                     Container(
-                      width: 16,
-                      height: 16,
+                      width: 24,
+                      height: 24,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.teal.shade700,
-                        border: Border.all(color: Colors.white, width: 2),
+                        color: Colors.amber.shade500,
+                        border: Border.all(color: Colors.black87, width: 4),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black54, blurRadius: 4),
+                        ],
                       ),
                     ),
                   ],
@@ -390,131 +467,100 @@ class _QiblaScreenState extends State<QiblaScreen> {
               ),
             ),
 
-            // Alt bilgi kartı
-            _buildInfoCard(heading),
+            // Bilgi Kartı
+            _buildInfoCard(heading, isFacingQibla),
           ],
         );
       },
     );
   }
 
-  /// Kıble oku widget'ı - gönderilen görsele benzer kırmızı ok tasarımı
-  Widget _buildQiblaArrow() {
-    // Görseldeki gibi kırmızı üçgen ok
+  Widget _buildMaccahArrow() {
     return SizedBox(
       width: 240,
       height: 240,
-      child: CustomPaint(
-        size: const Size(240, 240),
-        painter: QiblaArrowPainter(),
-      ),
+      child: CustomPaint(painter: ModernQiblaArrowPainter()),
     );
   }
 
-  /// Bilgi kartı
-  Widget _buildInfoCard(double heading) {
+  Widget _buildInfoCard(double heading, bool isFacingQibla) {
     return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isFacingQibla ? Colors.amber.shade500 : Colors.white24,
+          width: isFacingQibla ? 2 : 1,
+        ),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20),
         ],
       ),
       child: Column(
         children: [
-          // Başlık
-          Text(
-            'Kıble Bilgisi',
-            style: GoogleFonts.ebGaramond(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal.shade700,
-            ),
-          ),
-
-          Divider(height: 24),
-
-          // Pusula bilgileri
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildInfoItem(
-                'Pusula',
-                '${heading.toInt()}°',
-                icon: Icons.explore,
-              ),
-              _buildInfoItem(
-                'Kıble Yönü',
-                '${_qiblaDirection!.toInt()}°',
-                icon: Icons.navigation,
-              ),
+              _buildInfoItem('Pusula', '°', icon: Icons.explore),
+              Container(width: 1, height: 40, color: Colors.white24),
+              _buildInfoItem('Kıble', '°', icon: Icons.navigation),
             ],
           ),
-
-          SizedBox(height: 16),
-
-          // Kabe bilgisi
+          const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.straighten, size: 16, color: Colors.green.shade700),
-              SizedBox(width: 8),
+              Icon(
+                Icons.location_on,
+                size: 20,
+                color: isFacingQibla ? Colors.amber : Colors.teal.shade200,
+              ),
+              const SizedBox(width: 8),
               Text(
                 _distanceToKaaba != null
-                    ? 'Kabe\'ye uzaklık: ${_distanceToKaaba!.toInt()} km'
-                    : 'Kabe yönü hesaplandı',
-                style: GoogleFonts.ebGaramond(fontSize: 16),
+                    ? 'Kabe\'ye uzaklık:  km'
+                    : 'Hesaplanıyor...',
+                style: GoogleFonts.ebGaramond(
+                  fontSize: 18,
+                  color: isFacingQibla ? Colors.amber : Colors.white,
+                  fontWeight: isFacingQibla
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                ),
               ),
             ],
           ),
-
-          if (_currentPosition != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                'Konum: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
-                style: GoogleFonts.ebGaramond(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
         ],
       ),
     );
   }
 
-  /// Bilgi öğesi
-  Widget _buildInfoItem(String label, String value, {IconData? icon}) {
+  Widget _buildInfoItem(String label, String value, {required IconData icon}) {
     return Column(
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[
-              Icon(icon, size: 16, color: Colors.teal.shade600),
-              SizedBox(width: 4),
-            ],
+            Icon(icon, size: 16, color: Colors.teal.shade200),
+            const SizedBox(width: 6),
             Text(
               label,
               style: GoogleFonts.ebGaramond(
                 fontSize: 14,
-                color: Colors.grey.shade600,
+                color: Colors.white70,
               ),
             ),
           ],
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           value,
           style: GoogleFonts.ebGaramond(
-            fontSize: 20,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Colors.teal.shade700,
+            color: Colors.white,
           ),
         ),
       ],
@@ -522,478 +568,160 @@ class _QiblaScreenState extends State<QiblaScreen> {
   }
 }
 
-/// Pusula çizici - daha modern yeşil renkli tasarım
-class CompassPainter extends CustomPainter {
+class ModernCompassPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = min(size.width, size.height) / 2;
+    final radius = size.width / 2;
 
-    // Yeşil dış çerçeve (gönderilen görseldeki gibi)
-    final outerRingPaint = Paint()
-      ..color = Colors.green
-      ..strokeWidth = 12
-      ..style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius - 6, outerRingPaint);
+    final tickPaint = Paint()
+      ..color = Colors.white38
+      ..strokeWidth = 1.5;
 
-    // Beyaz arka plan
-    final backgroundPaint = Paint()..color = Colors.white;
-    canvas.drawCircle(center, radius - 12, backgroundPaint);
+    final boldTickPaint = Paint()
+      ..color = Colors.amber.shade300
+      ..strokeWidth = 3;
 
-    // Dış çember (ince gri çizgi)
-    final outlinePaint = Paint()
-      ..color = Colors.grey.shade200
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    canvas.drawCircle(center, radius - 13, outlinePaint);
-
-    // Kabe simgesini çiz (siyah kare, üst tarafta)
-    _drawKaabaSymbol(canvas, center, radius);
-
-    // Ana yönler
-    _drawMainDirections(canvas, center, radius);
-
-    // Ara yönler
-    _drawSubDirections(canvas, center, radius);
-
-    // Derece işaretleri
-    _drawDegreeMarks(canvas, center, radius);
-  }
-
-  // Kabe simgesi çizimi (görseldeki gibi üst kısımda)
-  void _drawKaabaSymbol(Canvas canvas, Offset center, double radius) {
-    final kaabaPaint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.fill;
-
-    // Görseldeki gibi üst kısma yerleştir
-    final rect = Rect.fromCenter(
-      center: Offset(center.dx, center.dy - radius + 24),
-      width: 16,
-      height: 16,
-    );
-
-    // Kabe'nin içindeki altın renkli detay
-    canvas.drawRect(rect, kaabaPaint);
-
-    // Kabe'nin altın kenarı
-    final borderPaint = Paint()
-      ..color = Colors.amber.shade600
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    canvas.drawRect(rect, borderPaint);
-  }
-
-  void _drawMainDirections(Canvas canvas, Offset center, double radius) {
-    // Not: Pusula yönleri, 0 derece = kuzey, 90 derece = doğu, 180 derece = güney, 270 derece = batı
-    // Ama cos ve sin fonksiyonları için 0 derece = sağ, 90 derece = aşağı olduğundan bir düzeltme yapıyoruz
-
-    // Kuzey (yukarı) - kırmızı renkle vurgulanır
-    _drawDirectionMark(canvas, center, radius, 'K', -90, Colors.red.shade700);
-
-    // Doğu (sağ)
-    _drawDirectionMark(canvas, center, radius, 'D', 0, Colors.teal.shade700);
-
-    // Güney (aşağı)
-    _drawDirectionMark(canvas, center, radius, 'G', 90, Colors.teal.shade700);
-
-    // Batı (sol)
-    _drawDirectionMark(canvas, center, radius, 'B', 180, Colors.teal.shade700);
-  }
-
-  // Yön işareti çizimi için yardımcı metot
-  void _drawDirectionMark(
-    Canvas canvas,
-    Offset center,
-    double radius,
-    String text,
-    double angleDegrees,
-    Color color,
-  ) {
-    final directionPaint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    double angleRadians = angleDegrees * pi / 180;
-
-    // Çizgiyi çiz
-    Offset start = Offset(
-      center.dx + (radius - 30) * cos(angleRadians),
-      center.dy + (radius - 30) * sin(angleRadians),
-    );
-
-    Offset end = Offset(
-      center.dx + (radius - 10) * cos(angleRadians),
-      center.dy + (radius - 10) * sin(angleRadians),
-    );
-
-    canvas.drawLine(start, end, directionPaint);
-
-    // Yön harfini çiz
-    final textStyle = TextStyle(
-      color: color,
+    final textStyle = const TextStyle(
+      color: Colors.white70,
       fontSize: 16,
       fontWeight: FontWeight.bold,
     );
 
-    final textSpan = TextSpan(text: text, style: textStyle);
+    for (int i = 0; i < 360; i += 5) {
+      bool isMainDirection = i % 90 == 0;
+      bool isSubDirection = i % 30 == 0;
 
-    final tp = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.center,
-    );
+      double tickRadiusTop =
+          radius - (isMainDirection ? 0 : (isSubDirection ? 5 : 10));
+      double tickRadiusBottom = radius - (isMainDirection ? 18 : 14);
 
-    tp.layout();
+      double angle = (i - 90) * pi / 180;
+      Offset p1 = Offset(
+        center.dx + tickRadiusTop * cos(angle),
+        center.dy + tickRadiusTop * sin(angle),
+      );
+      Offset p2 = Offset(
+        center.dx + tickRadiusBottom * cos(angle),
+        center.dy + tickRadiusBottom * sin(angle),
+      );
 
-    final textPosition = Offset(
-      center.dx + (radius - 50) * cos(angleRadians) - tp.width / 2,
-      center.dy + (radius - 50) * sin(angleRadians) - tp.height / 2,
-    );
+      canvas.drawLine(p1, p2, isMainDirection ? boldTickPaint : tickPaint);
 
-    tp.paint(canvas, textPosition);
-  }
+      // Ana Yönler
+      if (isMainDirection) {
+        String dirText = i == 0
+            ? 'K'
+            : i == 90
+            ? 'D'
+            : i == 180
+            ? 'G'
+            : 'B';
 
-  void _drawSubDirections(Canvas canvas, Offset center, double radius) {
-    // Kuzeydoğu (sağ üst)
-    _drawSubDirectionMark(canvas, center, radius, -45);
-
-    // Güneydoğu (sağ alt)
-    _drawSubDirectionMark(canvas, center, radius, 45);
-
-    // Güneybatı (sol alt)
-    _drawSubDirectionMark(canvas, center, radius, 135);
-
-    // Kuzeybatı (sol üst)
-    _drawSubDirectionMark(canvas, center, radius, -135);
-  }
-
-  // Ara yön işareti çizimi için yardımcı metot
-  void _drawSubDirectionMark(
-    Canvas canvas,
-    Offset center,
-    double radius,
-    double angleDegrees,
-  ) {
-    final subDirectionPaint = Paint()
-      ..color = Colors.teal.shade400
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-
-    double angleRadians = angleDegrees * pi / 180;
-
-    Offset start = Offset(
-      center.dx + (radius - 25) * cos(angleRadians),
-      center.dy + (radius - 25) * sin(angleRadians),
-    );
-
-    Offset end = Offset(
-      center.dx + (radius - 10) * cos(angleRadians),
-      center.dy + (radius - 10) * sin(angleRadians),
-    );
-
-    canvas.drawLine(start, end, subDirectionPaint);
-  }
-
-  void _drawDegreeMarks(Canvas canvas, Offset center, double radius) {
-    final degreePaint = Paint()
-      ..color = Colors.grey.shade400
-      ..strokeWidth = 1;
-
-    // 10 derece aralıklarla çizgi çiz (ana ve ara yönler hariç)
-    // Not: Pusula açılarını çizerken, 0 derece = kuzey (yukarı) olmalı
-    // Koordinat sisteminde yukarı -90 derece, sağ 0 derece olduğu için bir dönüşüm yapıyoruz
-    for (int i = 0; i < 360; i += 10) {
-      // Ana yönler (0, 90, 180, 270) ve ara yönleri (45, 135, 225, 315) atla
-      if (i % 45 != 0) {
-        // Pusula açısından matematiksel açıya dönüşüm:
-        // 0 -> -90, 90 -> 0, 180 -> 90, 270 -> 180, 360 -> 270
-        double mathAngle = (i - 90) * pi / 180;
-
-        // 30 derece aralıklarla biraz daha uzun işaretler
-        double length = i % 30 == 0 ? 8 : 5;
-
-        Offset start = Offset(
-          center.dx + (radius - length) * cos(mathAngle),
-          center.dy + (radius - length) * sin(mathAngle),
+        TextSpan span = TextSpan(
+          text: dirText,
+          style: isMainDirection && i == 0
+              ? textStyle.copyWith(color: Colors.redAccent, fontSize: 22)
+              : textStyle.copyWith(color: Colors.amber.shade200),
         );
-
-        Offset end = Offset(
-          center.dx + radius * cos(mathAngle),
-          center.dy + radius * sin(mathAngle),
+        TextPainter tp = TextPainter(
+          text: span,
+          textDirection: TextDirection.ltr,
         );
+        tp.layout();
 
-        canvas.drawLine(start, end, degreePaint);
+        double textOffset = radius - 35;
+        Offset tPos = Offset(
+          center.dx + textOffset * cos(angle) - tp.width / 2,
+          center.dy + textOffset * sin(angle) - tp.height / 2,
+        );
+        tp.paint(canvas, tPos);
       }
     }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-/// Ok başı için özel çizim
-class ArrowHeadPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.green.shade800
-      ..style = PaintingStyle.fill
-      ..strokeJoin = StrokeJoin.round;
-
-    // Daha net ve keskin bir ok başı
-    final Path path = Path();
-    path.moveTo(size.width / 2, 0); // Üst orta nokta
-    path.lineTo(0, size.height); // Sol alt köşe
-    path.lineTo(size.width / 2, size.height * 0.7); // Alt orta çentik
-    path.lineTo(size.width, size.height); // Sağ alt köşe
-    path.close(); // Şekli kapat
-
-    // Ok gölgesi
-    final Paint shadowPaint = Paint()
-      ..color = Colors.black26
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
-
-    final Path shadowPath = Path();
-    shadowPath.addPath(path, Offset(2, 2));
-    canvas.drawPath(shadowPath, shadowPaint);
-
-    // Ana ok şekli
-    canvas.drawPath(path, paint);
-
-    // Ok vurgusu
-    final Paint highlightPaint = Paint()
-      ..color = Colors.green.shade500
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    canvas.drawLine(
-      Offset(size.width / 4, size.height * 0.5),
-      Offset(size.width * 3 / 4, size.height * 0.5),
-      highlightPaint,
-    );
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-/// Ok şekli için clipper
-class ArrowClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.moveTo(size.width / 2, 0);
-    path.lineTo(0, size.height);
-    path.lineTo(size.width, size.height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-/// Kabe desenlerini çizmek için özel painter
-class KaabaPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final width = size.width;
-    final height = size.height;
-
-    // Altın rengi desenler
-    final designPaint = Paint()
-      ..color = Colors.amber.shade700.withValues(alpha: 0.6)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    // Yatay çizgiler
-    for (int i = 1; i < 4; i++) {
-      double y = height * i / 4;
-      canvas.drawLine(Offset(0, y), Offset(width, y), designPaint);
-    }
-
-    // Dikey çizgiler
-    for (int i = 1; i < 4; i++) {
-      double x = width * i / 4;
-      canvas.drawLine(Offset(x, 0), Offset(x, height), designPaint);
-    }
-
-    // Kabe örtüsü üzerindeki karakteristik desenler
-    final decorPaint = Paint()
-      ..color = Colors.amber.shade600.withValues(alpha: 0.7)
-      ..style = PaintingStyle.fill;
-
-    // Üst orta desen
-    final centerDesign = Path();
-    centerDesign.addOval(
-      Rect.fromCenter(
-        center: Offset(width / 2, height / 4),
-        width: width / 4,
-        height: width / 4,
-      ),
-    );
-    canvas.drawPath(centerDesign, decorPaint);
-
-    // Kenar süslemeleri
-    final borderPaint = Paint()
-      ..color = Colors.amber.shade500.withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    canvas.drawRect(Rect.fromLTRB(2, 2, width - 2, height - 2), borderPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Kıble oku çizici - görseldeki gibi kırmızı ok + Kabe ikonu
-class QiblaArrowPainter extends CustomPainter {
+class ModernQiblaArrowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
 
-    // Ok gövdesi - ince ve uzun
     final bodyPaint = Paint()
-      ..color = Colors.red.shade600
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Colors.amber.shade300, Colors.amber.shade700],
+      ).createShader(Rect.fromCenter(center: center, width: 8, height: 160))
       ..style = PaintingStyle.fill
-      ..strokeWidth = 6;
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round;
 
-    // Gövde çizgisi
+    // Uzun ince gövde
     canvas.drawLine(
-      Offset(center.dx, center.dy + 70),
-      Offset(center.dx, center.dy - 80),
+      Offset(center.dx, center.dy + 35),
+      Offset(center.dx, center.dy - 100),
       bodyPaint,
     );
 
-    // Ok başı - üçgen (daha büyük ve belirgin)
-    final arrowPaint = Paint()
-      ..color = Colors.red.shade700
+    // Ok Başı
+    final headPaint = Paint()
+      ..color = Colors.amber.shade400
       ..style = PaintingStyle.fill;
 
-    final arrowPath = Path();
-    arrowPath.moveTo(center.dx, center.dy - 110); // Üst nokta (daha uzun)
-    arrowPath.lineTo(center.dx - 18, center.dy - 80); // Sol alt
-    arrowPath.lineTo(center.dx + 18, center.dy - 80); // Sağ alt
-    arrowPath.close();
+    final headPath = Path();
+    headPath.moveTo(center.dx, center.dy - 125);
+    headPath.lineTo(center.dx - 18, center.dy - 90);
+    headPath.lineTo(center.dx, center.dy - 100);
+    headPath.lineTo(center.dx + 18, center.dy - 90);
+    headPath.close();
 
-    canvas.drawPath(arrowPath, arrowPaint);
+    canvas.drawShadow(headPath, Colors.black, 4, true);
+    canvas.drawPath(headPath, headPaint);
 
-    // Kabe ikonu - okun en ucunda
-    _drawKaabaIcon(canvas, center);
-
-    // Ok gövdesinin alt kısmı - beyaz çizgi
-    final bottomPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 6;
-
-    canvas.drawLine(
-      Offset(center.dx, center.dy),
-      Offset(center.dx, center.dy + 70),
-      bottomPaint,
-    );
-
-    // Merkez nokta
-    final centerDotPaint = Paint()
-      ..color = Colors.red.shade700
-      ..style = PaintingStyle.fill;
-
-    canvas.drawCircle(center, 6, centerDotPaint);
+    // Kabe
+    _drawModernKaaba(canvas, Offset(center.dx, center.dy - 135));
   }
 
-  /// Kabe ikonu çizimi - okun ucunda
-  void _drawKaabaIcon(Canvas canvas, Offset center) {
-    final kaabaPosition = Offset(center.dx, center.dy - 120);
+  void _drawModernKaaba(Canvas canvas, Offset position) {
+    final kaabaRect = Rect.fromCenter(center: position, width: 26, height: 26);
+    final kaabaPaint = Paint()..color = const Color(0xFF111111);
 
-    // Kabe ana yapısı (siyah küp) - daha büyük
-    final kaabaPaint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.fill;
-
-    final kaabaRect = Rect.fromCenter(
-      center: kaabaPosition,
-      width: 24, // Artırıldı
-      height: 24, // Artırıldı
+    canvas.drawShadow(Path()..addRect(kaabaRect), Colors.black, 6, true);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(kaabaRect, const Radius.circular(3)),
+      kaabaPaint,
     );
 
-    canvas.drawRect(kaabaRect, kaabaPaint);
-
-    // Altın kapı ve süsleme - daha kalın çizgiler
     final goldPaint = Paint()
-      ..color = Colors.amber.shade600
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3; // Artırıldı
+      ..color = Colors.amber.shade500
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
 
-    // Kabe etrafına altın çerçeve
-    canvas.drawRect(kaabaRect, goldPaint);
-
-    // Kapı detayı (altın dikey çizgi)
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(kaabaRect, const Radius.circular(3)),
+      goldPaint,
+    );
     canvas.drawLine(
-      Offset(kaabaPosition.dx, kaabaPosition.dy - 10),
-      Offset(kaabaPosition.dx, kaabaPosition.dy + 10),
+      Offset(position.dx - 12, position.dy - 5),
+      Offset(position.dx + 12, position.dy - 5),
       goldPaint,
     );
 
-    // Üst süsleme (yatay altın çizgi)
-    canvas.drawLine(
-      Offset(kaabaPosition.dx - 10, kaabaPosition.dy - 6),
-      Offset(kaabaPosition.dx + 10, kaabaPosition.dy - 6),
-      goldPaint,
-    );
-
-    // Alt süsleme (yatay altın çizgi)
-    canvas.drawLine(
-      Offset(kaabaPosition.dx - 8, kaabaPosition.dy + 4),
-      Offset(kaabaPosition.dx + 8, kaabaPosition.dy + 4),
-      goldPaint,
-    );
-
-    // Kabe örtüsü detayları (köşelerde büyük altın noktalar)
-    final dotPaint = Paint()
+    final doorPaint = Paint()
       ..color = Colors.amber.shade500
       ..style = PaintingStyle.fill;
-
-    // Köşe süslemeleri - daha büyük
-    canvas.drawCircle(
-      Offset(kaabaPosition.dx - 8, kaabaPosition.dy - 8),
-      2.5,
-      dotPaint,
+    canvas.drawRect(
+      Rect.fromLTRB(
+        position.dx - 3,
+        position.dy + 2,
+        position.dx + 3,
+        position.dy + 12,
+      ),
+      doorPaint,
     );
-    canvas.drawCircle(
-      Offset(kaabaPosition.dx + 8, kaabaPosition.dy - 8),
-      2.5,
-      dotPaint,
-    );
-    canvas.drawCircle(
-      Offset(kaabaPosition.dx - 8, kaabaPosition.dy + 8),
-      2.5,
-      dotPaint,
-    );
-    canvas.drawCircle(
-      Offset(kaabaPosition.dx + 8, kaabaPosition.dy + 8),
-      2.5,
-      dotPaint,
-    );
-
-    // Kabe'nin etrafında daha belirgin ışık efekti
-    final glowPaint = Paint()
-      ..color = Colors.amber.shade200.withValues(alpha: 0.4)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawCircle(kaabaPosition, 18, glowPaint);
-
-    // İç ışık efekti
-    final innerGlowPaint = Paint()
-      ..color = Colors.yellow.shade100.withValues(alpha: 0.6)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawCircle(kaabaPosition, 12, innerGlowPaint);
   }
 
   @override

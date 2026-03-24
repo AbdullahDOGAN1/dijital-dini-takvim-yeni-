@@ -85,7 +85,9 @@ class _ModernHomeScreenState extends State<ModernHomeScreen> {
                                     _getGreeting(),
                                     style: GoogleFonts.ebGaramond(
                                       fontSize: 16,
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -104,30 +106,30 @@ class _ModernHomeScreenState extends State<ModernHomeScreen> {
           // Content
           SliverToBoxAdapter(
             child: Column(
-                children: [
-                  const SizedBox(height: 8),
+              children: [
+                const SizedBox(height: 8),
 
-                  // Next Prayer Countdown - Priority 1
-                  const NextPrayerCountdownWidget(),
+                // Next Prayer Countdown - Priority 1
+                const NextPrayerCountdownWidget(),
 
-                  // Quick Actions Row
-                  _buildQuickActionsRow(),
+                // Quick Actions Row
+                _buildQuickActionsRow(),
 
-                  // Daily Prayer Times - Priority 2
-                  const DailyPrayerTimesWidget(),
+                // Daily Prayer Times - Priority 2
+                const DailyPrayerTimesWidget(),
 
-                  // Date and Qibla Row
-                  _buildDateQiblaRow(),
+                // Date and Qibla Row
+                _buildDateQiblaRow(),
 
-                  // Daily Content - Priority 3
-                  const DailyVerseWidget(),
+                // Daily Content - Priority 3
+                const DailyVerseWidget(),
 
-                  // Tasbih Counter - Priority 4
-                  const TasbihCounterWidget(),
+                // Tasbih Counter - Priority 4
+                const TasbihCounterWidget(),
 
-                  // Bottom spacing
-                  const SizedBox(height: 100),
-                ],
+                // Bottom spacing
+                const SizedBox(height: 100),
+              ],
             ),
           ),
         ],

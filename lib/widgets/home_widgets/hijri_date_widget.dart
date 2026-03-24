@@ -76,6 +76,30 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
     return '$dayName, ${now.day} $monthName ${now.year}';
   }
 
+  String _getOfflineHijriDate() {
+    final now = DateTime.now();
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays + 1;
+
+    const hijriMonths = [
+      'Muharrem',
+      'Safer',
+      'Rebiülevvel',
+      'Rebiülahir',
+      'Cemaziyelevvel',
+      'Cemaziyelahir',
+      'Recep',
+      'Şaban',
+      'Ramazan',
+      'Şevval',
+      'Zilkade',
+      'Zilhicce',
+    ];
+
+    // Dinamik Hicri hesaplama
+    final hDate = HijriCalendar.fromDate(now);
+    return '${hDate.hDay} ${hijriMonths[hDate.hMonth - 1]} ${hDate.hYear}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimationConfiguration.staggeredList(
@@ -220,31 +244,7 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        if (_isLoading)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.amber.shade700,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Yükleniyor...',
-                                style: GoogleFonts.ebGaramond(
-                                  fontSize: 14,
-                                  color: Colors.amber.shade600,
-                                ),
-                              ),
-                            ],
-                          )
-                        else if (_hijriDate != null)
+                        if (_hijriDate != null)
                           Text(
                             _hijriDate!.formattedDate,
                             style: GoogleFonts.ebGaramond(
@@ -256,45 +256,20 @@ class _HijriDateWidgetState extends State<HijriDateWidget> {
                             textAlign: TextAlign.center,
                           )
                         else
+                          // Fallback synchronous hijri calculation or empty space
                           Text(
-                            'Hicri tarih yüklenemedi',
+                            _getOfflineHijriDate(),
                             style: GoogleFonts.ebGaramond(
-                              fontSize: 14,
-                              color: Colors.grey,
-                              fontStyle: FontStyle.italic,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.amber.shade800,
+                              height: 1.3,
                             ),
                             textAlign: TextAlign.center,
                           ),
                       ],
                     ),
                   ),
-
-                  // Refresh button
-                  if (!_isLoading)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: TextButton.icon(
-                        onPressed: _loadHijriDate,
-                        icon: Icon(
-                          Icons.refresh,
-                          size: 16,
-                          color: Colors.amber.shade700,
-                        ),
-                        label: Text(
-                          'Yenile',
-                          style: GoogleFonts.ebGaramond(
-                            fontSize: 12,
-                            color: Colors.amber.shade700,
-                          ),
-                        ),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),

@@ -186,10 +186,6 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
     });
   }
 
-  Color _getPrayerColor() {
-    final cleanName = _nextPrayerName.replaceAll(' (Yarın)', '');
-    return _prayerColors[cleanName] ?? Colors.blue.shade400;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,157 +199,163 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
         verticalOffset: 50.0,
         child: FadeInAnimation(
           child: Container(
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  prayerColor.withValues(alpha: 0.1),
-                  prayerColor.withValues(alpha: 0.05),
-                ],
+                colors: isDark
+                    ? [Colors.grey.shade900, Colors.grey.shade800]
+                    : [prayerColor.withOpacity(0.2), prayerColor.withOpacity(0.05)],
               ),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: prayerColor.withValues(alpha: 0.3),
+                color: isDark ? Colors.white12 : prayerColor.withOpacity(0.2),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: prayerColor.withValues(alpha: 0.2),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  color: prayerColor.withOpacity(isDark ? 0.05 : 0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: _isLoading
-                ? const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        // Header
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.access_time,
-                              color: prayerColor,
-                              size: 24,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Sonraki Namaz',
-                              style: GoogleFonts.ebGaramond(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : Colors.black87,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: _isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          // Header
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: prayerColor.withOpacity(
+                                    isDark ? 0.2 : 0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.access_time_rounded,
+                                  color: prayerColor,
+                                  size: 22,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Circular Progress with Timer
-                        Row(
-                          children: [
-                            // Circular Progress
-                            CircularPercentIndicator(
-                              radius: 60,
-                              lineWidth: 8,
-                              percent: _progressPercent,
-                              center: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _getIconForPrayer(_nextPrayerName),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Sonraki Vakit',
+                                style: GoogleFonts.ebGaramond(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Timer Row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // Circular Progress
+                              SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: CircularPercentIndicator(
+                                  radius: 60,
+                                  lineWidth: 10,
+                                  percent: _progressPercent.clamp(0.0, 1.0),
+                                  center: Icon(
+                                    _getPrayerIcon(_nextPrayerName),
+                                    size: 40,
                                     color: prayerColor,
-                                    size: 28,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _nextPrayerTime,
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: prayerColor,
-                                    ),
+                                  progressColor: prayerColor,
+                                  backgroundColor: prayerColor.withOpacity(
+                                    isDark ? 0.2 : 0.15,
                                   ),
-                                ],
+                                  circularStrokeCap: CircularStrokeCap.round,
+                                  animation: false,
+                                ),
                               ),
-                              progressColor: prayerColor,
-                              backgroundColor: prayerColor.withValues(alpha: 0.2),
-                              circularStrokeCap: CircularStrokeCap.round,
-                            ),
 
-                            const SizedBox(width: 20),
-
-                            // Prayer Info
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _nextPrayerName,
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: prayerColor,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: prayerColor.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: prayerColor.withValues(alpha: 0.3),
+                              // Timer Details
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        _nextPrayerName.toUpperCase(),
+                                        style: GoogleFonts.ebGaramond(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: prayerColor,
+                                          letterSpacing: 1.5,
+                                        ),
                                       ),
-                                    ),
-                                    child: Text(
-                                      _timeUntilNextPrayer,
-                                      style: GoogleFonts.ebGaramond(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: prayerColor,
-                                        letterSpacing: 1.2,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _timeUntilNextPrayer,
+                                        style: GoogleFonts.libreBaskerville(
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black87,
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.notifications_active_outlined,
+                                            size: 14,
+                                            color: Colors.grey,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            _nextPrayerTime,
+                                            style: GoogleFonts.ebGaramond(
+                                              fontSize: 16,
+                                              color: Colors.grey.shade600,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'kaldı',
-                                    style: GoogleFonts.ebGaramond(
-                                      fontSize: 14,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  IconData _getIconForPrayer(String prayerName) {
-    final cleanName = prayerName.replaceAll(' (Yarın)', '');
-    switch (cleanName) {
+  // Get matching icon based on prayer
+  IconData _getPrayerIcon(String name) {
+    switch (name) {
       case 'İmsak':
         return Icons.wb_twilight;
       case 'Güneş':
@@ -368,6 +370,28 @@ class _NextPrayerCountdownWidgetState extends State<NextPrayerCountdownWidget> {
         return Icons.dark_mode;
       default:
         return Icons.access_time;
+    }
+  }
+
+  Color _getPrayerColor() {
+    if (_nextPrayerName.isEmpty) return Colors.green.shade600;
+
+    // Switch over correct Turkish names
+    switch (_nextPrayerName) {
+      case 'İmsak':
+        return Colors.purple.shade400;
+      case 'Güneş':
+        return Colors.orange.shade400;
+      case 'Öğle':
+        return Colors.blue.shade500;
+      case 'İkindi':
+        return Colors.yellow.shade700;
+      case 'Akşam':
+        return Colors.red.shade400;
+      case 'Yatsı':
+        return Colors.indigo.shade400;
+      default:
+        return _prayerColors[_nextPrayerName] ?? Colors.green.shade600;
     }
   }
 }

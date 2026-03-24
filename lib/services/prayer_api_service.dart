@@ -12,8 +12,10 @@ import 'package:flutter/foundation.dart';
 /// Service class for fetching prayer times from Diyanet Awqat Salah API
 /// Tüm sistem artık Diyanet API üzerine kurulu
 class PrayerApiService {
-  static final DiyanetAwqatSalahService _diyanetService = DiyanetAwqatSalahService();
-  static final DiyanetJsonCacheService _jsonCacheService = DiyanetJsonCacheService();
+  static final DiyanetAwqatSalahService _diyanetService =
+      DiyanetAwqatSalahService();
+  static final DiyanetJsonCacheService _jsonCacheService =
+      DiyanetJsonCacheService();
   static const bool _directApiEnabled = bool.fromEnvironment(
     'ENABLE_DIRECT_DIYANET_API',
     defaultValue: false,
@@ -355,10 +357,12 @@ class PrayerApiService {
       // Diyanet API kullanarak güncel namaz vakitlerini al
       final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
       final cityCode = DiyanetCityMapper.getCityCode(cityName);
-      
+
       if (cityCode == null) {
         if (kDebugMode) {
-          print('⚠️ Şehir kodu bulunamadı: $cityName, varsayılan Ankara kullanılıyor');
+          print(
+            '⚠️ Şehir kodu bulunamadı: $cityName, varsayılan Ankara kullanılıyor',
+          );
         }
         final fallbackPrayerTimes = await _getPrayerTimesFromDiyanet(
           'Ankara',
@@ -367,8 +371,11 @@ class PrayerApiService {
         return fallbackPrayerTimes ?? _getDefaultPrayerTimes();
       }
 
-      final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, DateTime.now());
-      
+      final prayerTimes = await _getPrayerTimesFromDiyanet(
+        cityName,
+        DateTime.now(),
+      );
+
       if (prayerTimes != null) {
         if (kDebugMode) {
           print('✅ Namaz vakitleri: $cityName ($lat, $lng)');
@@ -377,7 +384,9 @@ class PrayerApiService {
       } else {
         // API başarısız olursa varsayılan namaz vakitlerini döndür
         if (kDebugMode) {
-          print('⚠️ API\'dan veri alınamadı, varsayılan namaz vakitleri kullanılıyor');
+          print(
+            '⚠️ API\'dan veri alınamadı, varsayılan namaz vakitleri kullanılıyor',
+          );
         }
         return _getDefaultPrayerTimes();
       }
@@ -390,14 +399,17 @@ class PrayerApiService {
   /// Fetch prayer times for today by city name using Diyanet API
   static Future<PrayerTimesModel> getPrayerTimesForCity(String cityName) async {
     try {
-      final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, DateTime.now());
+      final prayerTimes = await _getPrayerTimesFromDiyanet(
+        cityName,
+        DateTime.now(),
+      );
       if (prayerTimes != null) {
         if (kDebugMode) {
           print('✅ Prayer times for: $cityName');
         }
         return prayerTimes;
       }
-      
+
       if (kDebugMode) {
         print('⚠️ City not found or API failed: $cityName');
       }
@@ -419,7 +431,9 @@ class PrayerApiService {
       final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, date);
       if (prayerTimes != null) {
         if (kDebugMode) {
-          print('✅ Prayer times for: $cityName (${date.toIso8601String().split('T')[0]})');
+          print(
+            '✅ Prayer times for: $cityName (${date.toIso8601String().split('T')[0]})',
+          );
         }
         return prayerTimes;
       }
@@ -446,7 +460,8 @@ class PrayerApiService {
         return null;
       }
 
-      final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final dateStr =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
       // 1) JSON cache first (GitHub + asset fallback)
       try {
@@ -457,7 +472,9 @@ class PrayerApiService {
 
         if (cachedData != null) {
           if (kDebugMode) {
-            print('✅ Prayer times loaded from JSON cache: $cityName ($dateStr)');
+            print(
+              '✅ Prayer times loaded from JSON cache: $cityName ($dateStr)',
+            );
           }
           return PrayerTimesModel.fromDiyanetApi(cachedData);
         }
@@ -466,7 +483,7 @@ class PrayerApiService {
           print('⚠️ JSON cache read failed, continuing with Diyanet API: $e');
         }
       }
-      
+
       if (!_directApiEnabled) {
         return null;
       }
@@ -483,7 +500,7 @@ class PrayerApiService {
         // Diyanet API response formatını PrayerTimesModel'e çevir
         return PrayerTimesModel.fromDiyanetApi(apiData);
       }
-      
+
       return null;
     } catch (e) {
       if (kDebugMode) {
@@ -541,7 +558,7 @@ class PrayerApiService {
 
       // Şehir ismini bul
       final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
-      
+
       // Diyanet API'den namaz vakitlerini al
       final prayerTimes = await _getPrayerTimesFromDiyanet(cityName, date);
 
@@ -644,10 +661,12 @@ class PrayerApiService {
       // Şehir adını belirle
       final cityName = selectedCity ?? getCityFromCoordinates(lat!, lng!);
       final cityCode = DiyanetCityMapper.getCityCode(cityName);
-      
+
       if (cityCode == null) {
         if (kDebugMode) {
-          print('⚠️ Şehir kodu bulunamadı: $cityName, varsayılan değerler kullanılıyor');
+          print(
+            '⚠️ Şehir kodu bulunamadı: $cityName, varsayılan değerler kullanılıyor',
+          );
         }
         return _getDefaultMonthlyPrayerTimes(year, month);
       }
@@ -669,14 +688,17 @@ class PrayerApiService {
           final Map<String, PrayerTimesModel> monthlyTimes = {};
           for (final dayData in cachedRange) {
             final prayerTimes = PrayerTimesModel.fromDiyanetApi(dayData);
-            final dayStr = (dayData['date']?.toString().split('-').last ?? '').replaceFirst(RegExp(r'^0'), '');
+            final dayStr = (dayData['date']?.toString().split('-').last ?? '')
+                .replaceFirst(RegExp(r'^0'), '');
             if (dayStr.isNotEmpty) {
               monthlyTimes[dayStr] = prayerTimes;
             }
           }
           if (monthlyTimes.isNotEmpty) {
             if (kDebugMode) {
-              print('✅ Aylık namaz vakitleri JSON cache’den alındı: ${monthlyTimes.length} gün');
+              print(
+                '✅ Aylık namaz vakitleri JSON cache’den alındı: ${monthlyTimes.length} gün',
+              );
             }
             return monthlyTimes;
           }
@@ -689,9 +711,11 @@ class PrayerApiService {
         // 2) Optional direct Diyanet API DateRange fallback
         final startDate = DateTime(year, month, 1);
         final endDate = DateTime(year, month + 1, 0); // Ayın son günü
-        
-        final startDateStr = '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
-        final endDateStr = '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
+
+        final startDateStr =
+            '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
+        final endDateStr =
+            '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
 
         final monthlyData = await _diyanetService.getDateRangePrayerTimes(
           countryCode: DiyanetCityMapper.countryCode,
@@ -707,11 +731,14 @@ class PrayerApiService {
           for (final dayData in monthlyData) {
             final prayerTimes = PrayerTimesModel.fromDiyanetApi(dayData);
             // Tarihten gün numarasını çıkar (gregorianDateShort: "29.11.2022" -> "29")
-            final dayStr = dayData['gregorianDateShort']?.split('.')[0] ?? 
-                          DateTime.parse(dayData['gregorianDateLongIso8601'] ?? startDateStr).day.toString();
+            final dayStr =
+                dayData['gregorianDateShort']?.split('.')[0] ??
+                DateTime.parse(
+                  dayData['gregorianDateLongIso8601'] ?? startDateStr,
+                ).day.toString();
             monthlyTimes[dayStr] = prayerTimes;
           }
-          
+
           if (kDebugMode) {
             print('✅ Aylık namaz vakitleri alındı: ${monthlyTimes.length} gün');
           }
@@ -747,7 +774,7 @@ class PrayerApiService {
   ) async {
     final Map<String, PrayerTimesModel> monthlyTimes = {};
     final cityCode = DiyanetCityMapper.getCityCode(cityName);
-    
+
     if (cityCode == null) {
       return _getDefaultMonthlyPrayerTimes(year, month);
     }
@@ -757,13 +784,14 @@ class PrayerApiService {
     }
 
     final daysInMonth = DateTime(year, month + 1, 0).day;
-    
+
     // İlk 5 günü çek (rate limit için)
     for (int day = 1; day <= daysInMonth && day <= 5; day++) {
       try {
         final date = DateTime(year, month, day);
-        final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-        
+        final dateStr =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
         final apiData = await _diyanetService.getDailyPrayerTimes(
           countryCode: DiyanetCityMapper.countryCode,
           stateCode: DiyanetCityMapper.stateCode,
@@ -775,7 +803,7 @@ class PrayerApiService {
           final prayerTimes = PrayerTimesModel.fromDiyanetApi(apiData);
           monthlyTimes[day.toString()] = prayerTimes;
         }
-        
+
         // Rate limit için kısa bekleme
         await Future.delayed(const Duration(milliseconds: 200));
       } catch (e) {
@@ -816,9 +844,11 @@ class PrayerApiService {
       // DateRange endpoint kullan (aylık 10 istek limiti var!)
       final startDate = DateTime(year, month, 1);
       final endDate = DateTime(year, month + 1, 0);
-      
-      final startDateStr = '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
-      final endDateStr = '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
+
+      final startDateStr =
+          '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
+      final endDateStr =
+          '${endDate.year}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}';
 
       final monthlyData = await _diyanetService.getDateRangePrayerTimes(
         countryCode: DiyanetCityMapper.countryCode,
@@ -832,8 +862,11 @@ class PrayerApiService {
         final Map<String, PrayerTimesModel> monthlyTimes = {};
         for (final dayData in monthlyData) {
           final prayerTimes = PrayerTimesModel.fromDiyanetApi(dayData);
-          final dayStr = dayData['gregorianDateShort']?.split('.')[0] ?? 
-                        DateTime.parse(dayData['gregorianDateLongIso8601'] ?? startDateStr).day.toString();
+          final dayStr =
+              dayData['gregorianDateShort']?.split('.')[0] ??
+              DateTime.parse(
+                dayData['gregorianDateLongIso8601'] ?? startDateStr,
+              ).day.toString();
           monthlyTimes[dayStr] = prayerTimes;
         }
         return monthlyTimes;
@@ -849,7 +882,6 @@ class PrayerApiService {
     }
   }
 
-
   /// Get Hijri date for a specific Gregorian date using Diyanet API
   static Future<HijriDate?> getHijriDate(DateTime gregorianDate) async {
     try {
@@ -857,10 +889,13 @@ class PrayerApiService {
         return null;
       }
 
-      final dateStr = '${gregorianDate.year}-${gregorianDate.month.toString().padLeft(2, '0')}-${gregorianDate.day.toString().padLeft(2, '0')}';
-      
-      final hijriData = await _diyanetService.getHijriCalendar(gregorianDate: dateStr);
-      
+      final dateStr =
+          '${gregorianDate.year}-${gregorianDate.month.toString().padLeft(2, '0')}-${gregorianDate.day.toString().padLeft(2, '0')}';
+
+      final hijriData = await _diyanetService.getHijriCalendar(
+        gregorianDate: dateStr,
+      );
+
       if (hijriData != null) {
         // Diyanet API response formatını HijriDate'e çevir
         // API response formatı kontrol edilmeli
@@ -875,7 +910,7 @@ class PrayerApiService {
           holidays: [],
         );
       }
-      
+
       return null;
     } catch (e) {
       if (kDebugMode) {

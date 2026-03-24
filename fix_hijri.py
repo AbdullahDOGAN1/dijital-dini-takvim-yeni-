@@ -1,4 +1,12 @@
-// ignore_for_file: avoid_print
+﻿import os
+import re
+
+path = 'lib/services/daily_content_service.dart'
+with open(path, 'r', encoding='utf-8') as f:
+    text = f.read()
+
+# Replace file content from top to avoid syntax errors
+new_content = '''// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -6,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:hijri/hijri_calendar.dart';
 import '../models/daily_content_model.dart';
 import '../models/prayer_times_model.dart';
-import 'prayer_api_service.dart';
 
 class DailyContentService {
   static List<DailyContentModel>? _cachedContent;
@@ -25,7 +32,7 @@ class DailyContentService {
           .toList();
       return _cachedContent!;
     } catch (e) {
-      print('Günlük içerik yüklenirken hata: ');
+      print('Günlük içerik yüklenirken hata: \');
       return [];
     }
   }
@@ -84,52 +91,14 @@ class DailyContentService {
     'Zilhicce',
   ];
 
-  static int? _hijriOffset;
-  static bool _isLoadingOffset = false;
-
-  /// Calculate generic daily offset by fetching Diyanet data once
-  static Future<int> getHijriOffset() async {
-    if (_hijriOffset != null) return _hijriOffset!;
-    if (_isLoadingOffset) return 0;
-    
-    _isLoadingOffset = true;
-    try {
-      final today = DateTime.now();
-      final model = await PrayerApiService.getPrayerTimesForToday();
-      final diyanetHijri = model.hijriDate;
-      
-      if (diyanetHijri != null && diyanetHijri.day.isNotEmpty) {
-        final dDay = int.tryParse(diyanetHijri.day) ?? 0;
-        final hLocal = HijriCalendar.fromDate(today).hDay;
-        
-        int diff = dDay - hLocal;
-        if (diff > 20) { diff = -1; } else if (diff < -20) { diff = 1; }
-        
-        if (diff >= -2 && diff <= 2) {
-          _hijriOffset = diff;
-        } else {
-          _hijriOffset = 0;
-        }
-      } else {
-        _hijriOffset = 0;
-      }
-    } catch (e) {
-      _hijriOffset = 0;
-    }
-    _isLoadingOffset = false;
-    return _hijriOffset ?? 0;
-  }
-
   /// Offline hijri calculation
   static Future<HijriDate?> getAccurateHijriDate(DateTime gregorianDate) async {
     try {
-      final offset = await getHijriOffset();
-      final adjustedGregorian = gregorianDate.add(Duration(days: offset));
-      final hDate = HijriCalendar.fromDate(adjustedGregorian);
+      final hDate = HijriCalendar.fromDate(gregorianDate);
       final monthName = _turkishHijriMonths[hDate.hMonth - 1];
       
-      final shortDate = '${hDate.hDay}.${hDate.hMonth}.${hDate.hYear}';
-      final longDate = '${hDate.hDay} $monthName ${hDate.hYear}';
+      final shortDate = '\.\.\';
+      final longDate = '\ \ \';
 
       return HijriDate(
         date: longDate,
@@ -142,7 +111,7 @@ class DailyContentService {
         holidays: [],
       );
     } catch (e) {
-      if (kDebugMode) print('Hijri date error: ');
+      if (kDebugMode) print('Hijri date error: \');
       return null;
     }
   }
@@ -150,7 +119,7 @@ class DailyContentService {
   static final Map<String, HijriDate> _hijriCache = {};
 
   static Future<HijriDate?> getCachedHijriDate(DateTime gregorianDate) async {
-    final dateKey = '${gregorianDate.year}-${gregorianDate.month}-${gregorianDate.day}';
+    final dateKey = '\-\-\';
     if (_hijriCache.containsKey(dateKey)) {
       return _hijriCache[dateKey];
     }
@@ -168,3 +137,7 @@ class DailyContentService {
     return await getContentForDay(dayOfYear);
   }
 }
+'''
+with open(path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+

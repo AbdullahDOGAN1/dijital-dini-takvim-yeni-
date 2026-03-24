@@ -153,7 +153,9 @@ ${_todayContent!.ayetHadis.metin.isNotEmpty ? "📿 Ayet/Hadis:\n${_todayContent
                                     _todayContent!.tarih,
                                     style: GoogleFonts.ebGaramond(
                                       fontSize: 14,
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                     ),
                                   ),
                                 ],

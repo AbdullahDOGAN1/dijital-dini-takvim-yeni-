@@ -30,7 +30,7 @@ class DiyanetJsonCacheService {
       if (cityBucket is! Map) return null;
 
       // Handle both YYYY-MM-DD and DD.MM.YYYY lookups
-      String queryKey = date; 
+      String queryKey = date;
       if (date.contains('-')) {
         final p = date.split('-');
         if (p.length == 3) {
@@ -83,7 +83,8 @@ class DiyanetJsonCacheService {
           final value = entry.value;
           if (value is Map) {
             final mutableValue = Map<String, dynamic>.from(value);
-            mutableValue['date'] = ymdKey; // Provide expected YYYY-MM-DD for PrayerApiService
+            mutableValue['date'] =
+                ymdKey; // Provide expected YYYY-MM-DD for PrayerApiService
             // DO NOT override gregorianDateShort! PrayerTimesModel needs it as DD.MM.YYYY
             results.add(mutableValue);
           }

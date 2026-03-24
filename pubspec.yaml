@@ -101,6 +101,7 @@ dependencies:
   
   # Home screen widgets for Android and iOS
   home_widget: ^0.6.0
+  hijri: ^3.0.0
 
 dev_dependencies:
   flutter_test:

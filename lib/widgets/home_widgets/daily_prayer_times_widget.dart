@@ -125,132 +125,195 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey.shade800 : Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark
+                    ? [Colors.grey.shade900, Colors.grey.shade800]
+                    : [Colors.white, Colors.green.shade50],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isDark ? Colors.white12 : Colors.green.shade100,
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  color: Colors.green.withOpacity(isDark ? 0.1 : 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                // Header
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Colors.green.shade600, Colors.green.shade700],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Column(
+                children: [
+                  // Modern Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 20,
                     ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.black26 : Colors.green.shade600,
+                      gradient: isDark
+                          ? null
+                          : LinearGradient(
+                              colors: [
+                                Colors.green.shade600,
+                                Colors.teal.shade500,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.mosque, color: Colors.white, size: 24),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Bugünün Namaz Vakitleri',
-                              style: GoogleFonts.ebGaramond(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              _currentLocation,
-                              style: GoogleFonts.ebGaramond(
-                                fontSize: 14,
-                                color: Colors.white.withValues(alpha: 0.9),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (_isLoading)
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.mosque,
+                            color: Colors.white,
+                            size: 22,
                           ),
                         ),
-                    ],
-                  ),
-                ),
-
-                // Prayer Times Grid
-                if (_isLoading)
-                  const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: CircularProgressIndicator(),
-                  )
-                else if (_todaysPrayerTimes != null)
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        // First row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildPrayerCard(_prayerData[0], 0),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildPrayerCard(_prayerData[1], 1),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildPrayerCard(_prayerData[2], 2),
-                            ),
-                          ],
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Bugünün Vakitleri',
+                                style: GoogleFonts.ebGaramond(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    color: Colors.white70,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    _currentLocation,
+                                    style: GoogleFonts.ebGaramond(
+                                      fontSize: 14,
+                                      color: Colors.white.withOpacity(0.9),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 12),
-                        // Second row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildPrayerCard(_prayerData[3], 3),
+                        if (_isLoading)
+                          const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildPrayerCard(_prayerData[4], 4),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildPrayerCard(_prayerData[5], 5),
-                            ),
-                          ],
-                        ),
+                          ),
                       ],
                     ),
-                  )
-                else
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      'Namaz vakitleri yüklenemedi',
-                      style: GoogleFonts.ebGaramond(
-                        fontSize: 16,
-                        color: Colors.grey,
+                  ),
+
+                  // Prayer Times Content
+                  if (_isLoading)
+                    const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: CircularProgressIndicator(color: Colors.green),
+                    )
+                  else if (_todaysPrayerTimes != null)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildPrayerCard(
+                                  _prayerData[0],
+                                  0,
+                                  isDark,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildPrayerCard(
+                                  _prayerData[1],
+                                  1,
+                                  isDark,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildPrayerCard(
+                                  _prayerData[2],
+                                  2,
+                                  isDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildPrayerCard(
+                                  _prayerData[3],
+                                  3,
+                                  isDark,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildPrayerCard(
+                                  _prayerData[4],
+                                  4,
+                                  isDark,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _buildPrayerCard(
+                                  _prayerData[5],
+                                  5,
+                                  isDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        'Namaz vakitleri yüklenemedi. Lütfen internet bağlantınızı kontrol edin.',
+                        style: GoogleFonts.ebGaramond(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -258,13 +321,36 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
     );
   }
 
-  Widget _buildPrayerCard(Map<String, dynamic> prayerInfo, int index) {
+  Widget _buildPrayerCard(
+    Map<String, dynamic> prayerInfo,
+    int index,
+    bool isDark,
+  ) {
     final prayerName = prayerInfo['name'] as String;
     final prayerColor = prayerInfo['color'] as Color;
     final prayerIcon = prayerInfo['icon'] as IconData;
     final prayerTime = _getPrayerTime(prayerName);
     final isPassed = _isPrayerPassed(prayerName);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Determine if it is the NEXT incoming prayer
+    // Simplified logic: the first prayer that has NOT passed is highlighted
+    bool isNext = false;
+    for (var info in _prayerData) {
+      if (!_isPrayerPassed(info['name'] as String)) {
+        if (info['name'] == prayerName) {
+          isNext = true;
+        }
+        break;
+      }
+    }
+
+    final cardBgColor = isDark
+        ? Colors.grey.shade800
+        : (isPassed ? Colors.grey.shade100 : Colors.white);
+
+    final borderColor = isNext
+        ? prayerColor.withOpacity(0.5)
+        : (isDark ? Colors.white12 : Colors.transparent);
 
     return AnimationConfiguration.staggeredGrid(
       position: index,
@@ -273,67 +359,56 @@ class _DailyPrayerTimesWidgetState extends State<DailyPrayerTimesWidget> {
       child: ScaleAnimation(
         child: FadeInAnimation(
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             decoration: BoxDecoration(
-              color: isPassed
-                  ? Colors.grey.withValues(alpha: 0.3)
-                  : prayerColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isPassed
-                    ? Colors.grey.withValues(alpha: 0.5)
-                    : prayerColor.withValues(alpha: 0.3),
-                width: 1.5,
-              ),
+              color: cardBgColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: borderColor, width: isNext ? 1.5 : 1),
+              boxShadow: [
+                if (isNext && !isDark)
+                  BoxShadow(
+                    color: prayerColor.withOpacity(0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                if (!isPassed && !isDark && !isNext)
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+              ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   prayerIcon,
-                  color: isPassed ? Colors.grey : prayerColor,
-                  size: 24,
+                  color: isPassed ? Colors.grey.shade400 : prayerColor,
+                  size: 26,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   prayerName,
                   style: GoogleFonts.ebGaramond(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                     color: isPassed
-                        ? Colors.grey
-                        : (isDark ? Colors.white : Colors.black87),
+                        ? Colors.grey.shade500
+                        : (isDark ? Colors.white70 : Colors.black54),
+                    fontWeight: isNext ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   prayerTime,
                   style: GoogleFonts.ebGaramond(
-                    fontSize: 14,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: isPassed ? Colors.grey : prayerColor,
+                    color: isPassed
+                        ? Colors.grey.shade400
+                        : (isDark ? Colors.white : Colors.black87),
                   ),
                 ),
-                if (isPassed)
-                  Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'Geçti',
-                      style: GoogleFonts.ebGaramond(
-                        fontSize: 10,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

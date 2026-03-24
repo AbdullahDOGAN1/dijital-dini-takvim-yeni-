@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 /// Diyanet Awqat Salah API Service
-/// 
+///
 /// API Documentation: https://awqatsalah.diyanet.gov.tr/
 /// GitHub: https://github.com/DinIsleriYuksekKurulu/AwqatSalah
-/// 
+///
 /// Rate Limits:
 /// - Each endpoint: 5 requests/day (per parameter combination)
 /// - DateRange endpoint: 10 requests/month
 /// - First 15 days: 100 requests limit (then drops to 5)
-/// 
+///
 /// IMPORTANT: Direct API calls should be minimal due to rate limits.
 /// This service will be used by Firebase Cloud Functions for daily data sync.
 /// Mobile app will read from Firebase Firestore (cached data).
@@ -19,7 +19,7 @@ class DiyanetAwqatSalahService {
   static const String _baseUrl = 'https://awqatsalah.diyanet.gov.tr/api';
   static const String _username = String.fromEnvironment('DIYANET_EMAIL');
   static const String _password = String.fromEnvironment('DIYANET_PASSWORD');
-  
+
   // Token management
   String? _accessToken;
   DateTime? _tokenExpiry;
@@ -42,14 +42,16 @@ class DiyanetAwqatSalahService {
       'status': status,
       'code': code,
       'message': message,
-      'responseBody':
-          responseBody == null || responseBody.length < 300 ? responseBody : '${responseBody.substring(0, 300)}...',
+      'responseBody': responseBody == null || responseBody.length < 300
+          ? responseBody
+          : '${responseBody.substring(0, 300)}...',
       'error': error?.toString(),
     };
     print('❌ Diyanet API Error: $normalized');
   }
 
-  bool _shouldRetryStatus(int statusCode) => statusCode == 429 || statusCode >= 500;
+  bool _shouldRetryStatus(int statusCode) =>
+      statusCode == 429 || statusCode >= 500;
 
   Future<http.Response?> _requestWithRetry({
     required Future<http.Response> Function() request,
@@ -81,7 +83,7 @@ class DiyanetAwqatSalahService {
     }
     return null;
   }
-  
+
   /// Authentication - Get Access Token
   /// Endpoint: POST /Auth/Login
   Future<bool> authenticate() async {
@@ -108,10 +110,7 @@ class DiyanetAwqatSalahService {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          body: json.encode({
-            'email': _username,
-            'password': _password,
-          }),
+          body: json.encode({'email': _username, 'password': _password}),
         ),
       );
 
@@ -126,15 +125,16 @@ class DiyanetAwqatSalahService {
             endpoint: endpoint,
             status: response.statusCode,
             code: 'TOKEN_MISSING',
-            message: 'Authentication response does not include token/accessToken',
+            message:
+                'Authentication response does not include token/accessToken',
             responseBody: response.body,
           );
           return false;
         }
-        
+
         // Token typically expires in 45 minutes
         _tokenExpiry = DateTime.now().add(const Duration(minutes: 45));
-        
+
         print('✅ Diyanet API: Authentication successful');
         return true;
       } else {
@@ -301,7 +301,9 @@ class DiyanetAwqatSalahService {
     if (response.statusCode == 200) {
       final data = _decodeList(response);
       if (data != null) {
-        print('✅ Diyanet API: Date range prayer times fetched (${data.length} days)');
+        print(
+          '✅ Diyanet API: Date range prayer times fetched (${data.length} days)',
+        );
       }
       return data;
     }
@@ -409,9 +411,7 @@ class DiyanetAwqatSalahService {
   /// Endpoint: GET /DailyContent
   /// Parameters:
   /// - Date: YYYY-MM-DD (optional, defaults to today)
-  Future<Map<String, dynamic>?> getDailyContent({
-    String? date,
-  }) async {
+  Future<Map<String, dynamic>?> getDailyContent({String? date}) async {
     const endpoint = '/DailyContent';
     final dateParam = date ?? DateTime.now().toIso8601String().split('T')[0];
     final response = await _authorizedGet(
@@ -444,9 +444,7 @@ class DiyanetAwqatSalahService {
   /// Endpoint: GET /ReligiousDays
   /// Parameters:
   /// - Year: YYYY (optional, defaults to current year)
-  Future<List<Map<String, dynamic>>?> getReligiousDays({
-    int? year,
-  }) async {
+  Future<List<Map<String, dynamic>>?> getReligiousDays({int? year}) async {
     const endpoint = '/ReligiousDays';
     final targetYear = (year ?? DateTime.now().year).toString();
     final response = await _authorizedGet(
@@ -459,7 +457,9 @@ class DiyanetAwqatSalahService {
     if (response.statusCode == 200) {
       final data = _decodeList(response);
       if (data != null) {
-        print('✅ Diyanet API: Religious days fetched for $targetYear (${data.length} items)');
+        print(
+          '✅ Diyanet API: Religious days fetched for $targetYear (${data.length} items)',
+        );
       }
       return data;
     }
@@ -522,7 +522,9 @@ class DiyanetAwqatSalahService {
     if (response.statusCode == 200) {
       final data = _decodeList(response);
       if (data != null) {
-        print('✅ Diyanet API: States fetched for $countryCode (${data.length} items)');
+        print(
+          '✅ Diyanet API: States fetched for $countryCode (${data.length} items)',
+        );
       }
       return data;
     }
@@ -551,17 +553,16 @@ class DiyanetAwqatSalahService {
     final response = await _authorizedGet(
       endpoint: endpoint,
       scope: 'cities',
-      query: {
-        'CountryCode': countryCode,
-        'StateCode': stateCode,
-      },
+      query: {'CountryCode': countryCode, 'StateCode': stateCode},
     );
 
     if (response == null) return null;
     if (response.statusCode == 200) {
       final data = _decodeList(response);
       if (data != null) {
-        print('✅ Diyanet API: Cities fetched for $stateCode (${data.length} items)');
+        print(
+          '✅ Diyanet API: Cities fetched for $stateCode (${data.length} items)',
+        );
       }
       return data;
     }
