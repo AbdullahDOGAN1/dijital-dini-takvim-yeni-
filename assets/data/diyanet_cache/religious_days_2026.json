@@ -1,8 +1,7 @@
 {
-  "generatedAt": "2026-05-01T03:29:56.904Z",
+  "generatedAt": "2026-07-01T04:01:24.158Z",
   "source": "diyanet_awqatsalah",
   "year": 2026,
   "days": [],
-  "fallbackUsed": true,
-  "fallbackReason": "ReligiousDays endpoint unavailable (404)"
+  "fallbackUsed": false
 }
