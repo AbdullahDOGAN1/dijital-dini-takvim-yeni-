@@ -1,12 +1,15 @@
 {
-  "generatedAt": "2026-08-01T02:51:08.009Z",
+  "generatedAt": "2026-09-01T03:54:50.295Z",
   "mode": "github-actions-json-cache",
   "citiesCount": 869,
-  "prayerStartDate": "2026-08-01",
-  "prayerEndDate": "2026-09-09",
+  "prayerStartDate": "2026-09-01",
+  "prayerEndDate": "2026-10-10",
   "religiousYears": [
     2026,
     2027
   ],
-  "religiousFallbackYears": []
+  "religiousFallbackYears": [
+    2026,
+    2027
+  ]
 }
